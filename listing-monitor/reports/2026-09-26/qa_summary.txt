@@ -1,0 +1,9 @@
+QA LISTING MOI 2026-09-26
+
+KFK: 2 listing, 0 listing co loi CAO, 2 listing co loi
+RFS: 2 listing, 0 listing co loi CAO, 2 listing co loi
+CFS: 13 listing, 1 listing co loi CAO, 13 listing co loi
+   - Ảnh: 1 loi
+
+Loi lap lai (co the do template):
+   - CFS | SEO | Meta description: khoảng trắng trước dấu câu (9/13)
