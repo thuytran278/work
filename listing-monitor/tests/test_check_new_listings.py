@@ -83,6 +83,17 @@ class CheckSiteTest(unittest.TestCase):
         self.assertEqual(rows, [])
         self.assertEqual(len([n for n in notes if "loi" in n]), 2)
 
+    def test_disabled_feed_falls_back_to_diff(self):
+        (m.STATE_DIR / "KFK.json").write_text(json.dumps({"known_ids": [101, 103]}))
+
+        def fetch(url, timeout=30):
+            if "/feed/" in url:
+                return "<!DOCTYPE html><html>homepage</html>", {}
+            return fake_fetch(url)
+        rows, notes = m.check_site("KFK", BASE, date(2026, 9, 26), timezone.utc, CFG, True, fetch=fetch)
+        self.assertEqual([(r["product_id"], r["detected_by"]) for r in rows], [(104, "diff")])
+        self.assertTrue(any("RSS feed bi tat" in n for n in notes))
+
 
 if __name__ == "__main__":
     unittest.main()

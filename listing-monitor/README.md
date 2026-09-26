@@ -41,6 +41,12 @@ Kết quả:
 - Nếu site báo `KHONG KIEM TRA DUOC`: site đang chặn (Cloudflare), tắt feed hoặc Store API. Xem dòng `(!)` để biết lỗi cụ thể.
 - Chỉnh danh sách site hoặc số trang tối đa trong `config.json`.
 
+## Chạy tự động (Claude routine)
+
+Routine chạy mỗi ngày lúc 23:24 giờ UK trên cloud. Mỗi lần chạy, kết quả (`reports/`) và danh sách so sánh (`data/state/`) được commit lên branch `claude/gifted-tesla-l4ekcx`, nên lần sau luôn có dữ liệu để so sánh.
+
+Lưu ý: RFS và CFS đã tắt RSS feed, nên hai site này chỉ dùng cách so sánh danh sách (`detected_by = diff`).
+
 ## Chạy tự động mỗi ngày (Windows)
 
 Mở Task Scheduler → Create Basic Task → Daily → Action: *Start a program*:

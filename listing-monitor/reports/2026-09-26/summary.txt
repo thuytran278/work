@@ -1,0 +1,14 @@
+LISTING MOI NGAY 2026-09-26
+
+KFK: khong co listing moi
+   (!) Lan chay dau: da luu danh sach goc, tu mai moi so sanh duoc.
+RFS: khong co listing moi
+   (!) RSS feed bi tat tren site (chi dung so sanh danh sach)
+   (!) Lan chay dau: da luu danh sach goc, tu mai moi so sanh duoc.
+RFK: khong co listing moi
+   (!) Lan chay dau: da luu danh sach goc, tu mai moi so sanh duoc.
+CFS: khong co listing moi
+   (!) RSS feed bi tat tren site (chi dung so sanh danh sach)
+   (!) Lan chay dau: da luu danh sach goc, tu mai moi so sanh duoc.
+
+Tong: 0 listing moi

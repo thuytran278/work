@@ -17,6 +17,7 @@ import csv
 import json
 import re
 import sys
+import time
 import urllib.error
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -47,14 +48,28 @@ def get_tz(name):
         return timezone.utc
 
 
-def http_get(url, timeout=30):
-    """Return (body_text, headers). Raises on HTTP / network error."""
+def http_get(url, timeout=30, retry_waits=(10, 30)):
+    """Return (body_text, headers). Raises on HTTP / network error.
+
+    Retries on 403/429/5xx: some sites' firewalls block bursts of requests.
+    """
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return resp.read().decode("utf-8", errors="replace"), resp.headers
+    for wait in (*retry_waits, None):
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                # Some sites prepend a UTF-8 BOM, which breaks json / xml parsing.
+                return resp.read().decode("utf-8-sig", errors="replace"), resp.headers
+        except urllib.error.HTTPError as e:
+            if wait is None or not (e.code in (403, 429) or e.code >= 500):
+                raise
+            time.sleep(wait)
 
 
 # ---------------------------------------------------------------- RSS feed
+
+class RssDisabled(Exception):
+    pass
+
 
 def parse_rss(xml_text, tz):
     """Return list of {product_id, name, url, published_at(datetime)}."""
@@ -89,6 +104,9 @@ def fetch_rss_for_date(base_url, target, tz, max_pages, fetch=http_get):
             if e.code == 404 and page > 1:  # no more pages
                 break
             raise
+        if "<rss" not in text[:500]:
+            # Feed disabled: WordPress redirects to the homepage (HTML).
+            raise RssDisabled("RSS feed bi tat tren site (chi dung so sanh danh sach)")
         items = parse_rss(text, tz)
         if not items:
             break
@@ -158,6 +176,8 @@ def check_site(site, base_url, target, tz, cfg, use_diff, fetch=http_get):
                 "published_at": it["published_at"].strftime("%Y-%m-%d %H:%M"),
                 "detected_by": "rss",
             }
+    except RssDisabled as e:
+        notes.append(str(e))
     except Exception as e:
         notes.append(f"RSS loi: {e}")
 
