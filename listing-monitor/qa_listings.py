@@ -40,6 +40,8 @@ TO_CONFIRM = [
     ("Trustpilot / 4.9★", "SOP: tránh 'Trustpilot' và claim 4.9★. Short description KFK và một số meta đang dùng. "
                           "Đây là template được duyệt hay cần sửa?"),
     ("Tên né thương hiệu", "Tool coi 'North London Red' = Arsenal, 'P^_^SG' = PSG. Còn tên thay thế nào khác không?"),
+    ("WINNERS / CHAMPIONS", "Listing in chữ kỷ niệm (vd 'CHAMPIONS 26') không bị báo thiếu player attribute/category. Đúng không?"),
+    ("Gift pack NOINDEX", "Một số gift pack KFK (Bay^_^rn, P^_^SG) đang để noindex. Cố ý (né thương hiệu) hay lỗi?"),
     ("Sleeve badge", "Tool KHÔNG báo lỗi 'sleeve badge' (tên option), chỉ báo 'badge' đứng riêng. Đúng không?"),
     ("Độ dài SEO title", "Tool báo khi SEO title > 65 ký tự và meta > 165 ký tự (mức Thấp)."),
     ("KFK / CFS / RFK template SEO", "SOP chưa có template SEO title/meta cho KFK, CFS, RFK nên tool chưa check đúng mẫu "

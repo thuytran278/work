@@ -328,7 +328,8 @@ def check_product(data):
         if k and not is_gift:
             add(HIGH, "Sai Home/Away/Third", "Description",
                 f"Tên là {'/'.join(sorted(name_kits))} nhưng đầu description ghi {'/'.join(sorted(k))}: "
-                + snippet(intro, "|".join(k), 60), "Sửa description (có thể copy từ listing khác)")
+                + snippet(intro, "|".join("goalkeeper|gk" if x == "gk" else x for x in k), 60),
+                "Sửa description (có thể copy từ listing khác)")
         bad_alts = [a for a, _ in product_alts if kits_in(a) and not kits_in(a) & name_kits]
         if bad_alts and not is_gift:
             add(MED, "Sai Home/Away/Third", "Ảnh / alt text",
@@ -397,11 +398,12 @@ def check_product(data):
         up = re.search(r"[A-ZÀ-ÝØ.\-']{2,}(?:\s[A-ZÀ-ÝØ.\-']{2,})*\s\d{1,2}", name)
         if not up and not is_gift:
             add(LOW, "Sai cầu thủ", "Tên sản phẩm", "Tên + số cầu thủ chưa VIẾT HOA", "Viết hoa tên + số cầu thủ")
-        if not players_attr:
+        commemorative = re.fullmatch(r"(winners|champions)\s*\d*", fold(p))  # e.g. "CHAMPIONS 26" print
+        if not players_attr and not commemorative:
             add(HIGH, "Sai cầu thủ", "Attribute Players",
                 f"Listing cầu thủ '{p}' nhưng THIẾU player attribute (không hiện trong filter cầu thủ)",
                 "Thêm attribute Players")
-        if p_words and not is_gift and not any(all(w in c for w in p_words) for c in cats_f):
+        if p_words and not is_gift and not commemorative and not any(all(w in c for w in p_words) for c in cats_f):
             add(MED, "Sai cầu thủ", "Category", f"Thiếu player category cho '{p}'", "Thêm player category")
         if re.search(r"personalisation options|how to add personalisation|add your own name", desc, re.I):
             add(HIGH, "Sai cầu thủ", "Description",

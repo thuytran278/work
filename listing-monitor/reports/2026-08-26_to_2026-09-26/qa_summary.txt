@@ -1,0 +1,27 @@
+QA LISTING MOI 2026-08-26 -> 2026-09-26
+
+KFK: 160 listing, 18 listing co loi CAO, 158 listing co loi
+   - SEO: 17 loi
+   - Sai team: 2 loi
+   - Sai tất (socks): 1 loi
+RFS: 68 listing, 33 listing co loi CAO, 68 listing co loi
+   - SEO: 27 loi
+   - Sai Home/Away/Third: 5 loi
+   - Sai season: 2 loi
+RFK: 289 listing, 17 listing co loi CAO, 289 listing co loi
+   - Sai season: 9 loi
+   - Sai Home/Away/Third: 6 loi
+   - Sai cầu thủ: 2 loi
+   - SEO: 1 loi
+CFS: 319 listing, 9 listing co loi CAO, 317 listing co loi
+   - Sai cầu thủ: 5 loi
+   - Sai Home/Away/Third: 3 loi
+   - Sai tất (socks): 1 loi
+
+Loi lap lai (co the do template):
+   - CFS | SEO | Meta description: khoảng trắng trước dấu câu (226/319)
+   - KFK | Sleeve | Description: Có nhắc 'short sleeve' (128/160)
+   - KFK | Words to Avoid | Short description: 'Trustpilot' (154/160)
+   - RFK | Words to Avoid | Short description: 'Trustpilot' (289/289)
+   - RFS | Words to Avoid | Description: 'worldwide' (40/68)
+   - RFS | Words to Avoid | Short description: 'Trustpilot' (68/68)
