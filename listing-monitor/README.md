@@ -6,13 +6,16 @@ Script kiểm tra xem trong ngày có listing mới nào được đăng lên 4 
 
 | Nguồn | Link | Dùng để |
 |---|---|---|
-| RSS feed | `/feed/?post_type=product` | Lấy **ngày giờ đăng** chính xác của sản phẩm |
-| Store API (công khai) | `/wp-json/wc/store/v1/products` | So danh sách ID hôm nay với lần chạy trước để bắt listing mà RSS bỏ sót. Đồng thời lấy SKU và category |
+| WP REST (công khai) | `/wp-json/wp/v2/product` | **Nguồn chính**: ngày giờ đăng chính xác, lọc được theo khoảng ngày |
+| RSS feed | `/feed/?post_type=product` | Dự phòng khi WP REST lỗi |
+| Store API (công khai) | `/wp-json/wc/store/v1/products` | So danh sách ID hôm nay với lần chạy trước để bắt listing mà 2 nguồn trên bỏ sót. Đồng thời lấy SKU và category |
 
 Cột `detected_by` trong file CSV cho biết listing được phát hiện từ nguồn nào:
-- `rss`: có trong RSS với đúng ngày đăng
-- `rss+diff`: cả hai nguồn đều thấy (chắc chắn nhất)
-- `diff`: RSS không có (feed bị tắt, bị cache hoặc hôm đó đăng quá nhiều), nhưng ID mới xuất hiện so với lần chạy trước
+- `wp` / `rss`: có ngày đăng nằm trong khoảng ngày cần xem
+- `wp+diff`: cả hai cách đều thấy
+- `diff`: nguồn có ngày đăng không thấy, nhưng ID mới xuất hiện so với lần chạy trước
+
+Cột `in_stock = NO`: listing mới đăng nhưng đang **hết hàng**, nên bị ẩn khỏi trang shop.
 
 ## Cài đặt (một lần)
 
@@ -25,7 +28,8 @@ Cột `detected_by` trong file CSV cho biết listing được phát hiện từ
 cd listing-monitor
 python check_new_listings.py                    # hôm nay (giờ UK)
 python check_new_listings.py --sites KFK RFS    # chỉ check một vài site
-python check_new_listings.py --date 2026-09-25  # xem ngày cũ (chỉ dùng RSS)
+python check_new_listings.py --date 2026-09-25  # xem một ngày cũ
+python check_new_listings.py --from 2026-08-26 --to 2026-09-26  # xem cả khoảng ngày
 ```
 
 Kết quả:
@@ -35,7 +39,7 @@ Kết quả:
 
 ## Lưu ý
 
-- **Lần chạy đầu tiên** chỉ dùng được RSS. Script lưu danh sách sản phẩm hiện có vào `data/state/`, và từ lần sau mới so sánh được. Đừng xoá thư mục `data/`.
+- Script lưu danh sách sản phẩm hiện có vào `data/state/` để lần sau so sánh. Đừng xoá thư mục `data/`.
 - Phần so sánh nghĩa là "mới kể từ lần chạy trước". Nên chạy **mỗi ngày một lần vào cùng một giờ**, ví dụ 23:30 giờ UK hoặc sáng hôm sau với `--date` là ngày hôm trước. Nếu nghỉ vài ngày, lần chạy kế tiếp sẽ gom hết listing của những ngày đó (cột `published_at` để trống với các dòng `diff`).
 - Chỉ thấy được sản phẩm đã **publish**. Draft và private không hiện trên các nguồn công khai.
 - Nếu site báo `KHONG KIEM TRA DUOC`: site đang chặn (Cloudflare), tắt feed hoặc Store API. Xem dòng `(!)` để biết lỗi cụ thể.
@@ -45,7 +49,7 @@ Kết quả:
 
 Routine chạy mỗi ngày lúc 23:24 giờ UK trên cloud. Mỗi lần chạy, kết quả (`reports/`) và danh sách so sánh (`data/state/`) được commit lên branch `claude/gifted-tesla-l4ekcx`, nên lần sau luôn có dữ liệu để so sánh.
 
-Lưu ý: RFS và CFS đã tắt RSS feed, nên hai site này chỉ dùng cách so sánh danh sách (`detected_by = diff`).
+Lưu ý: RFS và CFS đã tắt RSS feed, nhưng không ảnh hưởng vì nguồn chính là WP REST.
 
 ## Chạy tự động mỗi ngày (Windows)
 

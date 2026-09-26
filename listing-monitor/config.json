@@ -1,5 +1,6 @@
 {
   "timezone": "Europe/London",
+  "wp_max_pages": 20,
   "store_api_max_pages": 5,
   "rss_max_pages": 10,
   "sites": {

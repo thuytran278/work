@@ -1,19 +1,23 @@
 """Check which new listings went live on each website, without an API key.
 
-Two public sources are combined:
-  1. RSS feed  (/feed/?post_type=product)  -> exact publish date of each product.
-  2. Store API (/wp-json/wc/store/v1/products) -> list of live product IDs,
+Public sources, combined:
+  1. WP REST (/wp-json/wp/v2/product?after=&before=) -> exact publish date,
+     filtered by date range. Main source.
+  2. RSS feed (/feed/?post_type=product) -> fallback when WP REST fails.
+  3. Store API (/wp-json/wc/store/v1/products) -> list of live product IDs,
      compared with the list saved on the previous run to catch anything the
-     feed missed (feed disabled, cached, or too many products in one day).
+     dated sources missed. Also used to fill SKU / categories.
 
 Usage:
-  python check_new_listings.py                 # today (UK time)
+  python check_new_listings.py                                  # today (UK time)
   python check_new_listings.py --date 2026-09-25
+  python check_new_listings.py --from 2026-08-26 --to 2026-09-26
   python check_new_listings.py --sites KFK RFS
 """
 
 import argparse
 import csv
+import html
 import json
 import re
 import sys
@@ -21,7 +25,8 @@ import time
 import urllib.error
 import urllib.request
 import xml.etree.ElementTree as ET
-from datetime import date, datetime, timezone
+from collections import Counter
+from datetime import date, datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 
@@ -33,9 +38,10 @@ USER_AGENT = (
     "(KHTML, like Gecko) Chrome/128.0 Safari/537.36"
 )
 CSV_COLUMNS = [
-    "site", "product_id", "sku", "name", "url", "categories",
+    "site", "product_id", "sku", "name", "url", "categories", "in_stock",
     "published_at", "detected_by",
 ]
+MAX_LISTED_PER_SITE = 30  # longer lists: see the CSV
 
 
 def get_tz(name):
@@ -65,6 +71,40 @@ def http_get(url, timeout=30, retry_waits=(10, 30)):
             time.sleep(wait)
 
 
+def make_row(site, pid, name, url, published_at, source):
+    return {
+        "site": site, "product_id": pid or "", "sku": "", "name": name,
+        "url": url, "categories": "", "in_stock": "",
+        "published_at": published_at.strftime("%Y-%m-%d %H:%M") if published_at else "",
+        "detected_by": source,
+    }
+
+
+# ---------------------------------------------------------------- WP REST
+
+def fetch_wp_products(base_url, start, end, max_pages, fetch=http_get):
+    """Products published between start and end (inclusive, site local time)."""
+    found = []
+    after = f"{(start - timedelta(days=1)).isoformat()}T23:59:59"
+    before = f"{(end + timedelta(days=1)).isoformat()}T00:00:00"
+    for page in range(1, max_pages + 1):
+        url = (f"{base_url}/wp-json/wp/v2/product?after={after}&before={before}"
+               f"&per_page=100&page={page}&orderby=date&order=desc"
+               f"&_fields=id,date,link,title")
+        text, headers = fetch(url)
+        batch = json.loads(text)
+        for p in batch:
+            found.append({
+                "product_id": p["id"],
+                "name": html.unescape(p.get("title", {}).get("rendered", "")),
+                "url": p.get("link", ""),
+                "published_at": datetime.fromisoformat(p["date"]),
+            })
+        if len(batch) < 100 or page >= int(headers.get("X-WP-TotalPages") or page):
+            break
+    return found
+
+
 # ---------------------------------------------------------------- RSS feed
 
 class RssDisabled(Exception):
@@ -88,10 +128,10 @@ def parse_rss(xml_text, tz):
     return items
 
 
-def fetch_rss_for_date(base_url, target, tz, max_pages, fetch=http_get):
-    """Products whose publish date (site timezone) equals target.
+def fetch_rss_for_range(base_url, start, end, tz, max_pages, fetch=http_get):
+    """Products whose publish date (site timezone) is between start and end.
 
-    Feed is newest first, so stop once we reach an item older than target.
+    Feed is newest first, so stop once we reach an item older than start.
     """
     found = []
     for page in range(1, max_pages + 1):
@@ -106,15 +146,15 @@ def fetch_rss_for_date(base_url, target, tz, max_pages, fetch=http_get):
             raise
         if "<rss" not in text[:500]:
             # Feed disabled: WordPress redirects to the homepage (HTML).
-            raise RssDisabled("RSS feed bi tat tren site (chi dung so sanh danh sach)")
+            raise RssDisabled("RSS feed bi tat tren site")
         items = parse_rss(text, tz)
         if not items:
             break
         for it in items:
-            if it["published_at"] and it["published_at"].date() == target:
+            if it["published_at"] and start <= it["published_at"].date() <= end:
                 found.append(it)
         oldest = min((i["published_at"] for i in items if i["published_at"]), default=None)
-        if oldest is None or oldest.date() < target:
+        if oldest is None or oldest.date() < start:
             break
     return found
 
@@ -143,6 +183,23 @@ def fetch_store_products(base_url, known_ids, max_pages, fetch=http_get):
     return products
 
 
+def fetch_store_by_ids(base_url, ids, fetch=http_get):
+    """Store API details (SKU, categories) for specific product IDs."""
+    out = {}
+    ids = list(ids)
+    for i in range(0, len(ids), 100):
+        chunk = ",".join(str(x) for x in ids[i:i + 100])
+        text, _ = fetch(f"{base_url}/wp-json/wc/store/v1/products?include={chunk}&per_page=100")
+        for p in json.loads(text):
+            out[p["id"]] = p
+    # Out-of-stock products are hidden from the list endpoint: fetch one by one.
+    for pid in ids:
+        if pid not in out:
+            text, _ = fetch(f"{base_url}/wp-json/wc/store/v1/products/{pid}")
+            out[pid] = json.loads(text)
+    return out
+
+
 def load_state(site):
     path = STATE_DIR / f"{site}.json"
     if path.exists():
@@ -161,66 +218,115 @@ def save_state(site, known_ids, now):
 
 # ------------------------------------------------------------------ merge
 
-def check_site(site, base_url, target, tz, cfg, use_diff, fetch=http_get):
-    """Return (rows, notes) for one site."""
+def check_site(site, base_url, start, end, tz, cfg, use_diff, fetch=http_get):
+    """Return (rows, notes) for one site. rows sorted newest first."""
     notes = []
     by_id = {}
+    dated_ok = False
 
-    # 1. RSS
+    # 1. WP REST (main), 2. RSS only if WP REST failed
     try:
-        for it in fetch_rss_for_date(base_url, target, tz, cfg["rss_max_pages"], fetch):
-            key = it["product_id"] or it["url"]
-            by_id[key] = {
-                "site": site, "product_id": it["product_id"] or "", "sku": "",
-                "name": it["name"], "url": it["url"], "categories": "",
-                "published_at": it["published_at"].strftime("%Y-%m-%d %H:%M"),
-                "detected_by": "rss",
-            }
-    except RssDisabled as e:
-        notes.append(str(e))
+        for it in fetch_wp_products(base_url, start, end, cfg["wp_max_pages"], fetch):
+            by_id[it["product_id"]] = make_row(
+                site, it["product_id"], it["name"], it["url"], it["published_at"], "wp")
+        dated_ok = True
     except Exception as e:
-        notes.append(f"RSS loi: {e}")
+        notes.append(f"WP REST loi: {e}")
+        try:
+            for it in fetch_rss_for_range(base_url, start, end, tz, cfg["rss_max_pages"], fetch):
+                key = it["product_id"] or it["url"]
+                by_id[key] = make_row(
+                    site, it["product_id"], it["name"], it["url"], it["published_at"], "rss")
+            dated_ok = True
+        except RssDisabled as e2:
+            notes.append(str(e2))
+        except Exception as e2:
+            notes.append(f"RSS loi: {e2}")
 
-    # 2. Store API (always fetched: used for diff + to fill SKU / category)
-    state = load_state(site)
-    known = set(state["known_ids"]) if state else set()
-    try:
-        products = fetch_store_products(base_url, known, cfg["store_api_max_pages"], fetch)
-    except Exception as e:
-        products = None
-        notes.append(f"Store API loi: {e}")
-
-    if products is not None:
-        store = {p["id"]: p for p in products}
-        # fill details for RSS rows
-        for key, row in by_id.items():
-            p = store.get(key)
-            if p:
-                row["sku"] = p.get("sku", "")
-                row["categories"] = ", ".join(c["name"] for c in p.get("categories", []))
-                row["detected_by"] = "rss+diff" if use_diff and state and key not in known else "rss"
-
-        if use_diff:
+    # 3. Store API diff (only when the range ends today)
+    store = {}
+    if use_diff:
+        state = load_state(site)
+        known = set(state["known_ids"]) if state else set()
+        try:
+            store = {p["id"]: p for p in fetch_store_products(
+                base_url, known, cfg["store_api_max_pages"], fetch)}
             if state is None:
-                notes.append("Lan chay dau: da luu danh sach goc, tu mai moi so sanh duoc.")
+                notes.append("Lan chay dau: da luu danh sach goc de so sanh tu lan sau.")
             else:
                 for pid, p in store.items():
-                    if pid not in known and pid not in by_id:
-                        by_id[pid] = {
-                            "site": site, "product_id": pid, "sku": p.get("sku", ""),
-                            "name": p.get("name", ""), "url": p.get("permalink", ""),
-                            "categories": ", ".join(c["name"] for c in p.get("categories", [])),
-                            "published_at": "",
-                            "detected_by": "diff",
-                        }
+                    if pid in known:
+                        continue
+                    if pid in by_id:
+                        by_id[pid]["detected_by"] += "+diff"
+                    else:
+                        by_id[pid] = make_row(site, pid, p.get("name", ""),
+                                              p.get("permalink", ""), None, "diff")
             save_state(site, known | set(store), datetime.now(tz))
+        except Exception as e:
+            notes.append(f"Store API loi: {e}")
+            if not dated_ok:
+                notes.append("KHONG KIEM TRA DUOC")
 
-    return list(by_id.values()), notes
+    elif not dated_ok:
+        notes.append("KHONG KIEM TRA DUOC")
+
+    # 4. Fill SKU / categories
+    missing = [k for k in by_id if isinstance(k, int) and k not in store]
+    try:
+        store.update(fetch_store_by_ids(base_url, missing, fetch) if missing else {})
+    except Exception as e:
+        notes.append(f"Khong lay duoc SKU/category: {e}")
+    for key, row in by_id.items():
+        p = store.get(key)
+        if p:
+            row["sku"] = p.get("sku", "")
+            row["categories"] = ", ".join(html.unescape(c["name"]) for c in p.get("categories", []))
+            row["in_stock"] = "yes" if p.get("is_in_stock", True) else "NO"
+
+    rows = sorted(by_id.values(), key=lambda r: r["published_at"], reverse=True)
+    return rows, notes
+
+
+def build_summary(start, end, results, use_diff):
+    title = (f"LISTING MOI NGAY {start.isoformat()}" if start == end
+             else f"LISTING MOI TU {start.isoformat()} DEN {end.isoformat()}")
+    lines, total = [title, ""], 0
+    for site, (rows, notes) in results.items():
+        total += len(rows)
+        if "KHONG KIEM TRA DUOC" in notes:
+            status = "KHONG KIEM TRA DUOC"
+        else:
+            status = f"{len(rows)} listing moi" if rows else "khong co listing moi"
+        oos = sum(1 for r in rows if r["in_stock"] == "NO")
+        if oos:
+            status += f" ({oos} dang HET HANG)"
+        lines.append(f"{site}: {status}")
+        if start != end and rows:
+            per_day = Counter(r["published_at"][:10] or "(khong ro ngay)" for r in rows)
+            lines.append("   Theo ngay: " + ", ".join(
+                f"{d[5:] if d[0].isdigit() else d}: {n}" for d, n in sorted(per_day.items())))
+        if len(rows) <= MAX_LISTED_PER_SITE:
+            for r in rows:
+                oos = "  [HET HANG]" if r["in_stock"] == "NO" else ""
+                lines.append(f"   - {r['published_at'] or '?':16}  {r['name']}  "
+                             f"[{r['sku'] or '-'}]{oos}  {r['url']}")
+        else:
+            lines.append(f"   (Danh sach {len(rows)} listing: xem file CSV)")
+        for n in notes:
+            if n != "KHONG KIEM TRA DUOC":
+                lines.append(f"   (!) {n}")
+    lines += ["", f"Tong: {total} listing moi"]
+    if not use_diff:
+        lines.append("(Khoang ngay trong qua khu: khong so sanh danh sach)")
+    return "\n".join(lines)
 
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Check new listings per website.")
     ap.add_argument("--date", help="YYYY-MM-DD (default: today, UK time)")
+    ap.add_argument("--from", dest="date_from", help="YYYY-MM-DD, start of range")
+    ap.add_argument("--to", dest="date_to", help="YYYY-MM-DD, end of range (default: today)")
     ap.add_argument("--sites", nargs="*", help="e.g. KFK RFS (default: all)")
     ap.add_argument("--config", default=str(BASE_DIR / "config.json"))
     args = ap.parse_args(argv)
@@ -228,37 +334,29 @@ def main(argv=None):
     cfg = json.loads(Path(args.config).read_text(encoding="utf-8"))
     tz = get_tz(cfg.get("timezone", "Europe/London"))
     today = datetime.now(tz).date()
-    target = date.fromisoformat(args.date) if args.date else today
-    # Diff = "new since last run", only meaningful when checking today.
-    use_diff = target == today
+    if args.date_from:
+        start = date.fromisoformat(args.date_from)
+        end = date.fromisoformat(args.date_to) if args.date_to else today
+    else:
+        start = end = date.fromisoformat(args.date) if args.date else today
+    # Diff = "new since last run", only meaningful when the range ends today.
+    use_diff = end == today
 
     sites = {k: v.rstrip("/") for k, v in cfg["sites"].items()
              if not args.sites or k in args.sites}
+    results = {site: check_site(site, url, start, end, tz, cfg, use_diff)
+               for site, url in sites.items()}
 
-    all_rows, lines = [], [f"LISTING MOI NGAY {target.isoformat()}", ""]
-    for site, url in sites.items():
-        rows, notes = check_site(site, url, target, tz, cfg, use_diff)
-        all_rows.extend(rows)
-        status = f"{len(rows)} listing moi" if rows else "khong co listing moi"
-        if notes and not rows and any("loi" in n for n in notes):
-            status = "KHONG KIEM TRA DUOC"
-        lines.append(f"{site}: {status}")
-        for r in rows:
-            lines.append(f"   - {r['name']}  [{r['sku'] or '-'}]  {r['url']}")
-        for n in notes:
-            lines.append(f"   (!) {n}")
-    lines += ["", f"Tong: {len(all_rows)} listing moi"]
-    if not use_diff:
-        lines.append("(Ngay trong qua khu: chi dung RSS, khong so sanh danh sach)")
-
-    out_dir = REPORT_DIR / target.isoformat()
+    label = start.isoformat() if start == end else f"{start.isoformat()}_to_{end.isoformat()}"
+    out_dir = REPORT_DIR / label
     out_dir.mkdir(parents=True, exist_ok=True)
-    csv_path = out_dir / f"new_listings_{target.isoformat()}.csv"
+    csv_path = out_dir / f"new_listings_{label}.csv"
     with csv_path.open("w", newline="", encoding="utf-8-sig") as f:  # utf-8-sig: Excel reads accents
         w = csv.DictWriter(f, fieldnames=CSV_COLUMNS)
         w.writeheader()
-        w.writerows(all_rows)
-    summary = "\n".join(lines)
+        for rows, _ in results.values():
+            w.writerows(rows)
+    summary = build_summary(start, end, results, use_diff)
     (out_dir / "summary.txt").write_text(summary, encoding="utf-8")
 
     print(summary)
