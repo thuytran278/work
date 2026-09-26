@@ -8,5 +8,9 @@
     "RFS": "https://replicafootballshirt.com",
     "RFK": "https://replicafootballkits.com",
     "CFS": "https://cheapfootballshirts.com"
+  },
+  "request_delay": {
+    "default": 0.3,
+    "RFS": 3
   }
 }
