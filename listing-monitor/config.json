@@ -1,0 +1,11 @@
+{
+  "timezone": "Europe/London",
+  "store_api_max_pages": 5,
+  "rss_max_pages": 10,
+  "sites": {
+    "KFK": "https://kidsfootballkit.co.uk",
+    "RFS": "https://replicafootballshirt.com",
+    "RFK": "https://replicafootballkits.com",
+    "CFS": "https://cheapfootballshirts.com"
+  }
+}
