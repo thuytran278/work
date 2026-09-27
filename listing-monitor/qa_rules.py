@@ -80,7 +80,7 @@ def snippet(text, pattern, width=45):
 
 # ------------------------------------------------------------------ parsing
 
-# ADK: SOP says "adult + kid combo", but live data uses it for Adult Kits (shirt + shorts).
+# ADK = Adult Kit (shirt + shorts), confirmed by Clara 27/9 (the old SOP said "adult + kid combo").
 AUDIENCE_BY_SKU = {"AD": "adult", "WM": "women", "KD": "kids", "ADK": "adult", "BABY": "baby"}
 AUDIENCE_LABEL = {"adult": "Men/Adult", "women": "Women", "kids": "Kids",
                   "adult+kids": "Adult + Kid", "baby": "Baby"}
@@ -398,7 +398,8 @@ def check_product(data):
         up = re.search(r"[A-ZÀ-ÝØ.\-']{2,}(?:\s[A-ZÀ-ÝØ.\-']{2,})*\s\d{1,2}", name)
         if not up and not is_gift:
             add(LOW, "Sai cầu thủ", "Tên sản phẩm", "Tên + số cầu thủ chưa VIẾT HOA", "Viết hoa tên + số cầu thủ")
-        commemorative = re.fullmatch(r"(winners|champions)\s*\d*", fold(p))  # e.g. "CHAMPIONS 26" print
+        # "CHAMPIONS 26" style prints need no player attribute/category (Clara 27/9)
+        commemorative = re.fullmatch(r"(winners|champions)\s*\d*", fold(p))
         if not players_attr and not commemorative:
             add(HIGH, "Sai cầu thủ", "Attribute Players",
                 f"Listing cầu thủ '{p}' nhưng THIẾU player attribute (không hiện trong filter cầu thủ)",
@@ -496,7 +497,7 @@ def check_product(data):
         if probs:
             add(LOW, "SEO", field, f"{', '.join(probs)}: \"{text}\"", "Sửa định dạng")
     robots = page.get("robots", "")
-    if "noindex" in robots:
+    if "noindex" in robots and not is_gift:  # gift packs are noindex on purpose (Clara 27/9)
         add(HIGH, "SEO", "Robots", f"Trang đang NOINDEX ({robots}) -> Google không index", "Bật index trong Rank Math")
     canon = page.get("canonical", "")
     if canon and canon.rstrip("/") != s.get("permalink", "").rstrip("/"):

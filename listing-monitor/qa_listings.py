@@ -33,19 +33,17 @@ TEMPLATE_SHARE = 0.5
 TEMPLATE_MIN = 5
 
 TO_CONFIRM = [
-    ("SKU ADK", "SOP ghi ADK = combo Adult + Kid, nhưng trên web ADK đang dùng cho Adult Kit (áo + quần người lớn). "
-                "Tool đang hiểu ADK = Adult. Đúng không?"),
-    ("Short sleeve", "SOP: không bao giờ nhắc short sleeve. Nhưng template description KFK có 'Short-Sleeve shirt' và "
-                     "'Sleeve length: Short sleeve'. Có cần xoá khỏi template không?"),
-    ("Trustpilot / 4.9★", "SOP: tránh 'Trustpilot' và claim 4.9★. Short description KFK và một số meta đang dùng. "
-                          "Đây là template được duyệt hay cần sửa?"),
-    ("Tên né thương hiệu", "Tool coi 'North London Red' = Arsenal, 'P^_^SG' = PSG. Còn tên thay thế nào khác không?"),
-    ("WINNERS / CHAMPIONS", "Listing in chữ kỷ niệm (vd 'CHAMPIONS 26') không bị báo thiếu player attribute/category. Đúng không?"),
-    ("Gift pack NOINDEX", "Một số gift pack KFK (Bay^_^rn, P^_^SG) đang để noindex. Cố ý (né thương hiệu) hay lỗi?"),
-    ("Sleeve badge", "Tool KHÔNG báo lỗi 'sleeve badge' (tên option), chỉ báo 'badge' đứng riêng. Đúng không?"),
+    ("Short sleeve", "SOP: không bao giờ nhắc short sleeve. Description KFK (130/162 listing), RFK (107/289), CFS (6) đang có "
+                     "'Short-Sleeve shirt' / 'short sleeves'. Có cần xoá không?"),
+    ("Trustpilot / 4.9★", "SOP: tránh 'Trustpilot' và claim 4.9★. Short description KFK, RFS, RFK có dòng "
+                          "'Rated 4.9 on Trustpilot' (CFS không có). Giữ hay bỏ?"),
+    ("Tên né thương hiệu", "Tool coi 'North London Red' = Arsenal, 'P^_^SG' = PSG và nhận ra kiểu 'Arsn@l', 'Lvr^_^pooI'."),
+    ("Sleeve badge", "Tool KHÔNG báo lỗi 'sleeve badge' (tên option), chỉ báo 'badge' đứng riêng."),
     ("Độ dài SEO title", "Tool báo khi SEO title > 65 ký tự và meta > 165 ký tự (mức Thấp)."),
     ("KFK / CFS / RFK template SEO", "SOP chưa có template SEO title/meta cho KFK, CFS, RFK nên tool chưa check đúng mẫu "
                                      "cho các site này, chỉ check nội dung có khớp sản phẩm không."),
+    ("Đã xác nhận 27/9", "ADK = Adult Kit. Gift pack noindex là cố ý (không báo lỗi). "
+                         "Listing in 'CHAMPIONS 26 / WINNERS 26' không cần player attribute."),
 ]
 
 

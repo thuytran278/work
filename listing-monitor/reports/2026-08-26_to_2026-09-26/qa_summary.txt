@@ -1,7 +1,7 @@
 QA LISTING MOI 2026-08-26 -> 2026-09-26
 
-KFK: 160 listing, 18 listing co loi CAO, 158 listing co loi
-   - SEO: 17 loi
+KFK: 160 listing, 14 listing co loi CAO, 158 listing co loi
+   - SEO: 13 loi
    - Sai team: 2 loi
    - Sai tất (socks): 1 loi
 RFS: 68 listing, 33 listing co loi CAO, 68 listing co loi
