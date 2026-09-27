@@ -1,0 +1,9 @@
+QA LISTING MOI 2026-09-27
+
+KFK: 1 listing, 0 listing co loi CAO, 1 listing co loi
+RFS: 5 listing, 5 listing co loi CAO, 5 listing co loi
+   - SEO: 5 loi
+
+Loi lap lai (co the do template):
+   - RFS | Words to Avoid | Description: 'worldwide' (5/5)
+   - RFS | Words to Avoid | Short description: 'Trustpilot' (5/5)

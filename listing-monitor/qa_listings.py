@@ -107,7 +107,9 @@ def find_template_issues(products, rows):
     per_site = Counter(d["site"] for d in products)
     hit = defaultdict(set)
     for d, i in rows:
-        hit[(d["site"],) + issue_key(i)].add(d["store"]["id"])
+        # High issues are per-listing (e.g. canonical copied from an old listing), never "template".
+        if i["severity"] != qa_rules.HIGH:
+            hit[(d["site"],) + issue_key(i)].add(d["store"]["id"])
     out = {}
     for k, ids in hit.items():
         n = per_site[k[0]]
