@@ -115,9 +115,19 @@ class Rules(unittest.TestCase):
         self.assertIn("official", issue["detail"])
         self.assertIn("crest", issue["detail"])
 
-    def test_short_sleeve(self):
-        self.assertIn(("Sleeve", "Description"),
-                      groups(product(store__description="<p>Leeds 2026/27 kit with a short-sleeve shirt.</p>")))
+    def test_short_sleeve_is_fine_when_it_matches(self):
+        d = product(store__description="<p>Leeds 2026/27 kit with a short-sleeve shirt.</p>")
+        self.assertNotIn("Sleeve", {g for g, _ in groups(d)})
+
+    def test_short_sleeve_on_long_sleeve_listing(self):
+        d = product(store__name="Leeds United Home Kids Football Kit 2026/27 Long Sleeve (With socks)",
+                    store__sku="KFK_LEE_HOLV_KD_No_26/27",
+                    store__description="<p>Leeds 2026/27 kit with a short-sleeve shirt.</p>")
+        self.assertIn(("Sleeve", "Description"), groups(d))
+
+    def test_long_sleeve_text_on_short_sleeve_listing(self):
+        d = product(store__description="<p>The Leeds 2026/27 kit includes a long-sleeve shirt and shorts.</p>")
+        self.assertIn(("Sleeve", "Description"), groups(d))
 
     def test_canonical_to_other_page(self):
         self.assertOnly(product(page__canonical="https://kidsfootballkit.co.uk/product/leeds-away-2024-25/"),

@@ -441,10 +441,18 @@ def check_product(data):
                 + snippet(desc, r"socks"), "Sửa description")
 
     # ---------- Sleeve
+    # Mentioning the sleeve is fine as long as it matches the product (Clara 27/9).
+    img_text = fold(" ".join(a + " " + src for a, src in product_alts))
+    is_long = (has_word(fname, "long sleeve") or bool(sku and sku["long_sleeve"])
+               or bool(re.search(r"long[\s_-]?sleeve", img_text)))
     for field, text in [("Description", desc), ("Short description", short)] + seo_fields:
-        if re.search(r"short[\s-]sleeve", text, re.I):
-            add(MED, "Sleeve", field, "Có nhắc 'short sleeve' (quy tắc: không bao giờ nhắc short sleeve): "
-                + snippet(text, r"short[\s-]sleeve"), "Xoá cụm 'short sleeve'")
+        if is_long and re.search(r"short[\s-]sleeves?", text, re.I):
+            add(HIGH, "Sleeve", field, "Sản phẩm là Long Sleeve nhưng ghi 'short sleeve': "
+                + snippet(text, r"short[\s-]sleeve"), "Sửa thành long sleeve cho khớp ảnh/tên")
+        if not is_long and re.search(r"(includes?|with|supplied with|features?) (a |the )?long[\s-]sleeved?\b(?! option)",
+                                     text, re.I):
+            add(HIGH, "Sleeve", field, "Sản phẩm không phải Long Sleeve nhưng ghi áo dài tay: "
+                + snippet(text, r"long[\s-]sleeve"), "Sửa cho khớp ảnh/tên")
     if sku and has_word(fname, "long sleeve") != sku["long_sleeve"]:
         add(HIGH, "Sleeve", "SKU", f"Tên {'có' if 'long sleeve' in fname else 'không có'} Long Sleeve nhưng SKU là {sku['kit_code']}",
             "Sửa SKU / tên")

@@ -33,8 +33,6 @@ TEMPLATE_SHARE = 0.5
 TEMPLATE_MIN = 5
 
 TO_CONFIRM = [
-    ("Short sleeve", "SOP: không bao giờ nhắc short sleeve. Description KFK (130/162 listing), RFK (107/289), CFS (6) đang có "
-                     "'Short-Sleeve shirt' / 'short sleeves'. Có cần xoá không?"),
     ("Trustpilot / 4.9★", "SOP: tránh 'Trustpilot' và claim 4.9★. Short description KFK, RFS, RFK có dòng "
                           "'Rated 4.9 on Trustpilot' (CFS không có). Giữ hay bỏ?"),
     ("Tên né thương hiệu", "Tool coi 'North London Red' = Arsenal, 'P^_^SG' = PSG và nhận ra kiểu 'Arsn@l', 'Lvr^_^pooI'."),
@@ -43,7 +41,8 @@ TO_CONFIRM = [
     ("KFK / CFS / RFK template SEO", "SOP chưa có template SEO title/meta cho KFK, CFS, RFK nên tool chưa check đúng mẫu "
                                      "cho các site này, chỉ check nội dung có khớp sản phẩm không."),
     ("Đã xác nhận 27/9", "ADK = Adult Kit. Gift pack noindex là cố ý (không báo lỗi). "
-                         "Listing in 'CHAMPIONS 26 / WINNERS 26' không cần player attribute."),
+                         "Listing in 'CHAMPIONS 26 / WINNERS 26' không cần player attribute. "
+                         "Nhắc 'short sleeve' được, chỉ báo khi mâu thuẫn với Long Sleeve (tên/SKU/ảnh)."),
 ]
 
 

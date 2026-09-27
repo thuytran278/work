@@ -20,7 +20,6 @@ CFS: 319 listing, 9 listing co loi CAO, 317 listing co loi
 
 Loi lap lai (co the do template):
    - CFS | SEO | Meta description: khoảng trắng trước dấu câu (226/319)
-   - KFK | Sleeve | Description: Có nhắc 'short sleeve' (128/160)
    - KFK | Words to Avoid | Short description: 'Trustpilot' (154/160)
    - RFK | Words to Avoid | Short description: 'Trustpilot' (289/289)
    - RFS | Words to Avoid | Description: 'worldwide' (40/68)
