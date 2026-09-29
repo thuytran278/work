@@ -194,31 +194,34 @@ def write_excel(path, label, products, rows, errors, templates):
         for e in errors:
             ws.append(list(e))
 
-    # ---- Loi chi tiet
-    ws = wb.create_sheet("Lỗi chi tiết")
-    cols = ["Mức độ", "Site", "Ngày đăng", "ID", "SKU", "Tên sản phẩm", "Nhóm lỗi", "Vị trí",
-            "Chi tiết", "Cách sửa", "Lỗi template?", "URL", "Sửa trong admin"]
-    header(ws, cols, [11, 6, 16, 9, 30, 45, 20, 20, 70, 40, 12, 40, 20])
+    # ---- One sheet per site, so each site's team gets only its own list.
+    # Per-listing issues first (Cao -> Thap), template issues (fix the template once) at the bottom.
+    cols = ["Mức độ", "Ngày đăng", "ID", "SKU", "Tên sản phẩm", "Nhóm lỗi", "Vị trí",
+            "Chi tiết", "Cách sửa", "Lỗi template?", "URL", "Sửa trong admin", "Người sửa", "Đã sửa"]
+    widths = [11, 16, 9, 30, 45, 20, 20, 70, 40, 12, 40, 14, 14, 10]
     tmpl_keys = {k for k in templates}
-    ordered = sorted(rows, key=lambda r: (SEV_ORDER[r[1]["severity"]], SITE_ORDER.index(r[0]["site"]),
-                                          r[0].get("published_at", ""), r[0]["store"]["id"]))
-    for d, i in ordered:
-        s = d["store"]
-        base = s["permalink"].split("/product/")[0]
-        edit = f"{base}/wp-admin/post.php?post={s['id']}&action=edit"
-        ws.append([SEV_LABEL[i["severity"]], d["site"], d.get("published_at", ""), s["id"], s.get("sku", ""),
-                   qa_rules.strip_html(s["name"]), i["group"], i["field"], i["detail"], i["fix"],
-                   "Có" if (d["site"],) + issue_key(i) in tmpl_keys else "",
-                   s["permalink"], "Mở"])
-        r = ws.max_row
-        ws.cell(r, 1).fill = PatternFill("solid", fgColor=SEV_FILL[i["severity"]])
-        ws.cell(r, 12).hyperlink = s["permalink"]
-        ws.cell(r, 13).hyperlink = edit
-        ws.cell(r, 13).font = Font(color="0563C1", underline="single")
-        for c in (9, 10):
-            ws.cell(r, c).alignment = wrap
-    ws.freeze_panes = "A2"
-    ws.auto_filter.ref = ws.dimensions
+    for site in sites:
+        ws = wb.create_sheet(site)
+        header(ws, cols, widths)
+        site_rows = [(d, i, (d["site"],) + issue_key(i) in tmpl_keys) for d, i in rows if d["site"] == site]
+        site_rows.sort(key=lambda r: (r[2], SEV_ORDER[r[1]["severity"]], r[0].get("published_at", ""),
+                                      r[0]["store"]["id"]))
+        for d, i, is_tmpl in site_rows:
+            s = d["store"]
+            base = s["permalink"].split("/product/")[0]
+            edit = f"{base}/wp-admin/post.php?post={s['id']}&action=edit"
+            ws.append([SEV_LABEL[i["severity"]], d.get("published_at", ""), s["id"], s.get("sku", ""),
+                       qa_rules.strip_html(s["name"]), i["group"], i["field"], i["detail"], i["fix"],
+                       "Có" if is_tmpl else "", s["permalink"], "Mở", "", ""])
+            r = ws.max_row
+            ws.cell(r, 1).fill = PatternFill("solid", fgColor=SEV_FILL[i["severity"]])
+            ws.cell(r, 11).hyperlink = s["permalink"]
+            ws.cell(r, 12).hyperlink = edit
+            ws.cell(r, 12).font = Font(color="0563C1", underline="single")
+            for c in (8, 9):
+                ws.cell(r, c).alignment = wrap
+        ws.freeze_panes = "A2"
+        ws.auto_filter.ref = ws.dimensions
 
     # ---- Can xac nhan
     ws = wb.create_sheet("Cần xác nhận")
