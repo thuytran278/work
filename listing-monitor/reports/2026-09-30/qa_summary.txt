@@ -1,0 +1,10 @@
+QA LISTING MOI 2026-09-30
+
+RFS: 48 listing, 4 listing co loi CAO, 48 listing co loi
+   - Sai Home/Away/Third: 5 loi
+CFS: 25 listing, 1 listing co loi CAO, 25 listing co loi
+   - Ảnh: 1 loi
+
+Loi lap lai (co the do template):
+   - CFS | SEO | Meta description: khoảng trắng trước dấu câu (20/25)
+   - RFS | Words to Avoid | Short description: 'Trustpilot' (48/48)
