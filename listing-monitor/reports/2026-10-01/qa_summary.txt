@@ -1,0 +1,7 @@
+QA LISTING MOI 2026-10-01
+
+KFK: 10 listing, 0 listing co loi CAO, 10 listing co loi
+RFK: 1 listing, 0 listing co loi CAO, 1 listing co loi
+
+Loi lap lai (co the do template):
+   - KFK | Words to Avoid | Short description: 'Trustpilot' (10/10)
