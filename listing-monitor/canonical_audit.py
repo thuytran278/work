@@ -47,13 +47,22 @@ def norm(u):
 
 def audit_site(site, base_url, delay, progress):
     products = [p for p in list_products(base_url) if SEASON_2627.search(p["name"])]
+    # Progress is saved after every page so a stopped run resumes where it left off (same day only).
+    done_path = BASE_DIR / "data" / "cache" / f"canonical_{site}_{datetime.now().date().isoformat()}.json"
+    done = json.loads(done_path.read_text(encoding="utf-8")) if done_path.exists() else {}
+    done_path.parent.mkdir(parents=True, exist_ok=True)
     rows, errors = [], []
     for n, p in enumerate(products, 1):
-        try:
-            page = parse_head(fetch_head(p["url"]))
-        except Exception as e:
-            errors.append((p, str(e)))
-            continue
+        page = done.get(p["url"])
+        if page is None:
+            try:
+                page = parse_head(fetch_head(p["url"]))
+            except Exception as e:
+                errors.append((p, str(e)))
+                continue
+            done[p["url"]] = page
+            done_path.write_text(json.dumps(done), encoding="utf-8")
+            time.sleep(delay)
         canon = page["canonical"]
         if canon and norm(canon) != norm(p["url"]):
             slug = canon.rstrip("/").rsplit("/", 1)[-1]
@@ -62,7 +71,6 @@ def audit_site(site, base_url, delay, progress):
                          "robots": page["robots"]})
         if n % 50 == 0:
             progress(f"{site}: {n}/{len(products)}")
-        time.sleep(delay)
     progress(f"{site}: xong {len(products)} listing 26/27, {len(rows)} canonical sai, {len(errors)} loi tai")
     return site, len(products), rows, errors
 
