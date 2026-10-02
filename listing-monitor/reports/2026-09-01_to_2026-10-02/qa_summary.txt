@@ -1,0 +1,23 @@
+QA LISTING MOI 2026-09-01 -> 2026-10-02
+
+KFK: 133 listing, 16 listing co loi CAO, 132 listing co loi
+   - Club bị report (KFK): 14 loi
+   - Kho / Giá: 2 loi
+RFS: 112 listing, 12 listing co loi CAO, 112 listing co loi
+   - Sai Home/Away/Third: 11 loi
+   - SEO: 2 loi
+   - Sai đối tượng: 2 loi
+   - Sai season: 1 loi
+RFK: 249 listing, 5 listing co loi CAO, 249 listing co loi
+   - Sai season: 4 loi
+   - Sai Home/Away/Third: 1 loi
+CFS: 291 listing, 5 listing co loi CAO, 291 listing co loi
+   - Sai đối tượng: 4 loi
+   - Ảnh: 1 loi
+
+Loi lap lai (co the do template):
+   - CFS | SEO | Meta description: khoảng trắng trước dấu câu (202/291)
+   - KFK | Words to Avoid | Short description: 'Trustpilot' (127/133)
+   - RFK | Words to Avoid | Short description: 'Trustpilot' (249/249)
+   - RFK | Ảnh | Số lượng ảnh: Chỉ có 2 ảnh sản phẩm (163/249)
+   - RFS | Words to Avoid | Short description: 'Trustpilot' (112/112)
