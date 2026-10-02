@@ -102,6 +102,27 @@ class Extra(unittest.TestCase):
         d["store"]["description"] += "<table><tr><th>Size</th></tr><tr><td>XL</td></tr><tr><td>3XL</td></tr></table>"
         self.assertIn(("Sai đối tượng", "Bảng size"), groups(d))
 
+    def test_player_name_suffix_and_seo_position(self):
+        d = product(store__sku="CFS_BM_AW_AD_KANE 9_26/27", site="CFS",
+                    store__name="Bayern Munich Away Men Cheap Football Shirt 2026/27 – KANE 9",
+                    page__seo_title="Bayern Munich Away Men Cheap Football Shirt 2026/27 - KANE 9")
+        g = groups(d)
+        self.assertIn(("SEO tên cầu thủ", "Tên sản phẩm"), g)
+        self.assertIn(("SEO tên cầu thủ", "SEO title"), g)
+
+    def test_player_name_new_format_ok(self):
+        d = product(store__sku="CFS_BM_AW_AD_KANE 9_26/27", site="CFS",
+                    store__name="Bayern Munich KANE 9 Away Men Cheap Football Shirt 2026/27",
+                    page__seo_title="Bayern Munich KANE 9 Away Men Shirt 2026/27 | Cheap Football Shirts",
+                    page__h1="Bayern Munich KANE 9 Away Men Shirt 2026/27")
+        self.assertNotIn("SEO tên cầu thủ", {g for g, _ in groups(d)})
+
+    def test_h1_missing_player(self):
+        d = product(store__sku="CFS_BM_AW_AD_KANE 9_26/27", site="CFS",
+                    store__name="Bayern Munich KANE 9 Away Men Cheap Football Shirt 2026/27",
+                    page__seo_title="Bayern Munich KANE 9 Away Men Shirt 2026/27", page__h1="Bayern Munich Away Men 2026/27")
+        self.assertIn(("SEO tên cầu thủ", "H1"), groups(d))
+
     def test_duplicate_names(self):
         a, b = product(), copy.deepcopy(product())
         b["store"]["id"] = 2

@@ -52,6 +52,11 @@ def parse_head(head):
     }
 
 
+def parse_h1(page_html):
+    m = re.search(r"<h1[^>]*>(.*?)</h1>", page_html or "", re.S | re.I)
+    return html.unescape(re.sub(r"<[^>]+>", " ", m.group(1))).strip() if m else None
+
+
 def cached(site, product_id):
     path = CACHE_DIR / site / f"{product_id}.json"
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
@@ -112,6 +117,7 @@ def fetch_product(site, base_url, product_id, url, refresh=False, delay=0.3, sto
         data["page"] = parse_head(full)
         team = next(t for t in FREE_PIN_TEAMS if t in name)
         data["page"]["pin_text"] = bool(re.search(rf"free\s+{team}\s+pin", full, re.I))
+        data["page"]["h1"] = parse_h1(full)
     else:
         data["page"] = parse_head(fetch_head(page_url))
     imgs = data["store"].get("images") or []

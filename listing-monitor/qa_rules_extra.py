@@ -390,6 +390,7 @@ def check_extra(data):
         add(HIGH, "Ảnh", "Ảnh chính", f"Ảnh chính không tải được: {s['images'][0].get('src', '')}", "Upload lại ảnh chính")
 
     check_extra_c(data, add, name, desc, short, meta, sku, is_gift, team)
+    check_player_seo(data, add, name, seo_title, sku, is_gift)
     return issues
 
 
@@ -612,12 +613,62 @@ def site_has_main_colours(site):
     return site == "KFK"
 
 
+# ---------------------------------------------------------------- Part D: SEO case CFS player listings (2/10)
+# Traffic on CFS fell ~75% around 20/8/2026, the same week 107 near-duplicate player listings went live.
+# Agreed format (Clara, 2/10): player name right after the club, never as a "– PLAYER 9" suffix.
+#   Name: [Club] [PLAYER] [No.] [Home/Away/Third] [Men/Kids] Cheap Football [Shirt/Kit] [Season]
+#   H1:   [Club] [PLAYER] [No.] [Home/Away/Third] [Men/Kids] [Shirt/Kit] [Season]
+#   Slug: unchanged.
+PLAYER_SUFFIX = re.compile(r"\s[–-]\s*([A-ZÀ-ÝØ][A-ZÀ-ÝØ.'’\- ]+\s\d{1,2})\s*(\((with|no) socks\))?\s*$", re.I)
+
+
+def check_player_seo(data, add, name, seo_title, sku, is_gift):
+    if not sku or not sku["player"] or is_gift or re.fullmatch(r"(winners|champions)\s*\d*", fold(sku["player"])):
+        return
+    player = sku["player"].split()[0]
+    if PLAYER_SUFFIX.search(name):
+        add(MED, "SEO tên cầu thủ", "Tên sản phẩm",
+            f"Tên cầu thủ đang ở cuối tên ('{PLAYER_SUFFIX.search(name).group(1).strip()}'): các URL cùng mẫu áo trùng phần đầu",
+            "Đổi theo format: [Club] [PLAYER] [Số] [Home/Away] [Men/Kids] ... (giữ nguyên slug)")
+    if seo_title:
+        pos = fold(seo_title).find(fold(player))
+        if pos == -1:
+            add(HIGH, "SEO tên cầu thủ", "SEO title", f"SEO title không có tên cầu thủ '{player}': \"{seo_title}\"",
+                "Thêm tên cầu thủ ngay sau tên CLB")
+        elif pos > 45:
+            add(MED, "SEO tên cầu thủ", "SEO title",
+                f"Tên cầu thủ nằm ở ký tự {pos} của SEO title (Google cắt khoảng 60 ký tự): \"{seo_title}\"",
+                "Đưa tên cầu thủ lên ngay sau tên CLB")
+    h1 = data.get("page", {}).get("h1")
+    if h1 is not None:
+        miss = [w for w in (player, ) if fold(w) not in fold(h1)]
+        if miss or not re.search(r"\b(shirt|kit)s?\b", h1, re.I):
+            add(HIGH, "SEO tên cầu thủ", "H1", f"H1 thiếu tên cầu thủ hoặc thiếu Shirt/Kit: \"{h1}\"",
+                "H1: [Club] [PLAYER] [Số] [Home/Away] [Men/Kids] [Shirt/Kit] [Season]")
+
+
+def player_duplicate_groups(products, min_urls=5):
+    """Kits with many near-identical player URLs (same base name once the player suffix is removed)."""
+    groups = {}
+    for d in products:
+        n = strip_html(d["store"]["name"])
+        base = PLAYER_SUFFIX.sub("", n).strip()
+        groups.setdefault((d["site"], fold(base)), []).append(d)
+    return {k: v for k, v in groups.items() if len(v) >= min_urls and any(PLAYER_SUFFIX.search(strip_html(x["store"]["name"])) for x in v)}
+
+
 def check_extra_batch(products):
     """Duplicate product names on the same site (TC 029)."""
     seen = {}
     for d in products:
         seen.setdefault((d["site"], fold(strip_html(d["store"]["name"]))), []).append(d)
     out = []
+    for (site, _), ds in player_duplicate_groups(products).items():
+        ids = ", ".join(str(x["store"]["id"]) for x in ds)
+        for d in ds:
+            out.append((d, {"severity": LOW, "group": "SEO tên cầu thủ", "field": "Trùng lặp mẫu áo",
+                            "detail": f"{len(ds)} URL cùng 1 mẫu áo chỉ khác cầu thủ ({ids}): nguy cơ ăn thịt từ khoá",
+                            "fix": "Cầu thủ ít tìm kiếm: noindex hoặc canonical về listing gốc"}))
     for (_, _), ds in seen.items():
         if len(ds) > 1:
             ids = ", ".join(str(x["store"]["id"]) for x in ds)

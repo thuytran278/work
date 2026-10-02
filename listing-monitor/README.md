@@ -1,5 +1,7 @@
 # Listing Monitor: kiểm tra listing mới + QA lỗi mỗi ngày
 
+> Tài liệu đầy đủ (danh sách check, quyết định đã xác nhận, case SEO CFS, nhật ký hằng ngày, changelog): **[PROJECT_LOG.md](PROJECT_LOG.md)**
+
 Gồm 2 bước:
 1. `check_new_listings.py`: tìm listing mới đăng trong ngày hoặc trong một khoảng ngày.
 2. `qa_listings.py`: check sâu từng listing mới và xuất file Excel lỗi (xem mục **QA listing** bên dưới).
