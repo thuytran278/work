@@ -15,14 +15,17 @@ def product(**over):
         "site": "KFK",
         "page": {
             "seo_title": "Leeds United Home Kids Kit 26/27 | Birthday Gift for Kids",
-            "meta_description": "Shop Leeds United Home Kids Kit 26/27 with fast UK delivery and friendly support.",
+            "meta_description": "Shop the Leeds United Home Kids Kit 26/27 with fast UK delivery, easy returns and "
+                                "friendly support from a UK team that loves football gifts for young fans.",
             "robots": "follow, index",
             "canonical": URL,
         },
         "store": {
             "id": 1, "name": "Leeds United Home Kids Football Kit 2026/27 (With socks)",
             "sku": "KFK_LEE_HO_KD_No_26/27", "permalink": URL, "type": "variable",
-            "description": "<p>This Leeds United 2026/27 Kids Home Kit includes a shirt, matching shorts and matching socks.</p>",
+            "description": "<p>This Leeds United 2026/27 Kids Home Kit includes a top, matching shorts and matching socks. "
+                           + "It is lightweight, breathable and made for match days, training sessions and everyday play. " * 4
+                           + "</p>",
             "short_description": "<ul><li>Fast delivery</li></ul>",
             "attributes": [
                 {"name": "Size", "terms": [{"name": "16 (3-4 yrs)"}, {"name": "28 (12-13 yrs)"}]},
@@ -32,14 +35,14 @@ def product(**over):
                 {"name": "Kit Type", "terms": [{"name": "Home"}]},
                 {"name": "Kit Option", "terms": [{"name": "With Socks"}]},
             ],
-            "categories": [{"name": "Leeds United"}, {"name": "Championship"}],
+            "categories": [{"name": "Leeds United"}, {"name": "Premier League"}],
             "tags": [{"name": "Leeds United 26/27"}],
             "images": [
                 {"alt": "Leeds United Home Kids Kit 26_27 front view", "src": "https://x/leeds-home-front.webp"},
                 {"alt": "Leeds United Home Kids Kit 26_27 back view", "src": "https://x/leeds-home-back.webp"},
                 {"alt": "Kids Football Kit Size Chart", "src": "https://x/KFK-Kid-Kit-Size-Chart.png"},
             ],
-            "prices": {"price": "3999"}, "is_in_stock": True, "variations": [{"id": 2}],
+            "prices": {"price": "2999"}, "is_in_stock": True, "variations": [{"id": 2}],
         },
     }
     for path, value in over.items():
@@ -52,12 +55,12 @@ def product(**over):
 
 
 def groups(d):
-    return sorted({(i["group"], i["field"]) for i in q.check_product(d)})
+    return sorted({(i["group"], i["field"]) for i in q.check_product(d, extra=False)})
 
 
 class CleanListing(unittest.TestCase):
     def test_clean_listing_has_no_issues(self):
-        self.assertEqual(q.check_product(product()), [])
+        self.assertEqual(q.check_product(product()), [])  # base + extra rules
 
 
 class Rules(unittest.TestCase):
@@ -111,7 +114,7 @@ class Rules(unittest.TestCase):
 
     def test_words_to_avoid(self):
         d = product(store__description="<p>The official Leeds United 2026/27 kit with the club crest.</p>")
-        issue = [i for i in q.check_product(d) if i["group"] == "Words to Avoid"][0]
+        issue = [i for i in q.check_product(d, extra=False) if i["group"] == "Words to Avoid"][0]
         self.assertIn("official", issue["detail"])
         self.assertIn("crest", issue["detail"])
 
@@ -180,7 +183,7 @@ class Batch(unittest.TestCase):
     def test_duplicate_seo_title(self):
         a, b = product(), product()
         b["store"]["id"] = 2
-        issues = q.check_batch([a, b])
+        issues = q.check_batch([a, b], extra=False)
         self.assertEqual({i["field"] for _, i in issues}, {"SEO title", "Meta description"})
 
 

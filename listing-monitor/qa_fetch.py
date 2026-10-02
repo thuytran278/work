@@ -11,6 +11,7 @@ import html
 import json
 import re
 import time
+import urllib.error
 import urllib.request
 
 from check_new_listings import BASE_DIR, USER_AGENT, http_get
@@ -72,6 +73,29 @@ def prefetch_store(base_url, ids):
     return out
 
 
+FREE_PIN_TEAMS = ("spain", "france", "argentina", "england", "brazil", "portugal", "scotland")
+
+
+def fetch_text(url, timeout=40):
+    """Full page as text (only used where the <head> is not enough)."""
+    text, _ = http_get(url, timeout=timeout, retry_waits=(20, 60))
+    return text
+
+
+def image_ok(src, timeout=20):
+    """True if the image URL answers 200 with an image content type."""
+    if not src:
+        return None
+    req = urllib.request.Request(src, headers={"User-Agent": USER_AGENT, "Range": "bytes=0-1023"})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return resp.status in (200, 206) and resp.headers.get("Content-Type", "").startswith("image")
+    except urllib.error.HTTPError as e:
+        return False if e.code in (404, 410) else None  # 403/5xx: firewall/server, not proof of a broken image
+    except Exception:
+        return None
+
+
 def fetch_product(site, base_url, product_id, url, refresh=False, delay=0.3, store=None):
     path = CACHE_DIR / site / f"{product_id}.json"
     if path.exists() and not refresh:
@@ -80,7 +104,18 @@ def fetch_product(site, base_url, product_id, url, refresh=False, delay=0.3, sto
         text, _ = http_get(f"{base_url}/wp-json/wc/store/v1/products/{product_id}", retry_waits=(20, 60))
         store = json.loads(text)
     data = {"site": site, "store": store}
-    data["page"] = parse_head(fetch_head(url or data["store"]["permalink"]))
+    page_url = url or data["store"]["permalink"]
+    name = (data["store"].get("name") or "").lower()
+    if site == "KFK" and any(t in name for t in FREE_PIN_TEAMS):
+        # Free Pin promo text sits near add-to-cart, so the whole page is needed.
+        full = fetch_text(page_url)
+        data["page"] = parse_head(full)
+        team = next(t for t in FREE_PIN_TEAMS if t in name)
+        data["page"]["pin_text"] = bool(re.search(rf"free\s+{team}\s+pin", full, re.I))
+    else:
+        data["page"] = parse_head(fetch_head(page_url))
+    imgs = data["store"].get("images") or []
+    data["page"]["main_image_ok"] = image_ok(imgs[0].get("src")) if imgs else None
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
     time.sleep(delay)  # be gentle with the sites' firewalls (RFS blocks bursts)

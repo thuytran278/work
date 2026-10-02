@@ -211,7 +211,7 @@ TEAM_ALIASES = {
 SHARED_IMAGE_RE = re.compile(r"size chart|size guide|delivery|infographic|inforgraphic|shipping", re.I)
 
 
-def check_product(data):
+def check_product(data, extra=True):
     """Return list of issues for one cached product ({site, store, page})."""
     site, s, page = data["site"], data["store"], data.get("page", {})
     issues = []
@@ -552,10 +552,13 @@ def check_product(data):
         if fold(html.unescape(t["name"])) == fname:
             add(LOW, "Category / Tag", "Tag", f"Tag trùng tên sản phẩm: {t['name']}", "Xoá tag này")
 
+    if extra:
+        from qa_rules_extra import check_extra  # rules added 2/10 (KFK QA checker + new cases)
+        issues.extend(check_extra(data))
     return issues
 
 
-def check_batch(products):
+def check_batch(products, extra=True):
     """Cross-product checks: duplicate SEO title / meta within a site."""
     issues = []
     for field in ("seo_title", "meta_description"):
@@ -573,4 +576,7 @@ def check_batch(products):
                         "field": "SEO title" if field == "seo_title" else "Meta description",
                         "detail": f"Trùng với {len(ds) - 1} listing khác ({ids}): \"{v}\"",
                         "fix": "Viết riêng cho từng listing"}))
+    if extra:
+        from qa_rules_extra import check_extra_batch
+        issues.extend(check_extra_batch(products))
     return issues

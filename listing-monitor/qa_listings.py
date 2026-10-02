@@ -15,6 +15,7 @@ import argparse
 import csv
 import json
 import sys
+import time
 from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime
@@ -35,6 +36,8 @@ TEMPLATE_MIN = 5
 TO_CONFIRM = [
     ("Trustpilot / 4.9★", "SOP: tránh 'Trustpilot' và claim 4.9★. Short description KFK, RFS, RFK có dòng "
                           "'Rated 4.9 on Trustpilot' (CFS không có). Giữ hay bỏ?"),
+    ("Free Pin (KFK)", "Tool cũ: 7 đội Spain/France/Argentina/England/Brazil/Portugal/Scotland phải có chữ 'FREE [TEAM] PIN' "
+                       "trên trang. Ngày 2/10 không tìm thấy chữ này trong HTML trang. Khuyến mãi còn chạy không?"),
     ("Tên né thương hiệu", "Tool coi 'North London Red' = Arsenal, 'P^_^SG' = PSG và nhận ra kiểu 'Arsn@l', 'Lvr^_^pooI'."),
     ("Sleeve badge", "Tool KHÔNG báo lỗi 'sleeve badge' (tên option), chỉ báo 'badge' đứng riêng."),
     ("Độ dài SEO title", "Tool báo khi SEO title > 65 ký tự và meta > 165 ký tự (mức Thấp)."),
@@ -54,7 +57,12 @@ def load_listings(label):
         return list(csv.DictReader(f))
 
 
-def fetch_all(listings, cfg, refresh):
+def is_stale(site, pid, max_age_hours):
+    path = qa_fetch.CACHE_DIR / site / f"{pid}.json"
+    return not path.exists() or (time.time() - path.stat().st_mtime) / 3600 > max_age_hours
+
+
+def fetch_all(listings, cfg, refresh, max_age_hours=None):
     """One thread per site so no single site gets a burst of requests."""
     delays = cfg.get("request_delay", {})
     by_site = defaultdict(list)
@@ -65,8 +73,12 @@ def fetch_all(listings, cfg, refresh):
     def run(site):
         out = []
         base = cfg["sites"][site].rstrip("/")
-        todo = [int(r["product_id"]) for r in by_site[site]
-                if refresh or not qa_fetch.cached(site, int(r["product_id"]))]
+        def need(pid):
+            if max_age_hours is not None:
+                return is_stale(site, pid, max_age_hours)
+            return refresh or not qa_fetch.cached(site, pid)
+
+        todo = [int(r["product_id"]) for r in by_site[site] if need(int(r["product_id"]))]
         try:
             store = qa_fetch.prefetch_store(base, todo) if todo else {}
         except Exception:
@@ -74,7 +86,8 @@ def fetch_all(listings, cfg, refresh):
         for r in by_site[site]:
             try:
                 d = qa_fetch.fetch_product(site, base, int(r["product_id"]), r["url"],
-                                           refresh=refresh, delay=delays.get(site, delays.get("default", 0.3)),
+                                           refresh=need(int(r["product_id"])),
+                                           delay=delays.get(site, delays.get("default", 0.3)),
                                            store=store.get(int(r["product_id"])))
                 d["published_at"] = r["published_at"]
                 out.append(d)
@@ -262,6 +275,8 @@ def main(argv=None):
     ap.add_argument("--from", dest="date_from")
     ap.add_argument("--to", dest="date_to")
     ap.add_argument("--refresh", action="store_true", help="download again, ignore cache")
+    ap.add_argument("--max-age-hours", type=float,
+                    help="re-download only listings cached longer ago than this (resumable refresh)")
     ap.add_argument("--config", default=str(BASE_DIR / "config.json"))
     args = ap.parse_args(argv)
 
@@ -275,7 +290,7 @@ def main(argv=None):
     label = start.isoformat() if start == end else f"{start.isoformat()}_to_{end.isoformat()}"
 
     listings = load_listings(label)
-    products, errors = fetch_all(listings, cfg, args.refresh)
+    products, errors = fetch_all(listings, cfg, args.refresh, args.max_age_hours)
     rows = run_checks(products)
     templates = find_template_issues(products, rows)
 
