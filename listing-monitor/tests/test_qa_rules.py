@@ -25,7 +25,7 @@ def product(**over):
             "sku": "KFK_LEE_HO_KD_No_26/27", "permalink": URL, "type": "variable",
             "description": "<p>This Leeds United 2026/27 Kids Home Kit includes a top, matching shorts and matching socks. "
                            + "It is lightweight, breathable and made for match days, training sessions and everyday play. " * 4
-                           + "</p>",
+                           + "</p><ul><li><strong>Main colours:</strong> White top; White shorts.</li></ul>",
             "short_description": "<ul><li>Fast delivery</li></ul>",
             "attributes": [
                 {"name": "Size", "terms": [{"name": "16 (3-4 yrs)"}, {"name": "28 (12-13 yrs)"}]},
@@ -40,6 +40,7 @@ def product(**over):
             "images": [
                 {"alt": "Leeds United Home Kids Kit 26_27 front view", "src": "https://x/leeds-home-front.webp"},
                 {"alt": "Leeds United Home Kids Kit 26_27 back view", "src": "https://x/leeds-home-back.webp"},
+                {"alt": "Leeds United Home Kids Kit 26_27 detail", "src": "https://x/leeds-home-detail.webp"},
                 {"alt": "Kids Football Kit Size Chart", "src": "https://x/KFK-Kid-Kit-Size-Chart.png"},
             ],
             "prices": {"price": "2999"}, "is_in_stock": True, "variations": [{"id": 2}],

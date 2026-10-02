@@ -389,7 +389,227 @@ def check_extra(data):
     if page.get("main_image_ok") is False:
         add(HIGH, "Ảnh", "Ảnh chính", f"Ảnh chính không tải được: {s['images'][0].get('src', '')}", "Upload lại ảnh chính")
 
+    check_extra_c(data, add, name, desc, short, meta, sku, is_gift, team)
     return issues
+
+
+# ---------------------------------------------------------------- Part C: football-qa-tools commit c3c1e3c (2/10)
+
+KIT_SIDE = [("home", r"\bhome\b"), ("away", r"\baway\b"), ("third", r"\bthird\b"), ("goalkeeper", r"\b(goalkeeper|gk)\b")]
+CAT_KIT = KIT_SIDE + [("training", r"\btraining\b"), ("pre-match", r"\bpre[\s-]?match\b")]
+KIT_COLOURS = ['purple', 'pink', 'green', 'yellow', 'red', 'blue', 'orange', 'navy', 'burgundy', 'maroon', 'teal',
+               'gold', 'silver', 'brown', 'cream', 'violet', 'lime', 'turquoise', 'rose', 'coral', 'cyan', 'indigo',
+               'black', 'white', 'grey', 'gray']
+NEUTRAL = {'black', 'white', 'grey', 'gray'}
+EXTRA_ENTITIES = ['Celtic', 'Rangers', 'Boca Juniors', 'River Plate', 'Inter Miami', 'Al Nassr', 'Al Hilal',
+                  'Al Ittihad', 'Galatasaray', 'Fenerbahce', 'Besiktas', 'Benfica', 'FC Porto', 'Sporting CP', 'Ajax',
+                  'PSV', 'Feyenoord', 'Flamengo', 'Santos', 'Palmeiras', 'Corinthians', 'Club America', 'LA Galaxy',
+                  'Wrexham', 'Middlesbrough', 'Stoke City', 'Derby County', 'Coventry City', 'Bolton', 'Portsmouth',
+                  'Real Oviedo', 'Schalke', 'Norway', 'Italy', 'Wales', 'Ireland', 'Northern Ireland', 'Denmark',
+                  'Sweden', 'Poland', 'Ukraine', 'Nigeria', 'Jamaica', 'Chile', 'Peru']
+ADULT_SIZE = re.compile(r"^(XXS|XS|S|M|L|XL|XXL|2XL|3XL|XXXL|4XL|XXXXL|5XL|XXXXXL)$", re.I)
+SIZE_NORM = {'2XL': 'XXL', 'XXXL': '3XL', 'XXXXL': '4XL', 'XXXXXL': '5XL'}
+STANDARD_IMG = re.compile(r"size.?chart|size.?guide|delivery|infographic|inforgraphic|review|faq|background", re.I)
+
+
+def kit_side(text):
+    return next((k for k, rx in KIT_SIDE if re.search(rx, text or "", re.I)), None)
+
+
+def cat_kit(text):
+    return next((k for k, rx in CAT_KIT if re.search(rx, text or "", re.I)), None)
+
+
+def colours(text):
+    return {c for c in KIT_COLOURS if re.search(rf"\b{c}\b", text or "", re.I)}
+
+
+def entities():
+    names = [c for clubs in LEAGUE_CLUBS.values() for c in clubs] + WORLD_CUP_2026_TEAMS + EXTRA_ENTITIES
+    return sorted(set(names), key=len, reverse=True)
+
+
+ENTITIES = entities()
+
+
+def check_extra_c(data, add, name, desc, short, meta, sku, is_gift, team):
+    s = data["store"]
+    raw_desc = s.get("description") or ""
+    fname = fold(name)
+    imgs = [(i.get("src") or "", strip_html(i.get("alt"))) for i in s.get("images", [])]
+    pimgs = [(src, alt) for src, alt in imgs if not STANDARD_IMG.search(src + " " + alt)]
+
+    def fname_text(src):
+        return re.sub(r"[-_]", " ", src.rstrip("/").rsplit("/", 1)[-1].rsplit(".", 1)[0])
+
+    # C1. Price written in the description must match the selling price (within 30%: same ballpark)
+    p = s.get("prices") or {}
+    try:
+        page_price = int(p.get("sale_price") or p.get("price")) / 100
+    except (TypeError, ValueError):
+        page_price = None
+    if page_price and page_price >= 1:
+        bad = []
+        for m in re.finditer(r"£\s*(\d{1,5}(?:[.,]\d{2})?)|(\d{1,5}(?:[.,]\d{2})?)\s*GBP", desc + " " + short, re.I):
+            found = float((m.group(1) or m.group(2)).replace(",", "."))
+            if abs(found - page_price) / page_price <= 0.30 and abs(found - page_price) > 0.02:
+                bad.append(m.group(0))
+        if bad:
+            add(HIGH, "Kho / Giá", "Description",
+                f"Description ghi giá {', '.join(dict.fromkeys(bad))} nhưng giá đang bán là £{page_price:.2f}: "
+                + snippet(desc + " " + short, re.escape(bad[0]), 50), "Sửa giá trong description cho khớp")
+
+    # C2. "Main colours" field + C3. colours in image alt/filename vs description
+    if not is_gift and site_has_main_colours(data["site"]):
+        if not re.search(r"main\s+colou?rs?", desc, re.I):
+            add(LOW, "Nội dung", "Description", "Thiếu dòng 'Main colours' trong Product Details",
+                "Thêm 'Main colours: [màu] shirt; [màu] shorts' theo template")
+    desc_primary = colours(desc) - NEUTRAL
+    if desc_primary and not is_gift:
+        bad = []
+        for src, alt in pimgs:
+            if not alt:
+                continue
+            img_c = (colours(alt) | colours(fname_text(src))) - NEUTRAL
+            if img_c and not (img_c & desc_primary):
+                bad.append(f"\"{alt[:60]}\" ghi {'/'.join(sorted(img_c))}")
+        if bad:
+            add(MED, "Ảnh", "Màu ảnh vs description",
+                f"Description ghi màu {'/'.join(sorted(desc_primary))} nhưng ảnh: " + "; ".join(bad[:3]),
+                "Kiểm tra ảnh hoặc màu trong description (sai ảnh hoặc sai copy)")
+
+    # C4. Size table in description lists sizes that cannot be bought
+    var_sizes = {SIZE_NORM.get(t.upper().replace(" ", ""), t.upper().replace(" ", "")) for t in attr(s, "size", "sizes")}
+    if var_sizes and all(ADULT_SIZE.match(v) for v in var_sizes):
+        table_sizes = set()
+        for tbl in re.findall(r"<table.*?</table>", raw_desc, re.S | re.I):
+            for cell in re.findall(r"<t[dh][^>]*>(.*?)</t[dh]>", tbl, re.S | re.I):
+                c = strip_html(cell).upper().replace(" ", "")
+                if ADULT_SIZE.match(c):
+                    table_sizes.add(SIZE_NORM.get(c, c))
+        extra = table_sizes - var_sizes
+        if extra:
+            add(MED, "Sai đối tượng", "Bảng size",
+                f"Bảng size trong description có {sorted(extra)} nhưng không mua được (size đang bán: {sorted(var_sizes)})",
+                "Bỏ dòng size không bán khỏi bảng, hoặc thêm variation")
+
+    # C5. "(No socks)" title vs "complete kit / includes socks" in description or meta
+    if re.search(r"\bno[\s-]socks?\b", name, re.I):
+        rx = r"\b(complete\s+(?:\w+\s+){0,4}kit\s+included|includes?\s+socks?|socks?\s+(are\s+)?included)\b"
+        where = [f for f, t in (("Meta description", meta), ("Description", desc + " " + short)) if re.search(rx, t, re.I)]
+        if where:
+            add(HIGH, "Sai tất (socks)", where[0],
+                f"Tên ghi (No socks) nhưng {' và '.join(where)} ghi có tất/complete kit: "
+                + snippet(meta if where[0] == "Meta description" else desc + " " + short, rx, 40),
+                "Sửa câu bị copy từ template With Socks")
+
+    # C6. Images naming another club/team, C7. image kit side vs title (alt + filename)
+    title_ident = name + " " + team
+    tks = kit_side(name)
+    wrong_team, wrong_side = [], []
+    for src, alt in pimgs:
+        ft = fname_text(src)
+        for label, text in (("alt", alt), ("file", ft)):
+            if not text:
+                continue
+            others = [e for e in ENTITIES if re.search(rf"\b{re.escape(e)}\b", text, re.I)
+                      and not re.search(rf"\b{re.escape(e)}\b", title_ident, re.I) and not fuzzy_contains(title_ident, e)]
+            if others:
+                wrong_team.append(f"{label} \"{text[:60]}\" → {others[0]}")
+            ks = kit_side(text)
+            sides = {k for k, rx in KIT_SIDE if re.search(rx, text, re.I)}
+            if tks and ks and tks not in sides and not is_gift:
+                wrong_side.append(f"{label} \"{text[:60]}\" ghi {ks}")
+    if wrong_team and not is_gift:
+        add(HIGH, "Ảnh", "Ảnh sai team", "Ảnh mang tên team khác: " + "; ".join(dict.fromkeys(wrong_team[:3])),
+            "Kiểm tra có upload nhầm ảnh team khác không")
+    if wrong_side:
+        add(HIGH, "Sai Home/Away/Third", "Ảnh (alt/tên file)",
+            f"Tên là {tks} nhưng ảnh: " + "; ".join(dict.fromkeys(wrong_side[:3])), "Kiểm tra có upload nhầm ảnh không")
+
+    # C8. Kids photos on a men's listing and vice versa
+    if sku and not is_gift:
+        aud = sku["audience"]
+        bad = []
+        for src, alt in pimgs:
+            if aud == "adult" and re.search(r"\b(kids?|children|child|boys?|girls?|junior|youth)\b", alt, re.I):
+                bad.append(alt[:60])
+            if aud == "kids" and re.search(r"\bmen'?s?\b|\badult\b", alt, re.I):
+                bad.append(alt[:60])
+        if bad:
+            add(HIGH, "Sai đối tượng", "Ảnh (alt)",
+                f"Listing {'Men/Adult' if aud == 'adult' else 'Kids'} nhưng alt ảnh ghi: \"{bad[0]}\"",
+                "Kiểm tra có upload nhầm bộ ảnh của đối tượng khác không")
+
+    # C9. Fewer than 3 product photos
+    distinct = {re.sub(r"-\d+x\d+(\.[^./?]+)$", r"\1", src) for src, _ in pimgs}
+    if s.get("images") and len(distinct) < 3:
+        add(LOW, "Ảnh", "Số lượng ảnh", f"Chỉ có {len(distinct)} ảnh sản phẩm (nên ≥ 3: trước / sau / chi tiết)", "Thêm ảnh")
+
+    # C10. Category of another kit type
+    tck = cat_kit(name)
+    if tck and not is_gift:
+        wrong = [c["name"] for c in s.get("categories", []) if cat_kit(c["name"]) not in (None, tck)]
+        if wrong:
+            add(MED, "Category / Tag", "Category", f"Tên là {tck} nhưng có category {', '.join(html.unescape(w) for w in wrong)}",
+                "Xoá category sai loại áo (còn sót từ listing khác)")
+
+    # C11. Players attribute vs SKU print segment
+    players = attr(s, "players", "player")
+    if sku and sku["player"] and players:
+        if not any(fuzzy_contains(pl, sku["player"].split()[0]) for pl in players):
+            add(LOW, "Sai cầu thủ", "Attribute Players", f"SKU in '{sku['player']}' nhưng attribute Players = {', '.join(players)}",
+                "Kiểm tra lại cho khớp")
+
+    # C12. Copy errors: doubled words, 3+ same letters in a row
+    errs = []
+    # Keep tag boundaries: "About Brazil</h3><p>Brazil is..." is a heading + sentence, not a doubled word.
+    def sep(h):
+        return re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " | ", h or "")))
+    for field, text in (("Description", sep(raw_desc)), ("Short description", sep(s.get("short_description")))):
+        for m in re.finditer(r"\b([a-zA-Z]{2,})\s+\1\b", text, re.I):
+            errs.append((field, f"lặp '{m.group(0)}'", m.group(0)))
+        for m in re.finditer(r"\b[a-zA-Z]*([a-zA-Z])\1{2,}[a-zA-Z]*\b", text):
+            if not re.fullmatch(r"(x{2,4}l|www)", m.group(0), re.I):
+                errs.append((field, f"'{m.group(0)}' (3 chữ liền)", m.group(0)))
+    if errs:
+        f0 = errs[0]
+        add(MED, "Lỗi chính tả", f0[0], "; ".join(dict.fromkeys(e[1] for e in errs[:4])) + ": "
+            + snippet(desc + " " + short, re.escape(f0[2]), 30), "Sửa lỗi đánh máy")
+
+    # C13. SKU with spaces / non-ASCII (Google Merchant rejects them)
+    raw_sku = s.get("sku") or ""
+    if re.search(r"\s", raw_sku) or re.search(r"[^\x20-\x7E]", raw_sku):
+        add(LOW, "SKU", "SKU (Google)", f"SKU '{raw_sku}' có dấu cách hoặc ký tự đặc biệt: Google Merchant không nhận",
+            "Dùng chữ không dấu, số, - hoặc _ (vd FERRAN-9)")
+
+    # C14. Size chart heading in description for another audience
+    if sku and sku["audience"] and not is_gift:
+        exp = {"kids": "kids", "adult": "men", "women": "women", "baby": None}.get(sku["audience"])
+        found = set()
+        dl = desc.lower()
+        for m in re.finditer(r"size\s*(?:chart|guide)", dl):
+            w = dl[max(0, m.start() - 60):m.start()]
+            found.add("kids" if re.search(r"\bkid", w) else "women" if re.search(r"\bwomen", w)
+                      else "men" if re.search(r"\b(men|adult)\b", w) else None)
+        found.discard(None)
+        if exp and found and exp not in found:
+            add(HIGH, "Sai đối tượng", "Size chart (description)",
+                f"Description có size chart {'/'.join(sorted(found))} nhưng listing là {exp}", "Đổi size chart đúng đối tượng")
+
+    # C15. Multi-value attributes: every value must appear in the title
+    for a in s.get("attributes", []):
+        if fold(a["name"]) in ("clubs name", "club name", "national team", "national teams", "players") and len(a.get("terms", [])) > 1:
+            bad = [html.unescape(t["name"]) for t in a["terms"]
+                   if not fuzzy_contains(name, html.unescape(t["name"]).split(" ")[0])]
+            if bad and not is_gift:
+                add(MED, "Category / Tag", f"Attribute {a['name']}", f"Attribute {a['name']} có {', '.join(bad)} không có trong tên",
+                    "Xoá giá trị attribute thừa")
+
+
+def site_has_main_colours(site):
+    # "Main colours" is part of the KFK description template (Product Details).
+    return site == "KFK"
 
 
 def check_extra_batch(products):

@@ -65,6 +65,43 @@ class Extra(unittest.TestCase):
         d = product(store__description=product()["store"]["description"] + "<p>The shirt is light.</p>")
         self.assertIn(("Sai loại Shirt/Kit", "Description"), groups(d))
 
+    def test_description_price_differs(self):
+        d = product(store__prices={"price": "2999", "sale_price": "2999"})
+        d["store"]["description"] += "<p>Now only £27.99 while stocks last.</p>"
+        self.assertIn(("Kho / Giá", "Description"), groups(d))
+
+    def test_no_socks_but_meta_says_included(self):
+        d = product(store__name="Leeds United Home Kids Football Kit 2026/27 (No Socks)",
+                    page__meta_description=product()["page"]["meta_description"] + " Socks included.")
+        d["store"]["attributes"][5]["terms"] = [{"name": "No Socks"}]
+        d["store"]["prices"] = {"price": "2699"}
+        self.assertIn(("Sai tất (socks)", "Meta description"), groups(d))
+
+    def test_image_of_other_team_and_side(self):
+        imgs = copy.deepcopy(product()["store"]["images"])
+        imgs[0] = {"alt": "Chelsea Away Kids Kit front", "src": "https://x/chelsea-away-front.webp"}
+        g = groups(product(store__images=imgs))
+        self.assertIn(("Ảnh", "Ảnh sai team"), g)
+        self.assertIn(("Sai Home/Away/Third", "Ảnh (alt/tên file)"), g)
+
+    def test_category_other_kit_type(self):
+        d = product(store__categories=[{"name": "Leeds United"}, {"name": "Premier League"}, {"name": "Leeds Away"}])
+        self.assertIn(("Category / Tag", "Category"), groups(d))
+
+    def test_copy_errors(self):
+        d = product()
+        d["store"]["description"] += "<p>A greaaat fit for the the season.</p>"
+        self.assertIn(("Lỗi chính tả", "Description"), groups(d))
+
+    def test_size_table_has_unsellable_sizes(self):
+        d = product(store__sku="KFK_LEE_HO_AD_No_26/27",
+                    store__name="Leeds United Home Men Football Shirt 2026/27",
+                    page__seo_title="Leeds United Home Men Shirt 26/27",
+                    page__meta_description="Shop Leeds United Home Men Shirt 26/27.")
+        d["store"]["attributes"][0]["terms"] = [{"name": n} for n in ("S", "M", "L", "XL", "XXL")]
+        d["store"]["description"] += "<table><tr><th>Size</th></tr><tr><td>XL</td></tr><tr><td>3XL</td></tr></table>"
+        self.assertIn(("Sai đối tượng", "Bảng size"), groups(d))
+
     def test_duplicate_names(self):
         a, b = product(), copy.deepcopy(product())
         b["store"]["id"] = 2
