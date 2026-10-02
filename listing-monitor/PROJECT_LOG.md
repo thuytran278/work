@@ -143,6 +143,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 29/9 | 1 / 1 / 0 / 0 | RFS 1 | Crystal Palace Away (RFS): SEO và canonical của bản Home; KFK "(Witth Socks)" |
 | 30/9 | 0 / 48 / 0 / 25 | RFS 4, CFS 1 | 46 listing cũ vừa hiện lại. Retro RFS sai Home/Away; Wales Kids (CFS) dùng size chart Adult |
 | 1/10 | 10 / 0 / 1 / 0 | – | Không có lỗi Cao |
+| 2/10 | 0 / 0 / 8 / 1 | – | RFK 8 listing không có lỗi Cao. CFS 1 listing (Argentina MESSI 10 Kids) không check được: Cloudflare CFS chặn (403) |
 
 **Báo cáo tổng hợp:**
 
