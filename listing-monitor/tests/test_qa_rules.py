@@ -164,6 +164,10 @@ class Rules(unittest.TestCase):
                     store__name="Leeds United Birthday Gift Pack – Home and Away Kids Football Kit 2026/27")
         self.assertNotIn(("SEO", "Robots"), groups(d))
 
+    def test_blocked_page_skips_seo(self):
+        d = product(page={"seo_title": "", "meta_description": "", "robots": "", "canonical": "", "blocked": True})
+        self.assertEqual(groups(d), [("SEO", "Trang sản phẩm")])
+
     def test_out_of_stock(self):
         self.assertOnly(product(store__is_in_stock=False), "Kho / Giá", "Stock")
 

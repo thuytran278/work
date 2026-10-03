@@ -35,6 +35,8 @@ def fetch_head(url, timeout=30, retry_waits=(20, 60)):
         except urllib.error.HTTPError as e:
             if wait is None or not (e.code in (403, 429) or e.code >= 500):
                 raise
+            if e.code == 403 and b"Attention Required" in (e.read(4096) or b""):
+                raise  # Cloudflare firewall block (not a burst limit): retrying will not help
             time.sleep(wait)
 
 
@@ -119,7 +121,13 @@ def fetch_product(site, base_url, product_id, url, refresh=False, delay=0.3, sto
         data["page"]["pin_text"] = bool(re.search(rf"free\s+{team}\s+pin", full, re.I))
         data["page"]["h1"] = parse_h1(full)
     else:
-        data["page"] = parse_head(fetch_head(page_url))
+        try:
+            data["page"] = parse_head(fetch_head(page_url))
+        except urllib.error.HTTPError as e:
+            if e.code != 403:
+                raise
+            # Firewall (e.g. Cloudflare on CFS) blocks the page: keep the API data, skip page-based SEO checks.
+            data["page"] = {"seo_title": "", "meta_description": "", "robots": "", "canonical": "", "blocked": True}
     imgs = data["store"].get("images") or []
     data["page"]["main_image_ok"] = image_ok(imgs[0].get("src")) if imgs else None
     path.parent.mkdir(parents=True, exist_ok=True)

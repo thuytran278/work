@@ -1,0 +1,12 @@
+QA LISTING MOI 2026-10-03
+
+KFK: 8 listing, 2 listing co loi CAO, 7 listing co loi
+   - Kho / Giá: 1 loi
+   - Club bị report (KFK): 1 loi
+CFS: 11 listing, 2 listing co loi CAO, 11 listing co loi
+   - Kho / Giá: 1 loi
+   - Sai Home/Away/Third: 1 loi
+
+Loi lap lai (co the do template):
+   - CFS | SEO | Trang sản phẩm: Không đọc được trang (11/11)
+   - CFS | Sai đối tượng | Bảng size: Bảng size trong description có ['3XL', '4XL'] nhưng không mu (11/11)

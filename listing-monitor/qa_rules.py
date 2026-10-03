@@ -230,7 +230,8 @@ def check_product(data, extra=True):
     fname = fold(name)
     is_gift = sku and sku["gift"] or has_word(fname, "gift", "bundle", "pack")
     is_retro = has_word(fname, "retro")
-    seo_fields = [("SEO title", seo_title), ("Meta description", meta)]
+    blocked = bool(page.get("blocked"))  # page HTML not readable: SEO fields unknown, not empty
+    seo_fields = [] if blocked else [("SEO title", seo_title), ("Meta description", meta)]
 
     # ---------- SKU
     if not s.get("sku"):
@@ -482,11 +483,14 @@ def check_product(data, extra=True):
                 "Sửa lại còn 3 bullet")
 
     # ---------- SEO fields
-    if not seo_title:
+    if blocked:
+        add(LOW, "SEO", "Trang sản phẩm", "Không đọc được trang (tường lửa chặn tool): chưa check SEO title, meta, canonical",
+            "Whitelist IP tool trên Cloudflare")
+    elif not seo_title:
         add(HIGH, "SEO", "SEO title", "Không đọc được SEO title trên trang", "Kiểm tra Rank Math")
     elif len(seo_title) > 65:
         add(LOW, "SEO", "SEO title", f"SEO title dài {len(seo_title)} ký tự (nên <= 60)", "Rút gọn")
-    if not meta:
+    if not meta and not blocked:
         add(HIGH, "SEO", "Meta description", "Thiếu meta description", "Viết meta description")
     elif len(meta) > 165:
         add(LOW, "SEO", "Meta description", f"Meta dài {len(meta)} ký tự (nên <= 160)", "Rút gọn")
