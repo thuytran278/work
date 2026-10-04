@@ -145,6 +145,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 1/10 | 10 / 0 / 1 / 0 | – | Không có lỗi Cao |
 | 2/10 | 0 / 0 / 8 / 1 | – | RFK 8 listing không có lỗi Cao. CFS 1 listing (Argentina MESSI 10 Kids) không check được: Cloudflare CFS chặn (403) |
 | 3/10 | 8 / 0 / 0 / 11 | KFK 2, CFS 2 | KFK: P^_^SG Home Adult (club bị report, đang live); Rangers gift pack description ghi 46.99 GBP nhưng bán £47.99. CFS: Czech Home có description ghi Away; England Blue Special Edition không có variation; Liverpool 2027/28; Cloudflare vẫn chặn trang nên chưa check SEO |
+| 4/10 | 0 / 0 / 0 / 18 | – | CFS 18 listing (training, GK, Long Sleeve), không có lỗi Cao. Cloudflare CFS đã cho đọc trang lại. Barcelona Home Kids 2027/28 |
 
 **Báo cáo tổng hợp:**
 
