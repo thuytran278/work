@@ -36,7 +36,7 @@
     <textarea id="normal" readonly></textarea>
   </div>
   <div class="box">
-    <h2><span>🚫 preview=true <span class="count" id="c-preview">0</span></span><button class="sec" data-copy="preview">Copy</button></h2>
+    <h2><span>🚫 preview / URL nháp <span class="count" id="c-preview">0</span></span><button class="sec" data-copy="preview">Copy</button></h2>
     <textarea id="preview" readonly></textarea>
   </div>
 </div>
@@ -45,10 +45,10 @@
 
   function isPreview(url) {
     try {
-      const u = new URL(url);
-      return u.searchParams.get('preview') === 'true';
+      const p = new URL(url).searchParams;
+      return p.get('preview') === 'true' || p.has('p') || p.has('post_type');
     } catch (e) {
-      return /[?&]preview=true(&|#|$)/i.test(url);
+      return /[?&](preview=true|p=\d+|post_type=)/i.test(url);
     }
   }
 
