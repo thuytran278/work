@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>URL Filter - Preview vs Normal</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 0; padding: 16px; background: #f5f6f8; color: #222; }
+  h1 { font-size: 20px; margin: 0 0 12px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+  .box { background: #fff; border-radius: 8px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+  .box h2 { font-size: 14px; margin: 0 0 8px; display: flex; justify-content: space-between; align-items: center; }
+  textarea { width: 100%; height: 420px; box-sizing: border-box; font: 12px/1.4 monospace; border: 1px solid #ccc; border-radius: 6px; padding: 8px; resize: vertical; }
+  button { cursor: pointer; border: 0; border-radius: 6px; padding: 6px 12px; font-size: 13px; background: #2563eb; color: #fff; }
+  button.sec { background: #e5e7eb; color: #222; }
+  .bar { margin: 12px 0; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .count { font-weight: 600; color: #555; font-size: 13px; }
+  label { font-size: 13px; }
+</style>
+</head>
+<body>
+<h1>Lọc URL: preview=true ↔ URL thường</h1>
+<div class="bar">
+  <button id="run">Lọc</button>
+  <button class="sec" id="clear">Xóa hết</button>
+  <label><input type="checkbox" id="dedupe" checked> Bỏ URL trùng</label>
+</div>
+<div class="grid">
+  <div class="box">
+    <h2>Input (dán URL, mỗi dòng 1 URL)</h2>
+    <textarea id="input" placeholder="https://example.com/product/abc/&#10;https://example.com/?post_type=product&p=1&preview=true"></textarea>
+  </div>
+  <div class="box">
+    <h2><span>✅ URL thường <span class="count" id="c-normal">0</span></span><button class="sec" data-copy="normal">Copy</button></h2>
+    <textarea id="normal" readonly></textarea>
+  </div>
+  <div class="box">
+    <h2><span>🚫 preview=true <span class="count" id="c-preview">0</span></span><button class="sec" data-copy="preview">Copy</button></h2>
+    <textarea id="preview" readonly></textarea>
+  </div>
+</div>
+<script>
+  const $ = id => document.getElementById(id);
+
+  function isPreview(url) {
+    try {
+      const u = new URL(url);
+      return u.searchParams.get('preview') === 'true';
+    } catch (e) {
+      return /[?&]preview=true(&|#|$)/i.test(url);
+    }
+  }
+
+  function run() {
+    let lines = $('input').value.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+    if ($('dedupe').checked) lines = [...new Set(lines)];
+    const normal = [], preview = [];
+    lines.forEach(l => (isPreview(l) ? preview : normal).push(l));
+    $('normal').value = normal.join('\n');
+    $('preview').value = preview.join('\n');
+    $('c-normal').textContent = '(' + normal.length + ')';
+    $('c-preview').textContent = '(' + preview.length + ')';
+  }
+
+  $('run').onclick = run;
+  $('input').addEventListener('input', run);
+  $('dedupe').onchange = run;
+  $('clear').onclick = () => { $('input').value = ''; run(); };
+  document.querySelectorAll('[data-copy]').forEach(b => {
+    b.onclick = () => {
+      navigator.clipboard.writeText($(b.dataset.copy).value);
+      const t = b.textContent; b.textContent = 'Đã copy!';
+      setTimeout(() => b.textContent = t, 1000);
+    };
+  });
+</script>
+</body>
+</html>
