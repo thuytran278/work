@@ -147,6 +147,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 3/10 | 8 / 0 / 0 / 11 | KFK 2, CFS 2 | KFK: P^_^SG Home Adult (club bị report, đang live); Rangers gift pack description ghi 46.99 GBP nhưng bán £47.99. CFS: Czech Home có description ghi Away; England Blue Special Edition không có variation; Liverpool 2027/28; Cloudflare vẫn chặn trang nên chưa check SEO |
 | 4/10 | 0 / 0 / 0 / 18 | – | CFS 18 listing (training, GK, Long Sleeve), không có lỗi Cao. Cloudflare CFS đã cho đọc trang lại. Barcelona Home Kids 2027/28 |
 | 5/10 | 0 / 0 / 13 / 0 | – | Chạy theo yêu cầu lúc 9:01 UK. RFK 13 listing (Retro Portugal ×9, Al Hilal ×2, Retro England 2016, Retro Barcelona 98/99), không có lỗi Cao. 2 listing Retro Portugal có "across the chest" |
+| 5/10 (routine 23:24) | 0 / 2 / 17 / 8 | – | Cả ngày: RFS 2 gift bundle, RFK 17 (thêm Retro Portugal 2016, Retro Real Madrid 10/11, Retro Barcelona 14/15), CFS 8. Không có lỗi Cao (sau khi sửa báo nhầm Goalkeeper Home). CFS 6/8 bảng size có 3XL/4XL không bán; RFS 104418 SKU "AD/KD"; Trustpilot lặp lại |
 
 **Báo cáo tổng hợp:**
 
@@ -173,6 +174,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 2/10 | Part D: SEO tên cầu thủ (case CFS); `--max-age-hours` cho QA |
 | 3/10 | Trang bị tường lửa chặn (403): vẫn QA bằng dữ liệu API, chỉ bỏ phần SEO lấy từ trang (báo 1 dòng Thấp). Gặp trang chặn của Cloudflare thì không chờ/thử lại |
 | 5/10 | Sleeve: câu so sánh "alternative to the short-sleeve version" trên listing Long Sleeve không còn bị báo lỗi |
+| 5/10 | Tên "Goalkeeper Home/Away" được hiểu là áo thủ môn (khớp SKU GK/GreenGK, category Goalkeeper, ảnh goalkeeper), không còn báo Sai Home/Away/Third |
 
 ## 9. Hạn chế đã biết và câu hỏi còn mở
 

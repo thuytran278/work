@@ -168,6 +168,11 @@ class Rules(unittest.TestCase):
         d = product(page={"seo_title": "", "meta_description": "", "robots": "", "canonical": "", "blocked": True})
         self.assertEqual(groups(d), [("SEO", "Trang sản phẩm")])
 
+    def test_goalkeeper_home_is_a_goalkeeper_kit(self):
+        d = product(store__name="Leeds United Green Goalkeeper Home Kids Football Kit 2026/27 (With socks)",
+                    store__sku="KFK_LEE_GreenGK_KD_No_26/27")
+        self.assertNotIn(("Sai Home/Away/Third", "SKU"), groups(d))
+
     def test_out_of_stock(self):
         self.assertOnly(product(store__is_in_stock=False), "Kho / Giá", "Stock")
 

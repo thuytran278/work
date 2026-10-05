@@ -396,7 +396,8 @@ def check_extra(data):
 
 # ---------------------------------------------------------------- Part C: football-qa-tools commit c3c1e3c (2/10)
 
-KIT_SIDE = [("home", r"\bhome\b"), ("away", r"\baway\b"), ("third", r"\bthird\b"), ("goalkeeper", r"\b(goalkeeper|gk)\b")]
+# Goalkeeper first: "Goalkeeper Home" names a goalkeeper kit, not the outfield home kit.
+KIT_SIDE = [("goalkeeper", r"\b(goalkeeper|gk)\b"), ("home", r"\bhome\b"), ("away", r"\baway\b"), ("third", r"\bthird\b")]
 CAT_KIT = KIT_SIDE + [("training", r"\btraining\b"), ("pre-match", r"\bpre[\s-]?match\b")]
 KIT_COLOURS = ['purple', 'pink', 'green', 'yellow', 'red', 'blue', 'orange', 'navy', 'burgundy', 'maroon', 'teal',
                'gold', 'silver', 'brown', 'cream', 'violet', 'lime', 'turquoise', 'rose', 'coral', 'cyan', 'indigo',

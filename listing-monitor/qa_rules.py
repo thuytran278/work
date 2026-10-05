@@ -148,7 +148,9 @@ def product_type_in(text):
 
 def kits_in(text):
     t = fold(text)
-    return {v for k, v in KIT_WORDS.items() if has_word(t, k)}
+    found = {v for k, v in KIT_WORDS.items() if has_word(t, k)}
+    # "Goalkeeper Home/Away" is a goalkeeper kit (SKU GK / GreenGK), not the outfield home kit.
+    return found - {"home", "away", "third"} if "gk" in found else found
 
 
 def attr(store, *names):

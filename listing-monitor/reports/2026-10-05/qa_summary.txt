@@ -1,6 +1,9 @@
 QA LISTING MOI 2026-10-05
 
-RFK: 13 listing, 0 listing co loi CAO, 13 listing co loi
+RFS: 2 listing, 0 listing co loi CAO, 2 listing co loi
+RFK: 17 listing, 0 listing co loi CAO, 17 listing co loi
+CFS: 8 listing, 0 listing co loi CAO, 8 listing co loi
 
 Loi lap lai (co the do template):
-   - RFK | Words to Avoid | Short description: 'Trustpilot' (13/13)
+   - CFS | Sai đối tượng | Bảng size: Bảng size trong description có ['3XL', '4XL'] nhưng không mu (6/8)
+   - RFK | Words to Avoid | Short description: 'Trustpilot' (17/17)
