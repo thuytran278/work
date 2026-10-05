@@ -146,6 +146,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 2/10 | 0 / 0 / 8 / 1 | – | RFK 8 listing không có lỗi Cao. CFS 1 listing (Argentina MESSI 10 Kids) không check được: Cloudflare CFS chặn (403) |
 | 3/10 | 8 / 0 / 0 / 11 | KFK 2, CFS 2 | KFK: P^_^SG Home Adult (club bị report, đang live); Rangers gift pack description ghi 46.99 GBP nhưng bán £47.99. CFS: Czech Home có description ghi Away; England Blue Special Edition không có variation; Liverpool 2027/28; Cloudflare vẫn chặn trang nên chưa check SEO |
 | 4/10 | 0 / 0 / 0 / 18 | – | CFS 18 listing (training, GK, Long Sleeve), không có lỗi Cao. Cloudflare CFS đã cho đọc trang lại. Barcelona Home Kids 2027/28 |
+| 5/10 | 0 / 0 / 13 / 0 | – | Chạy theo yêu cầu lúc 9:01 UK. RFK 13 listing (Retro Portugal ×9, Al Hilal ×2, Retro England 2016, Retro Barcelona 98/99), không có lỗi Cao. 2 listing Retro Portugal có "across the chest" |
 
 **Báo cáo tổng hợp:**
 
@@ -171,6 +172,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 2/10 | Part C: các check trong commit `c3c1e3c` của football-qa-tools (giá trong description, Main colours, ảnh sai team/loại áo/đối tượng/màu, bảng size, socks, category kit type, lỗi đánh máy, SKU Google, size chart) |
 | 2/10 | Part D: SEO tên cầu thủ (case CFS); `--max-age-hours` cho QA |
 | 3/10 | Trang bị tường lửa chặn (403): vẫn QA bằng dữ liệu API, chỉ bỏ phần SEO lấy từ trang (báo 1 dòng Thấp). Gặp trang chặn của Cloudflare thì không chờ/thử lại |
+| 5/10 | Sleeve: câu so sánh "alternative to the short-sleeve version" trên listing Long Sleeve không còn bị báo lỗi |
 
 ## 9. Hạn chế đã biết và câu hỏi còn mở
 

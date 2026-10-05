@@ -1,0 +1,6 @@
+QA LISTING MOI 2026-10-05
+
+RFK: 13 listing, 0 listing co loi CAO, 13 listing co loi
+
+Loi lap lai (co the do template):
+   - RFK | Words to Avoid | Short description: 'Trustpilot' (13/13)

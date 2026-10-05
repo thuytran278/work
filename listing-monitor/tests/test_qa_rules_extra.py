@@ -123,6 +123,12 @@ class Extra(unittest.TestCase):
                     page__seo_title="Bayern Munich KANE 9 Away Men Shirt 2026/27", page__h1="Bayern Munich Away Men 2026/27")
         self.assertIn(("SEO tên cầu thủ", "H1"), groups(d))
 
+    def test_long_sleeve_compared_to_short_sleeve_is_fine(self):
+        d = product(store__name="Leeds United Home Kids Football Kit 2026/27 Long Sleeve (With socks)",
+                    store__sku="KFK_LEE_HOLV_KD_No_26/27")
+        d["store"]["description"] += "<p>A classic alternative to the short-sleeve version.</p>"
+        self.assertNotIn("Sleeve", {i["group"] for i in __import__("qa_rules").check_product(d)})
+
     def test_duplicate_names(self):
         a, b = product(), copy.deepcopy(product())
         b["store"]["id"] = 2

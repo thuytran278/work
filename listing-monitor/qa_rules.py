@@ -447,7 +447,10 @@ def check_product(data, extra=True):
     is_long = (has_word(fname, "long sleeve") or bool(sku and sku["long_sleeve"])
                or bool(re.search(r"long[\s_-]?sleeve", img_text)))
     for field, text in [("Description", desc), ("Short description", short)] + seo_fields:
-        if is_long and re.search(r"short[\s-]sleeves?", text, re.I):
+        # "an alternative to the short-sleeve version" compares, it does not describe this product.
+        compared = re.sub(r"(alternative to|instead of|unlike|than|compared (to|with)|as well as)\s+(the\s+|a\s+)?"
+                          r"short[\s-]sleeved?(\s+version)?|short[\s-]sleeved?\s+version", "", text, flags=re.I)
+        if is_long and re.search(r"short[\s-]sleeves?", compared, re.I):
             add(HIGH, "Sleeve", field, "Sản phẩm là Long Sleeve nhưng ghi 'short sleeve': "
                 + snippet(text, r"short[\s-]sleeve"), "Sửa thành long sleeve cho khớp ảnh/tên")
         if not is_long and re.search(r"(includes?|with|supplied with|features?) (a |the )?long[\s-]sleeved?\b(?! option)",
