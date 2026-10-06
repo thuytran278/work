@@ -148,6 +148,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 4/10 | 0 / 0 / 0 / 18 | – | CFS 18 listing (training, GK, Long Sleeve), không có lỗi Cao. Cloudflare CFS đã cho đọc trang lại. Barcelona Home Kids 2027/28 |
 | 5/10 | 0 / 0 / 13 / 0 | – | Chạy theo yêu cầu lúc 9:01 UK. RFK 13 listing (Retro Portugal ×9, Al Hilal ×2, Retro England 2016, Retro Barcelona 98/99), không có lỗi Cao. 2 listing Retro Portugal có "across the chest" |
 | 5/10 (routine 23:24) | 0 / 2 / 17 / 8 | – | Cả ngày: RFS 2 gift bundle, RFK 17 (thêm Retro Portugal 2016, Retro Real Madrid 10/11, Retro Barcelona 14/15), CFS 8. Không có lỗi Cao (sau khi sửa báo nhầm Goalkeeper Home). CFS 6/8 bảng size có 3XL/4XL không bán; RFS 104418 SKU "AD/KD"; Trustpilot lặp lại |
+| 6/10 | 2 / 0 / 8 / 4 | – | Không có lỗi Cao. KFK gift pack Portugal RONALDO 7 giá £69.99 (bảng giá £64.99), tên có dấu “ ”, thiếu category Primeira Liga; Free Pin không thấy trên 2 listing KFK Argentina/Portugal; RFK Barcelona 2027/28 (câu hỏi mở); CFS SKU "AD/KD" gift pack |
 
 **Báo cáo tổng hợp:**
 
