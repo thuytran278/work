@@ -1,0 +1,15 @@
+QA LISTING MOI 2026-10-08
+
+KFK: 14 listing, 1 listing co loi CAO, 14 listing co loi
+   - Sai cầu thủ: 1 loi
+   - SEO tên cầu thủ: 1 loi
+RFK: 5 listing, 0 listing co loi CAO, 5 listing co loi
+CFS: 4 listing, 0 listing co loi CAO, 2 listing co loi
+
+Loi lap lai (co the do template):
+   - KFK | Club bị report (KFK) | Ảnh: Barcelona (8/14)
+   - KFK | SEO | Meta description: có ký tự & hoặc " (8/14)
+   - KFK | SEO tên cầu thủ | Tên sản phẩm: Tên cầu thủ đang ở cuối tên (10/14)
+   - KFK | Sai loại Shirt/Kit | Description: Listing là KIT nhưng description dùng chữ 'shirt' 5 lần (7/14)
+   - KFK | Words to Avoid | Short description: 'Trustpilot' (14/14)
+   - RFK | Words to Avoid | Short description: 'Trustpilot' (5/5)
