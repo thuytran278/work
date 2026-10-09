@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(**/.env)",
+      "Edit(**/.env)",
+      "Bash(cat .env)",
+      "Bash(cat listing-monitor/.env)",
+      "Bash(type .env)",
+      "Bash(type listing-monitor\\.env)"
+    ]
+  }
+}

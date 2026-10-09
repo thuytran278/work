@@ -14,11 +14,13 @@ Usage:
 import argparse
 import csv
 import json
+import os
+import subprocess
 import sys
 import time
 from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 from check_new_listings import BASE_DIR, REPORT_DIR, get_tz
@@ -272,12 +274,14 @@ def build_summary(label, products, rows, errors, templates):
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Deep QA of new listings.")
     ap.add_argument("--date")
+    ap.add_argument("--yesterday", action="store_true", help="the UK day that just ended (for early-morning runs from Vietnam)")
     ap.add_argument("--from", dest="date_from")
     ap.add_argument("--to", dest="date_to")
     ap.add_argument("--refresh", action="store_true", help="download again, ignore cache")
     ap.add_argument("--max-age-hours", type=float,
                     help="re-download only listings cached longer ago than this (resumable refresh)")
     ap.add_argument("--config", default=str(BASE_DIR / "config.json"))
+    ap.add_argument("--open", action="store_true", help="open the Excel file when done")
     args = ap.parse_args(argv)
 
     cfg = json.loads(Path(args.config).read_text(encoding="utf-8"))
@@ -286,7 +290,8 @@ def main(argv=None):
         start = date.fromisoformat(args.date_from)
         end = date.fromisoformat(args.date_to) if args.date_to else today
     else:
-        start = end = date.fromisoformat(args.date) if args.date else today
+        start = end = (date.fromisoformat(args.date) if args.date
+                       else today - timedelta(days=1) if args.yesterday else today)
     label = start.isoformat() if start == end else f"{start.isoformat()}_to_{end.isoformat()}"
 
     listings = load_listings(label)
@@ -300,7 +305,19 @@ def main(argv=None):
     (REPORT_DIR / label / "qa_summary.txt").write_text(summary, encoding="utf-8")
     print(summary)
     print(f"\nFile Excel: {out}")
+    if args.open:
+        open_file(out)
     return 0
+
+
+def open_file(path):
+    try:
+        if sys.platform == "win32":
+            os.startfile(path)
+        else:
+            subprocess.run(["open" if sys.platform == "darwin" else "xdg-open", str(path)], check=False)
+    except Exception as e:
+        print(f"[!] Khong mo duoc file Excel: {e}")
 
 
 if __name__ == "__main__":

@@ -178,6 +178,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 3/10 | Trang bị tường lửa chặn (403): vẫn QA bằng dữ liệu API, chỉ bỏ phần SEO lấy từ trang (báo 1 dòng Thấp). Gặp trang chặn của Cloudflare thì không chờ/thử lại |
 | 5/10 | Sleeve: câu so sánh "alternative to the short-sleeve version" trên listing Long Sleeve không còn bị báo lỗi |
 | 5/10 | Tên "Goalkeeper Home/Away" được hiểu là áo thủ môn (khớp SKU GK/GreenGK, category Goalkeeper, ảnh goalkeeper), không còn báo Sai Home/Away/Third |
+| 9/10 | Chạy được trên máy tính của Clara: `run_daily.bat`/`run_daily.sh` (check ngày UK vừa kết thúc bằng `--yesterday`, tự mở Excel bằng `--open`), đọc key từ `.env` (đã chặn khỏi git, Claude Code không được đọc), `requirements.txt`, hướng dẫn `HUONG_DAN_MAY_TINH.md` |
 
 ## 9. Hạn chế đã biết và câu hỏi còn mở
 

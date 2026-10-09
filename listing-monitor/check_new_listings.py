@@ -19,6 +19,7 @@ import argparse
 import csv
 import html
 import json
+import os
 import re
 import sys
 import time
@@ -42,6 +43,24 @@ CSV_COLUMNS = [
     "published_at", "detected_by",
 ]
 MAX_LISTED_PER_SITE = 30  # longer lists: see the CSV
+
+
+def load_env(path=BASE_DIR / ".env"):
+    """Read KEY=VALUE lines from listing-monitor/.env (kept off GitHub by .gitignore).
+
+    Values already set in the environment win. Keys are never printed.
+    """
+    if not path.exists():
+        return
+    for line in path.read_text(encoding="utf-8-sig").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+
+
+load_env()
 
 
 def get_tz(name):
@@ -325,6 +344,7 @@ def build_summary(start, end, results, use_diff):
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Check new listings per website.")
     ap.add_argument("--date", help="YYYY-MM-DD (default: today, UK time)")
+    ap.add_argument("--yesterday", action="store_true", help="the UK day that just ended (for early-morning runs from Vietnam)")
     ap.add_argument("--from", dest="date_from", help="YYYY-MM-DD, start of range")
     ap.add_argument("--to", dest="date_to", help="YYYY-MM-DD, end of range (default: today)")
     ap.add_argument("--sites", nargs="*", help="e.g. KFK RFS (default: all)")
@@ -338,7 +358,8 @@ def main(argv=None):
         start = date.fromisoformat(args.date_from)
         end = date.fromisoformat(args.date_to) if args.date_to else today
     else:
-        start = end = date.fromisoformat(args.date) if args.date else today
+        start = end = (date.fromisoformat(args.date) if args.date
+                       else today - timedelta(days=1) if args.yesterday else today)
     # Diff = "new since last run", only meaningful when the range ends today.
     use_diff = end == today
 

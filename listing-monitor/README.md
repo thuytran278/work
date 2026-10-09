@@ -1,5 +1,7 @@
 # Listing Monitor: kiểm tra listing mới + QA lỗi mỗi ngày
 
+> **Chạy trên máy tính của bạn:** xem [HUONG_DAN_MAY_TINH.md](HUONG_DAN_MAY_TINH.md)
+>
 > Tài liệu đầy đủ (danh sách check, quyết định đã xác nhận, case SEO CFS, nhật ký hằng ngày, changelog): **[PROJECT_LOG.md](PROJECT_LOG.md)**
 
 Gồm 2 bước:
