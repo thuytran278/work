@@ -151,6 +151,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 6/10 | 2 / 0 / 8 / 4 | – | Không có lỗi Cao. KFK gift pack Portugal RONALDO 7 giá £69.99 (bảng giá £64.99), tên có dấu “ ”, thiếu category Primeira Liga; Free Pin không thấy trên 2 listing KFK Argentina/Portugal; RFK Barcelona 2027/28 (câu hỏi mở); CFS SKU "AD/KD" gift pack |
 | 7/10 | 2 / 0 / 0 / 17 | KFK 1 / CFS 1 | KFK 258491 Retro Barcelona MESSI 10 Long Sleeve SKU thiếu LS/LV; CFS 82922 Retro Argentina MESSI 10 Away 1994 SKU ghi HO. Tool chưa bắt: CFS Retro Portugal Away 2012 Long Sleeve SKU ghi năm 2018 (rule season retro chưa so năm đơn) – đã báo tay. CFS 13/17 bảng size 3XL/4XL |
 | 8/10 | 14 / 0 / 5 / 4 | KFK 1 | KFK 258661 Retro Argentina Away 1994 "– 10" thiếu tên cầu thủ (SEO title, attribute Players). Báo tay: KFK 258645 SKU team BZ (các listing Brazil khác dùng BRZ). KFK 14 retro cầu thủ: tên cầu thủ ở cuối, "shirt" trong description kit, Free Pin Brazil/Argentina không hiện |
+| 9/10 | 4 / 0 / 0 / 6 | CFS 2 | CFS 83228/83237 Real Madrid MBAPPÉ 10 Home/Away Adult Kit: description còn "How to Add Personalisation" (listing in sẵn). KFK gift pack Argentina 259291 giá £66.99 (bảng £64.99) |
 
 **Báo cáo tổng hợp:**
 
