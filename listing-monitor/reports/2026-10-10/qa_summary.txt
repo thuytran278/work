@@ -1,0 +1,8 @@
+QA LISTING MOI 2026-10-10
+
+RFS: 1 listing, 1 listing co loi CAO, 1 listing co loi
+   - Sai cầu thủ: 1 loi
+CFS: 20 listing, 0 listing co loi CAO, 20 listing co loi
+
+Loi lap lai (co the do template):
+   - CFS | SEO | Meta description: khoảng trắng trước dấu câu (17/20)
