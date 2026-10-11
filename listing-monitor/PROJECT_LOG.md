@@ -153,6 +153,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 8/10 | 14 / 0 / 5 / 4 | KFK 1 | KFK 258661 Retro Argentina Away 1994 "– 10" thiếu tên cầu thủ (SEO title, attribute Players). Báo tay: KFK 258645 SKU team BZ (các listing Brazil khác dùng BRZ). KFK 14 retro cầu thủ: tên cầu thủ ở cuối, "shirt" trong description kit, Free Pin Brazil/Argentina không hiện |
 | 9/10 | 4 / 0 / 0 / 6 | CFS 2 | CFS 83228/83237 Real Madrid MBAPPÉ 10 Home/Away Adult Kit: description còn "How to Add Personalisation" (listing in sẵn). KFK gift pack Argentina 259291 giá £66.99 (bảng £64.99) |
 | 10/10 | 0 / 1 / 0 / 20 | RFS 1 | RFS 104496 Retro Brazil PELÉ 10: description còn phần Personalisation. Báo nhầm: category "Edson Arantes do Nascimento" (tên thật của Pelé). CFS Barcelona 2027/28 (câu hỏi mở); CFS 17/20 meta có khoảng trắng trước dấu phẩy |
+| 11/10 | 0 / 0 / 0 / 9 | – | CFS 9 Kids Kit: cả 9 chỉ có 2 ảnh (overview + front), không có ảnh back và size chart; 5/9 "emblem"; Wales 2027 (câu hỏi mở). SKU Wolves WO (hôm 5/10 dùng WOL) |
 
 **Báo cáo tổng hợp:**
 

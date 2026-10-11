@@ -1,0 +1,9 @@
+QA LISTING MOI 2026-10-11
+
+CFS: 9 listing, 0 listing co loi CAO, 9 listing co loi
+
+Loi lap lai (co the do template):
+   - CFS | SEO | Meta description: khoảng trắng trước dấu câu (7/9)
+   - CFS | Words to Avoid | Description: 'emblem' (5/9)
+   - CFS | Ảnh | Size chart: Không thấy ảnh size chart (9/9)
+   - CFS | Ảnh | Số lượng ảnh: Chỉ có 2 ảnh sản phẩm (9/9)
