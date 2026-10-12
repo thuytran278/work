@@ -1,0 +1,11 @@
+QA LISTING MOI 2026-10-12
+
+RFS: 1 listing, 1 listing co loi CAO, 1 listing co loi
+   - Sai cầu thủ: 1 loi
+RFK: 13 listing, 2 listing co loi CAO, 13 listing co loi
+   - Sai cầu thủ: 2 loi
+   - Sai Home/Away/Third: 2 loi
+   - SEO tên cầu thủ: 1 loi
+
+Loi lap lai (co the do template):
+   - RFK | Words to Avoid | Short description: 'Trustpilot' (13/13)
