@@ -156,6 +156,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 11/10 | 0 / 0 / 0 / 9 | – | CFS 9 Kids Kit: cả 9 chỉ có 2 ảnh (overview + front), không có ảnh back và size chart; 5/9 "emblem"; Wales 2027 (câu hỏi mở). SKU Wolves WO (hôm 5/10 dùng WOL) |
 | 12/10 | 0 / 1 / 13 / 0 | RFS 1 / RFK 2 | RFS 104539 MARADONA 10: còn Personalisation (lặp lại lần 3 trên listing cầu thủ); RFK 128313 Retro Argentina Away 1994: SKU HO + Kit Type Home, SKU có "10" không tên cầu thủ; RFK 128325 RONALDINHO 10 LS thiếu attribute Players |
 | 13/10 | 0 / 0 / 12 / 0 | RFK 3 | RFK 128354/128368 Retro Barcelona Kid 2008/09, 2010/11 Long Sleeve: SKU thiếu LS; RFK 128341 Retro Argentina 10 Away Kid 1994: "10" không tên cầu thủ (lặp lại KFK 8/10, RFK 12/10). Barcelona 2027/28 Kid (câu hỏi mở) |
+| 14/10 | 0 / 1 / 0 / 0 | – | RFS Costa Rica WC 2026 Away Kid: chỉ Trustpilot, SEO title dài, 2 ảnh |
 
 **Báo cáo tổng hợp:**
 
