@@ -157,6 +157,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 12/10 | 0 / 1 / 13 / 0 | RFS 1 / RFK 2 | RFS 104539 MARADONA 10: còn Personalisation (lặp lại lần 3 trên listing cầu thủ); RFK 128313 Retro Argentina Away 1994: SKU HO + Kit Type Home, SKU có "10" không tên cầu thủ; RFK 128325 RONALDINHO 10 LS thiếu attribute Players |
 | 13/10 | 0 / 0 / 12 / 0 | RFK 3 | RFK 128354/128368 Retro Barcelona Kid 2008/09, 2010/11 Long Sleeve: SKU thiếu LS; RFK 128341 Retro Argentina 10 Away Kid 1994: "10" không tên cầu thủ (lặp lại KFK 8/10, RFK 12/10). Barcelona 2027/28 Kid (câu hỏi mở) |
 | 14/10 | 0 / 1 / 0 / 0 | – | RFS Costa Rica WC 2026 Away Kid: chỉ Trustpilot, SEO title dài, 2 ảnh |
+| 15/10 | 0 / 0 / 0 / 3 | – | CFS 3 Retro RONALDINHO 10 Kids: chỉ lỗi Thấp. Báo tay: SKU Brazil dùng BRA (CFS 7/10 dùng BRZ) |
 
 **Báo cáo tổng hợp:**
 
