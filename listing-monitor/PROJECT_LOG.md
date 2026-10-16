@@ -158,6 +158,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 13/10 | 0 / 0 / 12 / 0 | RFK 3 | RFK 128354/128368 Retro Barcelona Kid 2008/09, 2010/11 Long Sleeve: SKU thiếu LS; RFK 128341 Retro Argentina 10 Away Kid 1994: "10" không tên cầu thủ (lặp lại KFK 8/10, RFK 12/10). Barcelona 2027/28 Kid (câu hỏi mở) |
 | 14/10 | 0 / 1 / 0 / 0 | – | RFS Costa Rica WC 2026 Away Kid: chỉ Trustpilot, SEO title dài, 2 ảnh |
 | 15/10 | 0 / 0 / 0 / 3 | – | CFS 3 Retro RONALDINHO 10 Kids: chỉ lỗi Thấp. Báo tay: SKU Brazil dùng BRA (CFS 7/10 dùng BRZ) |
+| 16/10 | 2 / 0 / 0 / 3 | – | Không lỗi Cao. CFS Crystal Palace Away Kids mới đăng đã hết hàng; KFK Leverkusen description dùng "shirt" |
 
 **Báo cáo tổng hợp:**
 
