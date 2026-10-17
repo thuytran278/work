@@ -159,6 +159,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 14/10 | 0 / 1 / 0 / 0 | – | RFS Costa Rica WC 2026 Away Kid: chỉ Trustpilot, SEO title dài, 2 ảnh |
 | 15/10 | 0 / 0 / 0 / 3 | – | CFS 3 Retro RONALDINHO 10 Kids: chỉ lỗi Thấp. Báo tay: SKU Brazil dùng BRA (CFS 7/10 dùng BRZ) |
 | 16/10 | 2 / 0 / 0 / 3 | – | Không lỗi Cao. CFS Crystal Palace Away Kids mới đăng đã hết hàng; KFK Leverkusen description dùng "shirt" |
+| 17/10 | 0 / 0 / 0 / 35 | CFS 2 | CFS 35 Adult Kit (World Cup 2026 + Chelsea Training). 84015 Curacao Away: SKU HO + Kit Type Home, season 2026/27 cho đội tuyển; 84023 Chelsea Black Training: ảnh back của AC Milan. Uruguay/USA có category South Africa thừa. 35/35 meta khoảng trắng, 22/35 chỉ 2 ảnh |
 
 **Báo cáo tổng hợp:**
 
@@ -187,6 +188,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 5/10 | Sleeve: câu so sánh "alternative to the short-sleeve version" trên listing Long Sleeve không còn bị báo lỗi |
 | 5/10 | Tên "Goalkeeper Home/Away" được hiểu là áo thủ môn (khớp SKU GK/GreenGK, category Goalkeeper, ảnh goalkeeper), không còn báo Sai Home/Away/Third |
 | 9/10 | Chạy được trên máy tính của Clara: `run_daily.bat`/`run_daily.sh` (check ngày UK vừa kết thúc bằng `--yesterday`, tự mở Excel bằng `--open`), đọc key từ `.env` (đã chặn khỏi git, Claude Code không được đọc), `requirements.txt`, hướng dẫn `HUONG_DAN_MAY_TINH.md` |
+| 17/10 | SKU thủ môn dạng `AWGK`/`HOGK` khớp với tên "Away/Home Goalkeeper" (không còn báo nhầm Sai Home/Away/Third) |
 
 ## 9. Hạn chế đã biết và câu hỏi còn mở
 

@@ -310,7 +310,8 @@ def check_product(data, extra=True):
     # ---------- Home / Away / Third / GK
     name_kits = kits_in(name)
     if name_kits:
-        if sku and sku["kits"] and sku["kits"] != name_kits and not (sku["gift"] and sku["kits"] <= name_kits):
+        sku_kits = sku["kits"] - {"home", "away", "third"} if sku and "gk" in sku["kits"] else (sku or {}).get("kits")
+        if sku and sku_kits and sku_kits != name_kits and not (sku["gift"] and sku["kits"] <= name_kits):
             gk_third = "gk" in name_kits and sku["kits"] == {"third"}  # maybe a third goalkeeper kit
             add(MED if gk_third else HIGH, "Sai Home/Away/Third", "SKU",
                 f"Tên ghi {'/'.join(sorted(name_kits))} nhưng SKU ghi {sku['kit_code']}", "Sửa SKU hoặc tên")
