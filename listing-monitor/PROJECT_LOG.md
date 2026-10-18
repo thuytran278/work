@@ -161,6 +161,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 16/10 | 2 / 0 / 0 / 3 | – | Không lỗi Cao. CFS Crystal Palace Away Kids mới đăng đã hết hàng; KFK Leverkusen description dùng "shirt" |
 | 17/10 | 0 / 0 / 0 / 35 | CFS 2 | CFS 35 Adult Kit (World Cup 2026 + Chelsea Training). 84015 Curacao Away: SKU HO + Kit Type Home, season 2026/27 cho đội tuyển; 84023 Chelsea Black Training: ảnh back của AC Milan. Uruguay/USA có category South Africa thừa. 35/35 meta khoảng trắng, 22/35 chỉ 2 ảnh |
 | 18/10 (Clara hỏi lại 35 URL CFS 17/10) | – | CFS 3 | Check sâu thêm: 84258 USA Away description copy nguyên Uruguay (Team, màu navy, No socks) trong khi attribute With Socks, ảnh áo đen USA; 84031 Chelsea Blue Training Adult + 84116 RICE 4 dùng file ảnh tên Kids; "Chest badge: World Cup 2022 Champions" (Argentina GK) khớp option "Add World Cup Champion Badge +£2.99" trên trang; 12 listing cầu thủ short description câu lỗi "printed on the shirt, shorts and included"; 5 listing chỉ 1 ảnh |
+| 18/10 | 1 / 0 / 0 / 14 | KFK 1 / CFS 3 | KFK 261785 North London Red (Arsenal) Home LS: club bị report chỉ bán bundle mà đăng lẻ, giá £33.99 (bảng £30.99). CFS 84339/84391/84408: alt ảnh ghi Men trên listing Kids; 84408 Argentina 1994 "10" thiếu tên (alt ảnh ghi MESSI 10) |
 
 **Báo cáo tổng hợp:**
 

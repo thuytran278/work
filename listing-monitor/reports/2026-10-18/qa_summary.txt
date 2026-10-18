@@ -1,0 +1,11 @@
+QA LISTING MOI 2026-10-18
+
+KFK: 1 listing, 1 listing co loi CAO, 1 listing co loi
+   - Club bị report (KFK): 1 loi
+CFS: 14 listing, 3 listing co loi CAO, 14 listing co loi
+   - Sai đối tượng: 3 loi
+   - Sai cầu thủ: 1 loi
+
+Loi lap lai (co the do template):
+   - CFS | SEO | Meta description: Meta dài 176 ký tự (8/14)
+   - CFS | SEO | Meta description: khoảng trắng trước dấu câu (10/14)
