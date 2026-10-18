@@ -208,6 +208,8 @@ TEAM_ALIASES = {
     "arsenal": ["north london red"],
     "tottenham hotspur": ["north london white", "spurs"],
     "paris saint-germain": ["p^_^sg", "psg"],
+    "usa": ["united states"],
+    "united states": ["usa"],
 }
 
 SHARED_IMAGE_RE = re.compile(r"size chart|size guide|delivery|infographic|inforgraphic|shipping", re.I)
@@ -356,6 +358,15 @@ def check_product(data, extra=True):
             if text and not mentions_team(text):
                 add(MED, "Sai team", field, f"{field} không nhắc tên team '{team[0]}': \"{text}\"",
                     f"Thêm tên team vào {field}")
+        # "Kit Facts" list in the description: "Team: Uruguay" on a USA listing = copied from another listing.
+        m = re.search(r"\bTeam:\s*(?:</[a-z]+>\s*)*([^<\n]+)", s.get("description") or "")
+        facts_team = html.unescape(m.group(1)).strip() if m else ""
+        ft = squash(facts_team)
+        # exact match here: the field holds a clean team name, and fuzzy matching lets "usa" match "uruguay"
+        if ft and not any(ft in squash(n) or squash(n) in ft for n in names) and ft not in squash(name):
+            add(HIGH, "Sai team", "Description",
+                f"Kit Facts trong description ghi Team: {facts_team}, nhưng listing là {team[0]}",
+                "Viết lại description cho đúng team (đang copy từ listing khác)")
         cats = [fold(c["name"]) for c in s.get("categories", [])]
         if not any(fuzzy_contains(c, n) or fuzzy_contains(n, c) for c in cats for n in names):
             add(MED, "Category / Tag", "Category", f"Không có category của team '{team[0]}'",

@@ -1,7 +1,8 @@
 QA LISTING MOI 2026-10-17
 
-CFS: 35 listing, 2 listing co loi CAO, 35 listing co loi
+CFS: 35 listing, 3 listing co loi CAO, 35 listing co loi
    - Sai Home/Away/Third: 2 loi
+   - Sai team: 1 loi
    - Ảnh: 1 loi
 
 Loi lap lai (co the do template):

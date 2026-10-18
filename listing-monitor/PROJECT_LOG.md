@@ -160,6 +160,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 15/10 | 0 / 0 / 0 / 3 | – | CFS 3 Retro RONALDINHO 10 Kids: chỉ lỗi Thấp. Báo tay: SKU Brazil dùng BRA (CFS 7/10 dùng BRZ) |
 | 16/10 | 2 / 0 / 0 / 3 | – | Không lỗi Cao. CFS Crystal Palace Away Kids mới đăng đã hết hàng; KFK Leverkusen description dùng "shirt" |
 | 17/10 | 0 / 0 / 0 / 35 | CFS 2 | CFS 35 Adult Kit (World Cup 2026 + Chelsea Training). 84015 Curacao Away: SKU HO + Kit Type Home, season 2026/27 cho đội tuyển; 84023 Chelsea Black Training: ảnh back của AC Milan. Uruguay/USA có category South Africa thừa. 35/35 meta khoảng trắng, 22/35 chỉ 2 ảnh |
+| 18/10 (Clara hỏi lại 35 URL CFS 17/10) | – | CFS 3 | Check sâu thêm: 84258 USA Away description copy nguyên Uruguay (Team, màu navy, No socks) trong khi attribute With Socks, ảnh áo đen USA; 84031 Chelsea Blue Training Adult + 84116 RICE 4 dùng file ảnh tên Kids; "Chest badge: World Cup 2022 Champions" (Argentina GK) khớp option "Add World Cup Champion Badge +£2.99" trên trang; 12 listing cầu thủ short description câu lỗi "printed on the shirt, shorts and included"; 5 listing chỉ 1 ảnh |
 
 **Báo cáo tổng hợp:**
 
@@ -189,6 +190,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 5/10 | Tên "Goalkeeper Home/Away" được hiểu là áo thủ môn (khớp SKU GK/GreenGK, category Goalkeeper, ảnh goalkeeper), không còn báo Sai Home/Away/Third |
 | 9/10 | Chạy được trên máy tính của Clara: `run_daily.bat`/`run_daily.sh` (check ngày UK vừa kết thúc bằng `--yesterday`, tự mở Excel bằng `--open`), đọc key từ `.env` (đã chặn khỏi git, Claude Code không được đọc), `requirements.txt`, hướng dẫn `HUONG_DAN_MAY_TINH.md` |
 | 17/10 | SKU thủ môn dạng `AWGK`/`HOGK` khớp với tên "Away/Home Goalkeeper" (không còn báo nhầm Sai Home/Away/Third) |
+| 18/10 | Rule mới: "Team:" trong Kit Facts của description khác team của listing → Cao. Rule ảnh Kids/Adult nay xét cả tên file (tên file sai = Trung bình, alt sai = Cao). Alias USA = United States |
 
 ## 9. Hạn chế đã biết và câu hỏi còn mở
 

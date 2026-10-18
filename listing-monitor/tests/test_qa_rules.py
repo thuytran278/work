@@ -178,6 +178,14 @@ class Rules(unittest.TestCase):
                     store__sku="KFK_LEE_AWGK_KD_No_26/27")
         self.assertNotIn(("Sai Home/Away/Third", "SKU"), groups(d))
 
+    def test_kit_facts_team_from_other_listing(self):
+        d = product(store__description=product()["store"]["description"]
+                    + "<h3>Kit Facts</h3><ul><li><strong>Team:</strong> Leicester City</li></ul>")
+        self.assertIn(("Sai team", "Description"), groups(d))
+        d = product(store__description=product()["store"]["description"]
+                    + "<h3>Kit Facts</h3><ul><li><strong>Team:</strong> Leeds United</li></ul>")
+        self.assertNotIn(("Sai team", "Description"), groups(d))
+
     def test_out_of_stock(self):
         self.assertOnly(product(store__is_in_stock=False), "Kho / Giá", "Stock")
 

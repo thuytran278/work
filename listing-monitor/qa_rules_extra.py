@@ -532,15 +532,17 @@ def check_extra_c(data, add, name, desc, short, meta, sku, is_gift, team):
     # C8. Kids photos on a men's listing and vice versa
     if sku and not is_gift:
         aud = sku["audience"]
-        bad = []
+        bad, in_alt = [], False
         for src, alt in pimgs:
-            if aud == "adult" and re.search(r"\b(kids?|children|child|boys?|girls?|junior|youth)\b", alt, re.I):
-                bad.append(alt[:60])
-            if aud == "kids" and re.search(r"\bmen'?s?\b|\badult\b", alt, re.I):
-                bad.append(alt[:60])
+            for text in (alt, fname_text(src)):
+                if (aud == "adult" and re.search(r"\b(kids?|children|child|boys?|girls?|junior|youth)\b", text, re.I)
+                        or aud == "kids" and re.search(r"\bmen'?s?\b|\badult\b", text, re.I)):
+                    bad.append(text[:60])
+                    in_alt = in_alt or text == alt
         if bad:
-            add(HIGH, "Sai đối tượng", "Ảnh (alt)",
-                f"Listing {'Men/Adult' if aud == 'adult' else 'Kids'} nhưng alt ảnh ghi: \"{bad[0]}\"",
+            # file name only: often a photo reused from the other audience's listing, so check rather than alarm
+            add(HIGH if in_alt else MED, "Sai đối tượng", "Ảnh (alt/tên file)",
+                f"Listing {'Men/Adult' if aud == 'adult' else 'Kids'} nhưng ảnh ghi: \"{bad[0]}\"",
                 "Kiểm tra có upload nhầm bộ ảnh của đối tượng khác không")
 
     # C9. Fewer than 3 product photos

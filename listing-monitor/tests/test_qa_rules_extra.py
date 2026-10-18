@@ -84,6 +84,12 @@ class Extra(unittest.TestCase):
         self.assertIn(("Ảnh", "Ảnh sai team"), g)
         self.assertIn(("Sai Home/Away/Third", "Ảnh (alt/tên file)"), g)
 
+    def test_kids_image_file_on_adult_listing(self):
+        imgs = copy.deepcopy(product()["store"]["images"])
+        imgs[0] = {"alt": "Leeds United Home Adult Kit 26_27 front view", "src": "https://x/Leeds-Home-Kids-Kit-Front.webp"}
+        d = product(store__images=imgs, store__sku="KFK_LEE_HO_AD_No_26/27")
+        self.assertIn(("Sai đối tượng", "Ảnh (alt/tên file)"), groups(d))
+
     def test_category_other_kit_type(self):
         d = product(store__categories=[{"name": "Leeds United"}, {"name": "Premier League"}, {"name": "Leeds Away"}])
         self.assertIn(("Category / Tag", "Category"), groups(d))
