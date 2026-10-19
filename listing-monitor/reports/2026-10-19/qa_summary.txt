@@ -1,0 +1,13 @@
+QA LISTING MOI 2026-10-19
+
+KFK: 8 listing, 1 listing co loi CAO, 8 listing co loi
+   - Club bị report (KFK): 1 loi
+RFS: 6 listing, 2 listing co loi CAO, 6 listing co loi
+   - Words to Avoid: 6 loi
+RFK: 13 listing, 0 listing co loi CAO, 13 listing co loi
+CFS: 14 listing, 0 listing co loi CAO, 14 listing co loi
+
+Loi lap lai (co the do template):
+   - RFK | Words to Avoid | Short description: 'Trustpilot' (13/13)
+   - RFS | Thiếu nội dung bắt buộc | Description: Thiếu câu bắt buộc của RFS (6/6)
+   - RFS | Words to Avoid | Short description: 'Trustpilot' (6/6)
