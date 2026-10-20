@@ -1,0 +1,13 @@
+QA LISTING MOI 2026-10-20
+
+KFK: 4 listing, 0 listing co loi CAO, 4 listing co loi
+RFS: 30 listing, 8 listing co loi CAO, 30 listing co loi
+   - Sai season: 3 loi
+   - Sai đối tượng: 3 loi
+   - SEO: 3 loi
+   - Ảnh: 2 loi
+   - Sai cầu thủ: 2 loi
+
+Loi lap lai (co the do template):
+   - RFS | Thiếu nội dung bắt buộc | Description: Thiếu câu bắt buộc của RFS (30/30)
+   - RFS | Words to Avoid | Short description: 'Trustpilot' (30/30)
