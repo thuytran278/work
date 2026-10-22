@@ -8,7 +8,10 @@ check_extra(data) returns issues in the same shape as qa_rules.check_product.
 """
 
 import html
+import json
 import re
+from collections import Counter
+from pathlib import Path
 
 from qa_rules import (HIGH, LOW, MED, YEAR_RE, attr, fold, fuzzy_contains, has_word, kits_in, parse_sku,
                       seasons_in, snippet, strip_html)
@@ -55,8 +58,46 @@ GENERIC_NAME_WORDS = {
 # (KFK/CFS -3, RFS/RFK -2, as on the live sites); printed +10, long sleeve +1, retro +1 (both: +2).
 SHIRT_PRICE = {"KFK": 29.99, "RFS": 27.99, "RFK": 27.49, "CFS": 29.69}
 NO_SOCKS_DISCOUNT = {"KFK": 3, "RFS": 2, "RFK": 2, "CFS": 3}
-# Adult kits (ADK) with socks, as on the live sites (not in Clara's rule yet: MED only)
+# Adult kits (ADK) with socks, as on the live sites (confirmed by Clara 22/10)
 ADULT_KIT_WITH_SOCKS = {"KFK": 33.99, "CFS": 33.69}
+
+# Gift packs and anything without a fixed rule: compare with the price most listings of the same kind have live
+# (Clara 22/10: "follow what is on live"). Rebuilt from the cache on every QA run, saved in data/price_ref.json.
+PRICE_REF_PATH = Path(__file__).resolve().parent / "data" / "price_ref.json"
+
+
+def price_key(s, name):
+    sku = parse_sku(s.get("sku"))
+    if not sku:
+        return None
+    fname = fold(name)
+    kind = "gift" if sku["gift"] or has_word(fname, "gift", "bundle", "pack") else "kit" if has_word(fname, "kit") else "shirt"
+    players = len(re.findall(r"\d+", sku["player"] or ""))
+    return "|".join([kind, sku["aud_code"].upper(), kit_socks(s, name) or "-", str(players),
+                     "LS" if sku["long_sleeve"] or re.search(r"long[\s-]sleeve", name, re.I) else "-",
+                     "R" if has_word(fname, "retro") else "-"])
+
+
+def build_price_ref(products):
+    """{site: {key: [mode price, listings, share]}} from cached products (data dicts)."""
+    groups = {}
+    for d in products:
+        s = d.get("store") or {}
+        price, key = site_price(s), price_key(s, strip_html(s.get("name")))
+        if price and key:
+            groups.setdefault(d["site"], {}).setdefault(key, Counter())[price] += 1
+    return {site: {k: [c.most_common(1)[0][0], sum(c.values()), round(c.most_common(1)[0][1] / sum(c.values()), 2)]
+                   for k, c in keys.items()} for site, keys in groups.items()}
+
+
+def load_price_ref():
+    try:
+        return json.loads(PRICE_REF_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+PRICE_REF = load_price_ref()
 
 FREE_PIN_TEAMS = ['Spain', 'France', 'Argentina', 'England', 'Brazil', 'Portugal', 'Scotland']
 
@@ -215,13 +256,16 @@ def check_extra(data):
         socks = kit_socks(s, name)
         exp, sev, aud = None, HIGH, sku["audience"]
         if is_gift:
-            pass  # gift pack prices: old Master File table no longer matches the sites (47.99 live vs 46.99), ask Clara
+            ref = PRICE_REF.get(site, {}).get(price_key(s, name) or "")
+            if ref and ref[1] >= 3 and ref[2] >= 0.6 and abs(price - ref[0]) > 0.01:
+                add(MED, "Kho / Giá", "Giá", f"Giá đang bán £{price:.2f}, trong khi {ref[1]} gift pack cùng loại đang live "
+                    f"phần lớn ({int(ref[2] * 100)}%) là £{ref[0]:.2f}", "Kiểm tra lại giá gift pack")
         elif site in SHIRT_PRICE:
             base = SHIRT_PRICE[site]
             if sku["aud_code"] == "KD" and has_word(fname, "kit") and socks:
                 exp = base - (NO_SOCKS_DISCOUNT[site] if socks == "no" else 0)
             elif sku["aud_code"] == "ADK" and socks and site in ADULT_KIT_WITH_SOCKS:
-                exp, sev = ADULT_KIT_WITH_SOCKS[site] - (NO_SOCKS_DISCOUNT[site] if socks == "no" else 0), MED
+                exp = ADULT_KIT_WITH_SOCKS[site] - (NO_SOCKS_DISCOUNT[site] if socks == "no" else 0)
             elif sku["aud_code"] in ("AD", "WM") and has_word(fname, "shirt"):
                 exp = base
             if exp:

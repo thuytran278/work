@@ -26,6 +26,7 @@ from pathlib import Path
 from check_new_listings import BASE_DIR, REPORT_DIR, get_tz
 import qa_fetch
 import qa_rules
+import qa_rules_extra
 
 SEV_ORDER = {qa_rules.HIGH: 0, qa_rules.MED: 1, qa_rules.LOW: 2}
 SEV_LABEL = {qa_rules.HIGH: "Cao", qa_rules.MED: "Trung bình", qa_rules.LOW: "Thấp"}
@@ -103,7 +104,25 @@ def fetch_all(listings, cfg, refresh, max_age_hours=None):
     return products, errors
 
 
+def refresh_price_ref():
+    """Live prices of every cached listing -> data/price_ref.json (used for gift pack prices)."""
+    cached = []
+    for path in qa_fetch.CACHE_DIR.glob("*/*.json"):
+        try:
+            d = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if isinstance(d, dict) and d.get("store"):
+            cached.append(d)
+    ref = qa_rules_extra.build_price_ref(cached)
+    if ref:
+        qa_rules_extra.PRICE_REF_PATH.write_text(json.dumps(ref, ensure_ascii=False, indent=1, sort_keys=True),
+                                                 encoding="utf-8")
+        qa_rules_extra.PRICE_REF = ref
+
+
 def run_checks(products):
+    refresh_price_ref()
     rows = []
     for d in products:
         for i in qa_rules.check_product(d):
