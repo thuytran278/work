@@ -165,6 +165,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 19/10 | 8 / 6 / 13 / 14 | KFK 1 / RFS 2 | KFK 262012 Bay^_^rn Home LS live nhưng sheet ghi Private (reported); RFS 104722/104728 Nottingham Forest "Sponsor" Home/Away: chữ Sponsor (từ cấm) trong tên/SEO/meta. RFS 6/6 thiếu câu bắt buộc. Báo tay: CFS SKU XAVI 7/MADDISON 10 Men ghi 2026/27 (khác 26/27) |
 | 20/10 | 4 / 30 / 0 / 0 | RFS 8 | RFS: 21/30 là listing cũ (ID 100xxx–103xxx) mới hiện lại trên shop (phát hiện qua diff). 100757 Chelsea Away Women SKU "AD_WM" (thiếu đoạn player); CAICEDO 25 + DONNARUMMA GK Kid SKU 25/26; CAICEDO Away ảnh Man City; 3 Chelsea gift bundle trùng SEO title; Memory of Messi shirt nói kèm shorts+socks. Báo nhầm: category tên đầy đủ cầu thủ (Moisés Caicedo, Enzo Fernández) |
 | 21/10 | 0 / 0 / 4 / 13 | CFS 1 | CFS 84630 Inter Miami Away Kids: tên 2027/28 nhưng SEO title 26/27 (MLS season, câu hỏi mở) |
+| 22/10 | 0 / 0 / 0 / 0 | – | Không có listing mới trên cả 4 web |
 
 **Báo cáo tổng hợp:**
 
