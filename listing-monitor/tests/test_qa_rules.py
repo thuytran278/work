@@ -155,10 +155,6 @@ class Rules(unittest.TestCase):
         d["store"]["sku"] = "KFK_LEE_HOLV_KD_No_26/27"
         self.assertNotIn(("Sleeve", "SKU"), groups(d))
 
-    def test_rfs_required_sentence(self):
-        d = product(site="RFS")
-        self.assertIn(("Thiếu nội dung bắt buộc", "Description"), groups(d))
-
     def test_gift_pack_noindex_is_intentional(self):
         d = product(page__robots="follow, noindex", store__sku="KFK_LEE_HO/AWGP_KD_No_26/27",
                     store__name="Leeds United Birthday Gift Pack – Home and Away Kids Football Kit 2026/27")

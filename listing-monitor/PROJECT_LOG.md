@@ -195,6 +195,8 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 9/10 | Chạy được trên máy tính của Clara: `run_daily.bat`/`run_daily.sh` (check ngày UK vừa kết thúc bằng `--yesterday`, tự mở Excel bằng `--open`), đọc key từ `.env` (đã chặn khỏi git, Claude Code không được đọc), `requirements.txt`, hướng dẫn `HUONG_DAN_MAY_TINH.md` |
 | 17/10 | SKU thủ môn dạng `AWGK`/`HOGK` khớp với tên "Away/Home Goalkeeper" (không còn báo nhầm Sai Home/Away/Third) |
 | 18/10 | Rule mới: "Team:" trong Kit Facts của description khác team của listing → Cao. Rule ảnh Kids/Adult nay xét cả tên file (tên file sai = Trung bình, alt sai = Cao). Alias USA = United States |
+| 22/10 | **Giá cho cả 4 web** (Clara 22/10): shirt KFK 29.99 / RFS 27.99 / RFK 27.49 / CFS 29.69; kids kit with socks = giá shirt; no socks rẻ hơn (KFK/CFS −3, RFS/RFK −2, theo giá đang chạy trên web); in sẵn +10, long sleeve +1, retro +1. Adult kit (ADK) KFK 33.99 / CFS 33.69 with socks (chưa xác nhận, báo Trung bình). Giá khác nhau giữa các size → Trung bình. Bỏ check giá gift pack KFK (bảng cũ 46.99, web đang 47.99) |
+| 22/10 | **Template mới** (Clara 22/10: template description/short của các web đã đổi hết, AI đọc thấy confuse là lỗi): bỏ rule câu bắt buộc RFS + 3 bullet RFS. Thêm Part E đối chiếu các ô Kit / Season / Sleeves / In the parcel (socks) / Colours / Sizes / Name and number / Player print với tên, SKU, attribute |
 
 ## 9. Hạn chế đã biết và câu hỏi còn mở
 

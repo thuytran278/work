@@ -90,6 +90,26 @@ class Extra(unittest.TestCase):
         d = product(store__images=imgs, store__sku="KFK_LEE_HO_AD_No_26/27")
         self.assertIn(("Sai đối tượng", "Ảnh (alt/tên file)"), groups(d))
 
+    def test_price_rules_all_sites(self):
+        ok = product(site="RFK", store__prices={"price": "2749"},
+                     store__sku="RFK_LEE_HO_KD_No_26/27")  # RFK kids kit with socks = shirt price
+        self.assertNotIn(("Kho / Giá", "Giá"), groups(ok))
+        nosock = product(site="CFS", store__prices={"price": "2969"}, store__sku="CFS_LEE_HO_KD_No_26/27",
+                         store__name="Leeds United Home Kids Football Kit 2026/27 (No Socks)")
+        self.assertIn(("Kho / Giá", "Giá"), groups(nosock))  # should be 26.69
+        ls = product(store__prices={"price": "3399"}, store__sku="KFK_LEE_HOLV_KD_No_26/27",
+                     store__name="Leeds United Home Kids Football Kit 2026/27 (With socks, Long Sleeve)")
+        self.assertIn(("Kho / Giá", "Giá"), groups(ls))  # should be 30.99
+
+    def test_template_fields_contradict_listing(self):
+        d = product(store__description=product()["store"]["description"]
+                    + "<h3>Kit Facts</h3><ul><li><strong>Kit:</strong> Away</li><li><strong>Sleeves:</strong> long</li>"
+                      "<li><strong>In the parcel:</strong> 1 shirt and matching shorts. Socks are not included.</li></ul>")
+        g = groups(d)
+        self.assertIn(("Sai Home/Away/Third", "Description"), g)
+        self.assertIn(("Sleeve", "Description"), g)
+        self.assertIn(("Sai tất (socks)", "Description"), g)
+
     def test_category_other_kit_type(self):
         d = product(store__categories=[{"name": "Leeds United"}, {"name": "Premier League"}, {"name": "Leeds Away"}])
         self.assertIn(("Category / Tag", "Category"), groups(d))

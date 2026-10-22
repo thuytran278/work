@@ -200,9 +200,6 @@ WORDS_TO_AVOID = [
 ]
 WORDS_TO_AVOID_RE = [(re.compile(rf"(?<![a-z]){p}(?![a-z])", re.I), fix) for p, fix in WORDS_TO_AVOID]
 
-RFS_REQUIRED = ("our package contains exactly what is shown in the product pictures "
-                "at the time you placed your order")
-
 # Brand-safe names used on the sites instead of the real club name.
 TEAM_ALIASES = {
     "arsenal": ["north london red"],
@@ -421,7 +418,8 @@ def check_product(data, extra=True):
                 "Thêm attribute Players")
         if p_words and not is_gift and not commemorative and not any(all(w in c for w in p_words) for c in cats_f):
             add(MED, "Sai cầu thủ", "Category", f"Thiếu player category cho '{p}'", "Thêm player category")
-        if re.search(r"personalisation options|how to add personalisation|add your own name", desc, re.I):
+        if re.search(r"personalisation options|how to add personalisation|add your own name|select .?yes.? for personali",
+                     desc, re.I):
             add(HIGH, "Sai cầu thủ", "Description",
                 "Listing cầu thủ (in sẵn) nhưng description vẫn có phần Personalisation Options",
                 "Xoá phần Personalisation Options / How to add personalisation")
@@ -488,16 +486,8 @@ def check_product(data, extra=True):
                 "; ".join(f"'{h[0]}' ({h[2]})" for h in hits),
                 "; ".join(f"{h[0]} -> {h[1]}" for h in hits))
 
-    # ---------- Site-required copy
-    if site == "RFS":
-        if RFS_REQUIRED not in fold(desc):
-            add(MED, "Thiếu nội dung bắt buộc", "Description",
-                "Thiếu câu bắt buộc của RFS: 'Our package contains exactly what is shown in the product pictures at the time you placed your order.'",
-                "Thêm câu bắt buộc vào description")
-        n_li = len(re.findall(r"<li", s.get("short_description") or "", re.I))
-        if n_li and n_li != 3:
-            add(LOW, "Thiếu nội dung bắt buộc", "Short description", f"RFS short description có {n_li} bullet (quy tắc: đúng 3)",
-                "Sửa lại còn 3 bullet")
+    # Site-required copy (RFS "Our package contains..." sentence, 3 short-description bullets) belonged to the
+    # old templates; Clara 22/10: all templates changed, so these rules were removed.
 
     # ---------- SEO fields
     if blocked:

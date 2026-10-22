@@ -10,7 +10,7 @@ check_extra(data) returns issues in the same shape as qa_rules.check_product.
 import html
 import re
 
-from qa_rules import (HIGH, LOW, MED, attr, fold, fuzzy_contains, has_word, kits_in, parse_sku,
+from qa_rules import (HIGH, LOW, MED, YEAR_RE, attr, fold, fuzzy_contains, has_word, kits_in, parse_sku,
                       seasons_in, snippet, strip_html)
 
 # ---------------------------------------------------------------- Part A: KFK master file rules
@@ -51,10 +51,12 @@ GENERIC_NAME_WORDS = {
     'cheap', 'fan', 'version', 'edition', 'special', 'long', 'sleeve', 'set', 'full',
 }
 
-# Prices (KFK Master File section 9). Selling price, before printing/retro surcharges.
-KFK_PRICE = {"kids_no_socks": 26.99, "kids_with_socks": 29.99, "adult_kit_no_socks": 30.99,
-             "adult_kit_with_socks": 33.99, "shirt": 29.99}
-KFK_BUNDLE_PRICE = {"kids_no_socks": 46.99, "kids_with_socks": 49.99, "men_shirt": 49.99, "printed": 64.99}
+# Prices (Clara 22/10). Shirt price per site; kids kit with socks = shirt price; no socks is cheaper
+# (KFK/CFS -3, RFS/RFK -2, as on the live sites); printed +10, long sleeve +1, retro +1 (both: +2).
+SHIRT_PRICE = {"KFK": 29.99, "RFS": 27.99, "RFK": 27.49, "CFS": 29.69}
+NO_SOCKS_DISCOUNT = {"KFK": 3, "RFS": 2, "RFK": 2, "CFS": 3}
+# Adult kits (ADK) with socks, as on the live sites (not in Clara's rule yet: MED only)
+ADULT_KIT_WITH_SOCKS = {"KFK": 33.99, "CFS": 33.69}
 
 FREE_PIN_TEAMS = ['Spain', 'France', 'Argentina', 'England', 'Brazil', 'Portugal', 'Scotland']
 
@@ -114,6 +116,16 @@ GENERIC_CATEGORY_TAG = re.compile(
 
 def tokens(text):
     return {w for w in re.findall(r"[a-z]+", fold(text)) if len(w) >= 3 and w not in GENERIC_NAME_WORDS}
+
+
+def kit_socks(s, name):
+    """'with' / 'no' / None, from the name first, then the Kit Option attribute."""
+    for text in (name, " ".join(attr(s, "kit option"))):
+        if re.search(r"\bno[\s-]socks?\b|without socks", text, re.I):
+            return "no"
+        if re.search(r"\bwith socks?\b", text, re.I):
+            return "with"
+    return None
 
 
 def site_price(s):
@@ -197,32 +209,33 @@ def check_extra(data):
         add(MED, "SKU", "SKU", f"SKU có đuôi '{s['sku'].rsplit('-', 1)[1]}' ({s['sku']}): dấu hiệu duplicate WooCommerce",
             "Bỏ đuôi -1/-2, kiểm tra có listing trùng không")
 
-    # ---------- A6. Price (KFK) + Budget attribute (all sites)
+    # ---------- A6. Price (all sites) + Budget attribute
     price = site_price(s)
-    if site == "KFK" and sku and price:
-        socks = "with" if "with socks" in fname else "no" if "no socks" in fname else None
-        exp, aud = None, sku["audience"]
+    if sku and price:
+        socks = kit_socks(s, name)
+        exp, sev, aud = None, HIGH, sku["audience"]
         if is_gift:
-            if sku["player"] and len(re.findall(r"\d+", sku["player"])) > 1:
-                exp = None  # 2 printed players: not in the Master File price table
-            elif sku["player"]:
-                exp = KFK_BUNDLE_PRICE["printed"]
-            elif aud == "adult":
-                exp = KFK_BUNDLE_PRICE["men_shirt"]
-            elif socks:
-                exp = KFK_BUNDLE_PRICE[f"kids_{socks}_socks"]
-        else:
-            if sku["aud_code"] == "KD" and socks and has_word(fname, "kit"):
-                exp = KFK_PRICE[f"kids_{socks}_socks"]
-            elif sku["aud_code"] == "ADK" and socks:
-                exp = KFK_PRICE[f"adult_kit_{socks}_socks"]
+            pass  # gift pack prices: old Master File table no longer matches the sites (47.99 live vs 46.99), ask Clara
+        elif site in SHIRT_PRICE:
+            base = SHIRT_PRICE[site]
+            if sku["aud_code"] == "KD" and has_word(fname, "kit") and socks:
+                exp = base - (NO_SOCKS_DISCOUNT[site] if socks == "no" else 0)
+            elif sku["aud_code"] == "ADK" and socks and site in ADULT_KIT_WITH_SOCKS:
+                exp, sev = ADULT_KIT_WITH_SOCKS[site] - (NO_SOCKS_DISCOUNT[site] if socks == "no" else 0), MED
             elif sku["aud_code"] in ("AD", "WM") and has_word(fname, "shirt"):
-                exp = KFK_PRICE["shirt"]
+                exp = base
             if exp:
-                exp += (1 if is_retro else 0) + (10 if sku["player"] else 0) + (1 if sku["long_sleeve"] else 0)
+                exp += ((1 if is_retro else 0) + (10 if sku["player"] else 0)
+                        + (1 if sku["long_sleeve"] or re.search(r"long[\s-]sleeve", name, re.I) else 0))
         if exp and abs(price - exp) > 0.01:
-            add(MED, "Kho / Giá", "Giá", f"Giá đang bán £{price:.2f}, bảng giá Master File là £{exp:.2f}",
-                "Kiểm tra lại giá (Master File mục 9)")
+            parts = ["giá gốc"] + [w for w, on in (("no socks", socks == "no"), ("in sẵn +10", sku["player"]),
+                                                   ("long sleeve +1", sku["long_sleeve"]), ("retro +1", is_retro)) if on]
+            add(sev, "Kho / Giá", "Giá", f"Giá đang bán £{price:.2f}, đúng ra là £{exp:.2f} ({', '.join(parts)})",
+                "Sửa giá tất cả variation theo bảng giá")
+        rng = (s.get("prices") or {}).get("price_range") or {}
+        if rng.get("min_amount") and rng.get("max_amount") and rng["min_amount"] != rng["max_amount"] and not is_gift:
+            add(MED, "Kho / Giá", "Variation", f"Các size có giá khác nhau (£{int(rng['min_amount']) / 100:.2f} – "
+                f"£{int(rng['max_amount']) / 100:.2f})", "Đặt cùng 1 giá cho mọi size")
     budget = attr(s, "budget")
     if budget and price:
         b = budget[0]
@@ -391,6 +404,7 @@ def check_extra(data):
 
     check_extra_c(data, add, name, desc, short, meta, sku, is_gift, team)
     check_player_seo(data, add, name, seo_title, sku, is_gift)
+    check_template_fields(data, add, name, sku, is_gift)
     return issues
 
 
@@ -679,3 +693,79 @@ def check_extra_batch(products):
                 out.append((d, {"severity": MED, "group": "Trùng lặp", "field": "Tên sản phẩm",
                                 "detail": f"Trùng tên với listing khác ({ids})", "fix": "Kiểm tra listing trùng, giữ 1 bản"}))
     return out
+
+
+# ---------------------------------------------------------------- Part E: labelled fields of the new templates (22/10)
+# KFK "Product Details", CFS "Kit Facts", short descriptions "What you get / Includes": every labelled value
+# must agree with the listing. Anything a reader (or an AI) would find contradictory is an error.
+def template_lines(raw):
+    t = html.unescape(re.sub(r"<[^>]+>", "\n", raw or ""))
+    return re.sub(r"[ \t]*\n\s*", "\n", t)
+
+
+def field_value(text, *labels):
+    for label in labels:
+        m = re.search(rf"(?im)^\s*{label}\s*:\s*\n?\s*([^\n]+)", text)
+        if m:
+            return m.group(1).strip()
+    return ""
+
+
+def check_template_fields(data, add, name, sku, is_gift):
+    s = data["store"]
+    if is_gift:
+        return
+    desc, short = template_lines(s.get("description")), template_lines(s.get("short_description"))
+    both = desc + "\n" + short
+    long_name = bool(re.search(r"long[\s-]sleeve", name, re.I) or (sku and sku["long_sleeve"]))
+
+    kit_v = field_value(desc, "Kit", "Kit type")
+    if kit_v and kits_in(kit_v) and kits_in(name) and not kits_in(kit_v) & kits_in(name):
+        add(HIGH, "Sai Home/Away/Third", "Description", f"Description ghi Kit: {kit_v}, nhưng tên là "
+            f"{'/'.join(sorted(kits_in(name)))}", "Sửa ô Kit trong description")
+
+    season_v = field_value(desc, "Season")
+    if season_v:
+        got = seasons_in(season_v) | set(YEAR_RE.findall(season_v))
+        want = seasons_in(name) | set(YEAR_RE.findall(name))
+        if got and want and not got & want:
+            add(HIGH, "Sai season", "Description", f"Description ghi Season: {season_v}, tên sản phẩm là {', '.join(sorted(want))}",
+                "Sửa ô Season trong description")
+
+    sleeve_v = field_value(desc, "Sleeves", "Sleeve length")
+    if sleeve_v and (("long" in sleeve_v.lower()) != long_name):
+        add(HIGH, "Sleeve", "Description", f"Description ghi Sleeves: {sleeve_v}, nhưng tên là "
+            f"{'Long Sleeve' if long_name else 'tay ngắn'}", "Sửa ô Sleeves trong description")
+
+    socks = kit_socks(s, name)
+    if socks == "with" and re.search(r"socks (are )?not included|without socks|no socks", both, re.I):
+        add(HIGH, "Sai tất (socks)", "Description", "Listing With Socks nhưng description/short description ghi không có tất: "
+            + snippet(both, r"socks (are )?not included|without socks|no socks", 40), "Sửa phần In the parcel / What you get")
+
+    colours_v = field_value(desc, "Colours", "Main colours")
+    name_cols = {c for c in KIT_COLOURS if re.search(rf"\b{c}\b", name, re.I)}
+    if name_cols:
+        where = colours_v or " ".join(desc.split()[:60])
+        cols = {c for c in KIT_COLOURS if re.search(rf"\b{c}\b", where, re.I)}
+        if cols and not name_cols & cols:
+            add(MED, "Màu", "Description", f"Tên ghi màu {', '.join(sorted(name_cols))} nhưng description ghi "
+                f"{', '.join(sorted(cols))}: \"{(colours_v or snippet(where, '|'.join(sorted(cols)), 40))[:90]}\"",
+                "Sửa màu trong description cho đúng mẫu áo")
+
+    sizes_v = field_value(both, "Sizes")
+    aud = sku and sku["audience"]
+    if sizes_v and aud in ("kids", "adult", "women"):
+        says_kids = bool(re.search(r"\bkids?|ages?\b|yrs|\b(16|18|20|22|24|26|28)\b", sizes_v, re.I))
+        says_adult = bool(re.search(r"\badult|\bmen|\b(S|M|L|XL|XXL)\b", sizes_v))
+        if (aud == "kids" and says_adult and not says_kids) or (aud != "kids" and says_kids and not says_adult):
+            add(HIGH, "Sai đối tượng", "Description", f"Listing {aud} nhưng description ghi Sizes: {sizes_v}",
+                "Sửa ô Sizes trong description")
+
+    nn = field_value(both, "Name and number", "Name & number")
+    if sku and sku["player"] and nn and re.search(r"optional|available as an option|can be added|choose", nn, re.I):
+        add(HIGH, "Sai cầu thủ", "Description", f"Listing in sẵn {sku['player']} nhưng ghi Name and number: {nn[:80]}",
+            "Sửa thành: tên số in sẵn, không đổi được")
+    if sku and not sku["player"] and re.search(r"pre-?printed with|player print:", both, re.I):
+        add(HIGH, "Sai cầu thủ", "Description", "Listing không in sẵn nhưng description có Player print / Pre-printed: "
+            + snippet(both, r"pre-?printed with|player print:", 40), "Xoá phần Player print (copy từ listing cầu thủ)")
+
