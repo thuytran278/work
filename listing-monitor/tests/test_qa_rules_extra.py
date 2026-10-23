@@ -126,6 +126,23 @@ class Extra(unittest.TestCase):
         self.assertIn(("Lỗi chính tả", "Trang sản phẩm (option / tab / description)"), g)
         self.assertNotIn(("Sai team", "Trang sản phẩm (option / tab / description)"), g)  # review + delivery list
 
+    def test_price_on_photo(self):
+        d = product()
+        d["page"]["image_price"] = [49.99]
+        self.assertIn(("Kho / Giá", "Giá trên ảnh"), groups(d))
+        d["page"]["image_price"] = [29.99]
+        self.assertNotIn(("Kho / Giá", "Giá trên ảnh"), groups(d))
+
+    def test_christmas_image_required_on_kfk(self):
+        d = product()
+        d["published_at"] = "2026-10-24 10:00"
+        self.assertIn(("Christmas campaign", "Ảnh"), groups(d))
+        d["store"]["images"].append({"alt": "Leeds xmas image", "src": "https://x/Leeds-Xmas-Gift-Gen-Image.webp"})
+        self.assertNotIn(("Christmas campaign", "Ảnh"), groups(d))
+        d["published_at"] = "2026-10-01 10:00"
+        d["store"]["images"].pop()
+        self.assertNotIn(("Christmas campaign", "Ảnh"), groups(d))
+
     def test_category_other_kit_type(self):
         d = product(store__categories=[{"name": "Leeds United"}, {"name": "Premier League"}, {"name": "Leeds Away"}])
         self.assertIn(("Category / Tag", "Category"), groups(d))

@@ -1,2 +1,4 @@
 openpyxl
 tzdata; sys_platform == "win32"
+pillow
+pytesseract

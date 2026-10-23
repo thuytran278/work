@@ -12,5 +12,12 @@
   "request_delay": {
     "default": 0.3,
     "RFS": 3
+  },
+  "christmas_campaign": {
+    "KFK": {
+      "from": "2026-10-23",
+      "until": "2026-12-31",
+      "note": "Clara 23/10: moi listing moi (plain + gift pack) tren KFK phai co anh AI Christmas (ten file/alt co Xmas/Christmas)"
+    }
   }
 }

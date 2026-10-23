@@ -87,6 +87,37 @@ def parse_body(page_html):
     return re.sub(r"[ \t\u00a0]*\n\s*", "\n", text).strip()
 
 
+def image_price(src, timeout=30):
+    """Prices printed on a product photo (gift pack "SPECIAL OFFER £49.99" badge), read with OCR.
+    None when OCR is not installed or the image cannot be read; [] when no price is printed."""
+    try:
+        import io
+        import pytesseract
+        from PIL import Image, ImageOps
+    except ImportError:
+        return None
+    try:
+        req = urllib.request.Request(src, headers={"User-Agent": USER_AGENT})
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            im = Image.open(io.BytesIO(resp.read())).convert("RGB")
+    except Exception:
+        return None
+    w, h = im.size
+    # the badge sits in a bottom corner; whole image last
+    for crop in (im.crop((0, int(h * 0.78), int(w * 0.42), h)), im.crop((int(w * 0.58), int(h * 0.78), w, h)), im):
+        g = ImageOps.grayscale(crop).resize((crop.width * 3, crop.height * 3))
+        for img in (g, ImageOps.autocontrast(g).point(lambda p: 255 if p > 150 else 0)):
+            try:
+                text = pytesseract.image_to_string(img, config="--psm 6")
+            except Exception:
+                return None
+            found = (re.findall(r"[£€]\s?(\d{2,3})\s?[.,]\s?(\d{2})", text)
+                     or re.findall(r"(?<!\d)(\d{2,3})[.,](\d{2})(?!\d)", text))
+            if found:
+                return sorted({float(f"{a}.{b}") for a, b in found})
+    return []
+
+
 def cached(site, product_id):
     path = CACHE_DIR / site / f"{product_id}.json"
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
@@ -158,6 +189,8 @@ def fetch_product(site, base_url, product_id, url, refresh=False, delay=0.3, sto
         data["page"] = {"seo_title": "", "meta_description": "", "robots": "", "canonical": "", "blocked": True}
     imgs = data["store"].get("images") or []
     data["page"]["main_image_ok"] = image_ok(imgs[0].get("src")) if imgs else None
+    if imgs:
+        data["page"]["image_price"] = image_price(imgs[0].get("src"))
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
     time.sleep(delay)  # be gentle with the sites' firewalls (RFS blocks bursts)

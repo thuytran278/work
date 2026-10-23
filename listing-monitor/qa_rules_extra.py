@@ -99,6 +99,13 @@ def load_price_ref():
 
 PRICE_REF = load_price_ref()
 
+try:
+    CAMPAIGNS = json.loads((Path(__file__).resolve().parent / "config.json").read_text(encoding="utf-8")).get(
+        "christmas_campaign", {})
+except (OSError, ValueError):
+    CAMPAIGNS = {}
+XMAS_RE = re.compile(r"x-?mas|christmas|santa|festive", re.I)
+
 FREE_PIN_TEAMS = ['Spain', 'France', 'Argentina', 'England', 'Brazil', 'Portugal', 'Scotland']
 
 # Reported Club Status sheet, KFK column (as in kfk_rules.py, 19 Jul 2026).
@@ -453,6 +460,7 @@ def check_extra(data):
     check_extra_c(data, add, name, desc, short, meta, sku, is_gift, team)
     check_player_seo(data, add, name, seo_title, sku, is_gift)
     check_template_fields(data, add, name, sku, is_gift)
+    check_campaign_and_photo_price(data, add, name, site, is_gift)
     if (data.get("page") or {}).get("body"):
         check_page_body(data, add, name, sku, is_gift, is_retro, team)
     else:
@@ -971,4 +979,27 @@ def check_page_body(data, add, name, sku, is_gift, is_retro, team):
         lines = body_lines(body, re.escape(typos[0]))
         add(MED, "Lỗi chính tả", where, f"Sai chính tả: {', '.join(typos)}" + (f' ("{lines[0][:90]}")' if lines else ""),
             "Sửa chính tả")
+
+
+# ---------------------------------------------------------------- Part G: KFK Christmas campaign + price on photos (23/10)
+def check_campaign_and_photo_price(data, add, name, site, is_gift):
+    s, page = data["store"], data.get("page") or {}
+    # Price printed on the main photo must be the selling price (KFK task 23/10: "live photos vs sale price")
+    shown = page.get("image_price")
+    price = site_price(s)
+    if shown and price:
+        regular = (s.get("prices") or {}).get("regular_price")
+        ok = {round(price, 2)} | ({int(regular) / 100} if regular else set())
+        if not any(abs(x - y) < 0.01 for x in shown for y in ok):
+            add(HIGH, "Kho / Giá", "Giá trên ảnh", f"Ảnh chính ghi £{', £'.join(f'{x:.2f}' for x in shown)} nhưng giá đang "
+                f"bán là £{price:.2f}", "Làm lại ảnh với giá đúng (hoặc sửa giá nếu ảnh đúng)")
+
+    # Christmas campaign: every listing published in the campaign window carries a Christmas AI image
+    camp = CAMPAIGNS.get(site)
+    published = (data.get("published_at") or "")[:10]
+    if camp and published and camp["from"] <= published <= camp["until"]:
+        imgs = s.get("images") or []
+        if not any(XMAS_RE.search((i.get("src") or "") + " " + (i.get("alt") or "")) for i in imgs):
+            add(HIGH, "Christmas campaign", "Ảnh", "Listing đăng trong đợt Christmas nhưng chưa có ảnh AI Christmas "
+                "(không có ảnh nào tên/alt chứa Xmas/Christmas)", "Thêm ảnh AI Christmas (đặt tên file/alt có chữ Xmas)")
 
