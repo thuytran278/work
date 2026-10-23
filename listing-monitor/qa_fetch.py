@@ -12,6 +12,7 @@ import json
 import re
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 
 from check_new_listings import BASE_DIR, USER_AGENT, http_get
@@ -97,7 +98,7 @@ def image_price(src, timeout=30):
     except ImportError:
         return None
     try:
-        req = urllib.request.Request(src, headers={"User-Agent": USER_AGENT})
+        req = urllib.request.Request(safe_url(src), headers={"User-Agent": USER_AGENT})
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             im = Image.open(io.BytesIO(resp.read())).convert("RGB")
     except Exception:
@@ -149,6 +150,11 @@ def prefetch_store(base_url, ids):
 FREE_PIN_TEAMS = ("spain", "france", "argentina", "england", "brazil", "portugal", "scotland")
 
 
+def safe_url(url):
+    """Image file names can contain "–" or accents: percent-encode them (keep what is already encoded)."""
+    return urllib.parse.quote(url, safe=":/?&=%#+,;@~")
+
+
 def fetch_text(url, timeout=40):
     """Full page as text (only used where the <head> is not enough)."""
     text, _ = http_get(url, timeout=timeout, retry_waits=(20, 60))
@@ -159,7 +165,7 @@ def image_ok(src, timeout=20):
     """True if the image URL answers 200 with an image content type."""
     if not src:
         return None
-    req = urllib.request.Request(src, headers={"User-Agent": USER_AGENT, "Range": "bytes=0-1023"})
+    req = urllib.request.Request(safe_url(src), headers={"User-Agent": USER_AGENT, "Range": "bytes=0-1023"})
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             return resp.status in (200, 206) and resp.headers.get("Content-Type", "").startswith("image")

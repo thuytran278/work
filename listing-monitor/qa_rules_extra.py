@@ -990,7 +990,7 @@ def check_campaign_and_photo_price(data, add, name, site, is_gift):
     if shown and price:
         regular = (s.get("prices") or {}).get("regular_price")
         ok = {round(price, 2)} | ({int(regular) / 100} if regular else set())
-        if not any(abs(x - y) < 0.01 for x in shown for y in ok):
+        if not any(abs(x - y) < 0.06 for x in shown for y in ok):  # OCR can misread the last digit (67.48 for 67.49)
             add(HIGH, "Kho / Giá", "Giá trên ảnh", f"Ảnh chính ghi £{max(shown):.2f} nhưng giá đang "
                 f"bán là £{price:.2f}", "Làm lại ảnh với giá đúng (hoặc sửa giá nếu ảnh đúng)")
 
