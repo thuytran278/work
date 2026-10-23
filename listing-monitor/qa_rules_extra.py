@@ -1020,7 +1020,7 @@ def check_page_body(data, add, name, sku, is_gift, is_retro, team):
 
 
 # ---------------------------------------------------------------- Part G: KFK Christmas campaign + price on photos (23/10)
-OCR_LOOKALIKE = {frozenset(p) for p in (("1", "4"), ("1", "7"), ("8", "9"), ("5", "9"), ("3", "8"), ("0", "8"))}
+OCR_LOOKALIKE = {frozenset(p) for p in (("1", "4"), ("1", "7"), ("8", "9"), ("5", "9"), ("3", "8"), ("0", "8"), ("0", "6"))}
 
 
 def ocr_same_price(read, real):

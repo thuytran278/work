@@ -144,11 +144,14 @@ def image_price(src, timeout=30, im=None):
                 vals = set()
                 for a, b in found:
                     vals.add(float(f"{a}.{b}"))
-                    if len(a) == 3 and a[0] in "2348":
-                        vals.add(float(f"{a[1:]}.{b}"))  # "£" read as a digit: "847.99" is £47.99
+                    if len(a) == 3:
+                        vals.add(float(f"{a[1:]}.{b}"))  # "£" or a stray letter read as a digit: "847.99" is £47.99
                     if b[0] == "9" and b != "99":
                         vals.add(float(f"{a[-2:] if len(a) == 3 else a}.99"))  # last 9 misread: "49.95" is £49.99
-                return sorted(v for v in vals if v < 200)
+                # gift packs and kits cost £10–£200: "6.69" is a cut-off "£46.69" (badge text "2 shirts only" next to it)
+                vals = sorted(v for v in vals if 10 <= v < 200)
+                if vals:
+                    return vals
     return []
 
 
