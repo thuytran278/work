@@ -166,6 +166,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 20/10 | 4 / 30 / 0 / 0 | RFS 8 | RFS: 21/30 là listing cũ (ID 100xxx–103xxx) mới hiện lại trên shop (phát hiện qua diff). 100757 Chelsea Away Women SKU "AD_WM" (thiếu đoạn player); CAICEDO 25 + DONNARUMMA GK Kid SKU 25/26; CAICEDO Away ảnh Man City; 3 Chelsea gift bundle trùng SEO title; Memory of Messi shirt nói kèm shorts+socks. Báo nhầm: category tên đầy đủ cầu thủ (Moisés Caicedo, Enzo Fernández) |
 | 21/10 | 0 / 0 / 4 / 13 | CFS 1 | CFS 84630 Inter Miami Away Kids: tên 2027/28 nhưng SEO title 26/27 (MLS season, câu hỏi mở) |
 | 22/10 | 0 / 0 / 0 / 0 | – | Không có listing mới trên cả 4 web |
+| 23/10 (audit) | 1.192 / 696 / 741 / 1.546 | KFK 326 / RFS 203 / RFK 112 / CFS 147 | Check toàn bộ sản phẩm 2026, 2026/27, 2027/28 (4.175) với mọi rule mới: `reports/season_2026_27_28/`. Nhiều nhất: KFK size người lớn trên listing Kids (137), club bị report (117); RFS listing in sẵn vẫn có Personalisation (156); CFS alt ảnh sai đối tượng (97); RFK giá no socks bán giá with socks (32) |
 
 **Báo cáo tổng hợp:**
 
@@ -210,6 +211,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 23/10 | OCR: chấp nhận tối đa 2 chữ số dễ đọc nhầm (1↔4, 1↔7, 8↔9, 5↔9, 3↔8, 0↔8) — font hẹp của RFK đọc "17.49" thay 47.49. Quét giá ảnh gift pack RFS/RFK: 4 lệch thật (RFS 97266, 94742, 90706, 81335), 5 RFK là đọc nhầm (đã xem tận mắt) |
 | 23/10 | Dấu màu ảnh tách sáng/tối (xanh nhạt Lazio Home ≠ navy Third): 27 ô màu. Rõ ràng (giống áo khác ≥75%, giống áo cùng loại <50%) → Cao; chỉ có 1 listing loại khác trùng ảnh ≥85% (không biết bên nào sai) → Trung bình "1 trong 2 listing dùng nhầm ảnh". Lượt quét đầu (4.120 ảnh): Switzerland CFS 69011, Crystal Palace CFS 82227 / RFK 118873, Australia RFS 90337, Porto RFS 100404 ↔ RFK 112328, Lazio RFK 125947 ↔ CFS 80637 |
 | 23/10 | OCR CFS: badge "2 shirts only £46.69" làm OCR đọc thành 6.69 / 116.69 / 72.09 → bỏ số < £10, thử bỏ chữ số thừa đầu, thêm cặp 0↔6. Quét giá ảnh 405 gift pack RFS/RFK/CFS: lệch thật chỉ 4 (RFS), CFS và RFK 0 (đã xem tận mắt các ảnh bị báo) |
+| 23/10 | Check toàn trang, giảm báo nhầm: câu lặp trên ≥10% trang của 1 web (giới thiệu shop, badge…) không tính cho check đối tượng/team (`data/boilerplate.json`); bỏ ô chọn size và link sản phẩm khác ("Ajax Kids Kit"); dòng tự khớp tên ("Yellow Goalkeeper Home") không tính sai loại áo; personalise trong description chỉ báo 1 lần; ảnh gia đình "Men and Kids" không tính sai đối tượng |
 
 ## 9. Hạn chế đã biết và câu hỏi còn mở
 

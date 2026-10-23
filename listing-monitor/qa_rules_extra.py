@@ -647,8 +647,11 @@ def check_extra_c(data, add, name, desc, short, meta, sku, is_gift, team):
         bad, in_alt = [], False
         for src, alt in pimgs:
             for text in (alt, fname_text(src)):
-                if (aud == "adult" and re.search(r"\b(kids?|children|child|boys?|girls?|junior|youth)\b", text, re.I)
-                        or aud == "kids" and re.search(r"\bmen'?s?\b|\badult\b", text, re.I)):
+                kid_w = re.search(r"\b(kids?|children|child|boys?|girls?|junior|youth)\b", text, re.I)
+                adult_w = re.search(r"\bmen'?s?\b|\badult\b", text, re.I)
+                if kid_w and adult_w:
+                    continue  # family photo: "Home for Men and Kids"
+                if aud == "adult" and kid_w or aud == "kids" and adult_w:
                     bad.append(text[:60])
                     in_alt = in_alt or text == alt
         if bad:
@@ -917,19 +920,51 @@ def product_text(body, own_name=""):
             continue  # testimonial / rating widget: customers' words, not product info
         if any("working days" in x.lower() for x in lines[i + 1:i + 4]) or re.search(r"destinations|countries", st, re.I):
             continue  # delivery table: "Germany / 9–13 working days"
-        if re.fullmatch(r"(?:choose\s+)?(?:home|away|third|goalkeeper)\s+kit\s+size", st, re.I):
-            continue  # size pickers of a "buy together" bundle widget
+        if len(st.split()) <= 4 and re.search(r"\bsize$", st, re.I):
+            continue  # "Away Women Size", "Kids Size": size pickers of a bundle widget
+        if len(st.split()) <= 5 and re.fullmatch(r"[\w .'&-]+\s+(?:men|mens|kids?|women|adult)\s+(?:kits?|shirts?)", st, re.I) \
+                and not st.endswith("."):
+            continue  # "Ajax Kids Kit", "Barcelona Men Shirt": links to other products
+        if re.match(r"choose\b", st, re.I) or re.fullmatch(
+                r"(?:home|away|third|goalkeeper|men'?s?|kids?|adult|women'?s?)(?:\s+kit)?\s+size", st, re.I):
+            continue  # size pickers of a "buy together" bundle widget ("Choose Kids Size", "Choose Home Kit S")
         if (re.search(r"\b(gift (pack|bundle|set)|football (kit|shirt)s?)\b", st, re.I) and not st.endswith(".")
-                and len(st.split()) <= 20 and fold(st) != own and not own.startswith(fold(st))):
+                and len(st.split()) <= 30 and fold(st) != own and not own.startswith(fold(st))):
             continue  # title of another product (cross-sell / bundle widget)
         keep.append(st)
     return "\n".join(keep)
 
 
+BOILERPLATE_PATH = Path(__file__).resolve().parent / "data" / "boilerplate.json"
+try:
+    BOILERPLATE = {k: set(v) for k, v in json.loads(BOILERPLATE_PATH.read_text(encoding="utf-8")).items()}
+except (OSError, ValueError):
+    BOILERPLATE = {}
+
+
+def build_boilerplate(products, share=0.1, min_pages=20):
+    """Lines that sit on a large share of a site's product pages (shop intro "...premium kids football kits",
+    trust badges, generic tabs). Used only for the audience / team checks: a shared option form with a wrong kit
+    label is also on many pages and must still be caught by the kit check."""
+    per_site = {}
+    for d in products:
+        body = (d.get("page") or {}).get("body")
+        if body:
+            per_site.setdefault(d["site"], []).append({ln.strip() for ln in body.split("\n") if len(ln.split()) >= 5})
+    out = {}
+    for site, pages in per_site.items():
+        if len(pages) >= min_pages:
+            c = Counter(ln for p in pages for ln in p)
+            out[site] = sorted(ln for ln, n in c.items() if n >= share * len(pages))
+    return out
+
+
 def check_page_body(data, add, name, sku, is_gift, is_retro, team):
     s, body = data["store"], product_text(data["page"]["body"], name)
+    common = BOILERPLATE.get(data["site"], set())
+    own_body = "\n".join(ln for ln in body.split("\n") if ln not in common)
     # real sentences only: menus, tags, "Shop England World Cup 2026 Kits" links and short labels left out
-    sentences = "\n".join(ln for ln in body.split("\n")
+    sentences = "\n".join(ln for ln in own_body.split("\n")
                           if len(ln.split()) >= 10 or len(ln.split()) >= 5 and re.search(r"[.!?:]$", ln))
     where = "Trang sản phẩm (option / tab / description)"
 
@@ -941,6 +976,8 @@ def check_page_body(data, add, name, sku, is_gift, is_retro, team):
             k = kits_in(m.group(1))
             if k and not k <= name_kits:
                 line = body[body.rfind("\n", 0, m.start()) + 1: (body.find("\n", m.end()) + 1 or len(body) + 1) - 1]
+                if kits_in(line) - {"training"} <= name_kits:
+                    continue  # read as a whole the line agrees ("Yellow Goalkeeper Home" = one goalkeeper kit)
                 bad.append(line.strip()[:90])
         if bad:
             add(HIGH, "Sai Home/Away/Third", where,
@@ -950,7 +987,7 @@ def check_page_body(data, add, name, sku, is_gift, is_retro, team):
     # 2. Another audience (kids page showing a Men's size chart, men's page saying kids kit...)
     aud = sku and "/" not in (sku["aud_code"] or "") and sku["audience"]
     if aud in AUD_WORDS and not is_gift:
-        bad = body_lines(body, AUD_WORDS[aud] + AUD_CTX)
+        bad = body_lines(own_body, AUD_WORDS[aud] + AUD_CTX)
         if bad:
             add(HIGH, "Sai đối tượng", where, f"Listing {aud} nhưng trang ghi: " + "; ".join(f'"{b[:90]}"' for b in bad[:3]),
                 "Sửa chữ / bảng size cho đúng đối tượng")
@@ -1000,8 +1037,10 @@ def check_page_body(data, add, name, sku, is_gift, is_retro, team):
 
     # 7. Print status
     if sku and sku["player"]:
-        bad = body_lines(body, r"personalis(e|ation) for|click .yes. for personali|select .yes. for personali|"
-                               r"name and number:\s*(optional|available)")
+        in_desc = fold(strip_html(s.get("description")))
+        bad = [ln for ln in body_lines(body, r"personalis(e|ation) for|click .yes. for personali|select .yes. for personali|"
+                                             r"name and number:\s*(optional|available)")
+               if fold(ln) not in in_desc]  # the description itself is already reported by the Description rule
         if bad:
             add(HIGH, "Sai cầu thủ", where, f"Listing in sẵn {sku['player']} nhưng trang vẫn cho/nhắc personalise: \"{bad[0][:90]}\"",
                 "Bỏ option / đoạn personalisation trên listing in sẵn")

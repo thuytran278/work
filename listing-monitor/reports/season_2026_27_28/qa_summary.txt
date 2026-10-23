@@ -1,0 +1,30 @@
+QA LISTING MOI season_2026_27_28
+
+KFK: 1192 listing, 326 listing co loi CAO, 1062 listing co loi
+   - Sai đối tượng: 160 loi
+   - Club bị report (KFK): 117 loi
+   - Words to Avoid: 25 loi
+   - SEO: 11 loi
+   - Sai tất (socks): 7 loi
+RFS: 696 listing, 203 listing co loi CAO, 696 listing co loi
+   - Sai cầu thủ: 156 loi
+   - Sai Home/Away/Third: 59 loi
+   - Sai loại Shirt/Kit: 40 loi
+   - Sai đối tượng: 27 loi
+   - Ảnh: 14 loi
+RFK: 741 listing, 112 listing co loi CAO, 741 listing co loi
+   - Sai Home/Away/Third: 53 loi
+   - Kho / Giá: 32 loi
+   - Sai đối tượng: 16 loi
+   - Sai season: 14 loi
+   - Words to Avoid: 10 loi
+CFS: 1546 listing, 147 listing co loi CAO, 1175 listing co loi
+   - Sai đối tượng: 98 loi
+   - Sai Home/Away/Third: 26 loi
+   - Sai tất (socks): 10 loi
+   - Sai season: 10 loi
+   - SEO tên cầu thủ: 10 loi
+
+Loi lap lai (co the do template):
+   - RFK | Words to Avoid | Short description: 'Trustpilot' (741/741)
+   - RFS | Words to Avoid | Short description: 'Trustpilot' (666/696)

@@ -137,9 +137,25 @@ def refresh_image_fp():
     qa_rules_extra.IMAGE_FP = fps
 
 
+def refresh_boilerplate():
+    cached = []
+    for path in qa_fetch.CACHE_DIR.glob("*/*.json"):
+        try:
+            d = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if isinstance(d, dict) and (d.get("page") or {}).get("body"):
+            cached.append(d)
+    bp = qa_rules_extra.build_boilerplate(cached)
+    if bp:
+        qa_rules_extra.BOILERPLATE_PATH.write_text(json.dumps(bp, ensure_ascii=False, indent=1), encoding="utf-8")
+        qa_rules_extra.BOILERPLATE = {k: set(v) for k, v in bp.items()}
+
+
 def run_checks(products):
     refresh_price_ref()
     refresh_image_fp()
+    refresh_boilerplate()
     rows = []
     for d in products:
         for i in qa_rules.check_product(d):
