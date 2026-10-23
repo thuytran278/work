@@ -89,21 +89,20 @@ def parse_body(page_html):
 
 
 def colour_print(im):
-    """Colour make-up of the kit in a product photo: 12 hue bins + white + black + grey, normalised.
-    White studio background and the bottom badge strip are left out."""
-    from PIL import Image
+    """Colour make-up of the kit in a product photo: 12 hues x (light, dark) + white + black + grey, normalised.
+    White studio background and the bottom badge strip are left out. Light/dark keeps sky blue apart from navy."""
     w, h = im.size
     small = im.crop((int(w * 0.08), int(h * 0.08), int(w * 0.92), int(h * 0.80))).resize((80, 80)).convert("HSV")
-    bins = [0.0] * 15
+    bins = [0.0] * 27
     for hh, ss, vv in small.getdata():
         if vv > 235 and ss < 20:
             continue  # background
         if vv < 50:
-            bins[13] += 1
+            bins[25] += 1
         elif ss < 40:
-            bins[12 if vv > 200 else 14] += 1
+            bins[24 if vv > 200 else 26] += 1
         else:
-            bins[hh * 12 // 256] += 1
+            bins[hh * 12 // 256 * 2 + (0 if vv > 150 else 1)] += 1
     total = sum(bins) or 1
     return [round(b / total, 3) for b in bins]
 

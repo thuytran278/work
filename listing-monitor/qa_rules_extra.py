@@ -1067,7 +1067,7 @@ def check_photo_kit(data, add, name):
     me = f"{data['site']}:{s.get('id')}"
     same, other = [], {}
     for k, v in IMAGE_FP.items():
-        if k == me or not v.get("key") or v["key"][0] != key[0] or v["key"][1] != key[1] or v["key"][3] != key[3]:
+        if k == me or not v.get("key") or len(v.get("fp") or []) != len(fp) or v["key"][0] != key[0] or v["key"][1] != key[1] or v["key"][3] != key[3]:
             continue
         sim = colour_sim(fp, v["fp"])
         if v["key"][2] == key[2]:
@@ -1078,9 +1078,11 @@ def check_photo_kit(data, add, name):
         return
     kit, best = max(((k, max(v)) for k, v in other.items()), key=lambda x: x[1][0])
     best_same = max(same) if same else None
-    if best[0] >= 0.75 and (best_same is None and best[0] >= 0.85 or best_same is not None and best_same < 0.5):
+    if best_same is not None and best_same < 0.5 and best[0] >= 0.75:
         add(HIGH, "Sai Home/Away/Third", "Ảnh (màu áo)",
             f"Tên là {key[2]} nhưng màu áo trong ảnh chính giống áo {kit} của {key[0].title()} ({int(best[0] * 100)}%, "
-            f"listing {best[1]})" + (f", chỉ giống áo {key[2]} {int(best_same * 100)}%" if best_same is not None else ""),
-            "Kiểm tra có upload nhầm ảnh áo khác không")
-
+            f"listing {best[1]}), chỉ giống áo {key[2]} {int(best_same * 100)}%", "Kiểm tra có upload nhầm ảnh áo khác không")
+    elif best_same is None and best[0] >= 0.85:
+        add(MED, "Sai Home/Away/Third", "Ảnh (màu áo)",
+            f"Ảnh chính gần như trùng ảnh của listing {kit} {best[1]} ({int(best[0] * 100)}%): 1 trong 2 listing đang dùng "
+            f"nhầm ảnh", "So với ảnh áo thật của mùa này, sửa listing bị nhầm")

@@ -16,6 +16,7 @@ from check_new_listings import REPORT_DIR
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--label", required=True)
+    ap.add_argument("--force", action="store_true", help="recompute even if present (after a fingerprint change)")
     args = ap.parse_args(argv)
     rows = list(csv.DictReader((REPORT_DIR / args.label / f"new_listings_{args.label}.csv").open(encoding="utf-8-sig")))
     by_site = {}
@@ -31,7 +32,7 @@ def main(argv=None):
             except (OSError, ValueError):
                 continue
             page, imgs = d.setdefault("page", {}), d["store"].get("images") or []
-            if page.get("image_colours") or not imgs:
+            if (page.get("image_colours") and len(page["image_colours"]) == 27 and not args.force) or not imgs:
                 continue
             try:
                 page["image_colours"] = qa_fetch.colour_print(qa_fetch.load_image(imgs[0]["src"]))
