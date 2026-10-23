@@ -1,0 +1,20 @@
+QA LISTING MOI 2026-10-17 -> 2026-10-21
+
+KFK: 13 listing, 2 listing co loi CAO, 12 listing co loi
+   - Club bị report (KFK): 2 loi
+RFS: 14 listing, 3 listing co loi CAO, 14 listing co loi
+   - Words to Avoid: 6 loi
+   - Sai loại Shirt/Kit: 2 loi
+   - Sai đối tượng: 1 loi
+RFK: 17 listing, 0 listing co loi CAO, 17 listing co loi
+CFS: 76 listing, 10 listing co loi CAO, 68 listing co loi
+   - Sai tất (socks): 5 loi
+   - Sai cầu thủ: 5 loi
+   - Sai đối tượng: 3 loi
+   - Sai season: 1 loi
+   - Kho / Giá: 1 loi
+
+Loi lap lai (co the do template):
+   - KFK | Words to Avoid | Description: 'Badge' (8/13)
+   - RFK | Words to Avoid | Short description: 'Trustpilot' (17/17)
+   - RFS | Words to Avoid | Short description: 'Trustpilot' (14/14)

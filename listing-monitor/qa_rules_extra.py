@@ -385,6 +385,10 @@ def check_extra(data):
         if bad:
             clean = re.sub(r"(?i)kid'?s'? kit size chart|men'?s'? shirt size chart|women'?s'? shirt size chart|"
                            r"adult kit size chart|shirt length \(cm\)|shorts length \(cm\)|shirts (and|&) kits", "", desc)
+            # New KFK template (Oct 2026) lists the kit's parts: "Football shirt with ... / Matching shorts", "applied to
+            # the shirt", "Long Sleeve shirt, matching shorts": the shirt as a part of the kit is not a type error.
+            clean = re.sub(r"(?i)(?:football |short[\s-]sleeve |long[\s-]sleeve )?shirts?(?=[^.]{0,60}\bshorts\b)|"
+                           r"(?:applied|printed) (?:to|on) the (?:back of the )?shirt|football shirt with", "", clean)
             hits = list(re.finditer(rf"\b{bad}s?\b", clean, re.I))
             if hits:
                 add(MED, "Sai loại Shirt/Kit", "Description",
@@ -852,21 +856,35 @@ def body_lines(body, pattern):
     return [ln.strip() for ln in body.split("\n") if re.search(pattern, ln, re.I)]
 
 
-def product_text(body):
-    """Body without customer reviews (quoted testimonials) and the delivery country list."""
-    lines = body.split("\n")
+def product_text(body, own_name=""):
+    """Body without what is not about this product: footer / menus that some themes put inside the product block,
+    customer reviews, the delivery country table, "frequently bought together" product titles, raw HTML leaks."""
+    end = re.search(r"\n(?:About Us|Search our store|All Categories)\n|Copyright\s*©", body)
+    lines = (body[:end.start()] if end else body).split("\n")
+    own = fold(own_name)
     keep = []
     for i, ln in enumerate(lines):
-        if re.match(r"\s*[“\"★]", ln):
+        st = ln.strip()
+        if not st or "<" in st and ">" in st or "class=" in st:
+            continue  # raw HTML of a bundle widget
+        if re.match(r"[“\"★]", st):
             continue  # testimonial / rating widget: customers' words, not product info
-        if any("working days" in x.lower() for x in lines[i + 1:i + 4]) or re.search(r"destinations|countries", ln, re.I):
+        if any("working days" in x.lower() for x in lines[i + 1:i + 4]) or re.search(r"destinations|countries", st, re.I):
             continue  # delivery table: "Germany / 9–13 working days"
-        keep.append(ln)
+        if re.fullmatch(r"(?:choose\s+)?(?:home|away|third|goalkeeper)\s+kit\s+size", st, re.I):
+            continue  # size pickers of a "buy together" bundle widget
+        if (re.search(r"\b(gift (pack|bundle|set)|football (kit|shirt)s?)\b", st, re.I) and not st.endswith(".")
+                and len(st.split()) <= 20 and fold(st) != own and not own.startswith(fold(st))):
+            continue  # title of another product (cross-sell / bundle widget)
+        keep.append(st)
     return "\n".join(keep)
 
 
 def check_page_body(data, add, name, sku, is_gift, is_retro, team):
-    s, body = data["store"], product_text(data["page"]["body"])
+    s, body = data["store"], product_text(data["page"]["body"], name)
+    # real sentences only: menus, tags, "Shop England World Cup 2026 Kits" links and short labels left out
+    sentences = "\n".join(ln for ln in body.split("\n")
+                          if len(ln.split()) >= 10 or len(ln.split()) >= 5 and re.search(r"[.!?:]$", ln))
     where = "Trang sản phẩm (option / tab / description)"
 
     # 1. Another kit type
@@ -896,20 +914,20 @@ def check_page_body(data, add, name, sku, is_gift, is_retro, team):
     national = bool(attr(s, "national team", "national teams")) or any(fold(team) == fold(c) for c in WORLD_CUP_2026_TEAMS)
     # a club page naturally names its country ("one of Germany's prominent teams"): countries only count on national pages
     pool = ENTITIES if national else [e for e in ENTITIES if e not in WORLD_CUP_2026_TEAMS]
-    others = [e for e in pool if re.search(rf"\b{re.escape(e)}\b", body, re.I)
+    others = [e for e in pool if re.search(rf"\b{re.escape(e)}\b", sentences, re.I)
               and not re.search(rf"\b{re.escape(e)}\b", ident, re.I) and not fuzzy_contains(ident, e)
               and not fuzzy_contains(e, team or "~")]
     if others:
-        lines = body_lines(body, rf"\b{re.escape(others[0])}\b")
+        lines = body_lines(sentences, rf"\b{re.escape(others[0])}\b")
         add(MED, "Sai team", where, f"Trang nhắc team khác: {', '.join(others[:3])}" + (f' ("{lines[0][:90]}")' if lines else ""),
             "Kiểm tra có copy nội dung từ listing team khác không")
 
     # 4. Another season (club listings with a season in the name)
     name_seasons = seasons_in(name)
     if name_seasons and not is_retro:
-        other = seasons_in(body) - name_seasons
+        other = seasons_in(sentences) - name_seasons
         if other:
-            lines = body_lines(body, "|".join(o.replace("/", r"\s*/\s*(?:20)?") for o in other))
+            lines = body_lines(sentences, "|".join(o.replace("/", r"\s*/\s*(?:20)?") for o in other))
             add(HIGH, "Sai season", where, f"Tên là {', '.join(name_seasons)} nhưng trang có {', '.join(sorted(other))}"
                 + (f': "{lines[0][:90]}"' if lines else ""), "Sửa season cho khớp")
 
@@ -927,7 +945,9 @@ def check_page_body(data, add, name, sku, is_gift, is_retro, team):
 
     # 6. Shirt-only listing talking about shorts
     if has_word(fold(name), "shirt") and not has_word(fold(name), "kit") and not is_gift:
-        bad = body_lines(body, r"matching shorts|shirt and shorts|shorts and socks|with shorts")
+        bad = [ln for ln in body_lines(body, r"matching shorts|shirt and shorts|shorts and socks|with shorts|"
+                                                r"\bkid replica football kit\b")
+               if not re.search(r"not included|shirt only", ln, re.I)]
         if bad:
             add(HIGH, "Sai loại Shirt/Kit", where, f"Listing chỉ là áo (Shirt) nhưng trang ghi: \"{bad[0][:90]}\"",
                 "Bỏ phần nói về quần short / tất")
