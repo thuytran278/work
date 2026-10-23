@@ -300,6 +300,7 @@ def main(argv=None):
     ap.add_argument("--max-age-hours", type=float,
                     help="re-download only listings cached longer ago than this (resumable refresh)")
     ap.add_argument("--config", default=str(BASE_DIR / "config.json"))
+    ap.add_argument("--label", help="QA a prepared list: reports/<label>/new_listings_<label>.csv (build_audit_list.py)")
     ap.add_argument("--open", action="store_true", help="open the Excel file when done")
     args = ap.parse_args(argv)
 
@@ -311,7 +312,7 @@ def main(argv=None):
     else:
         start = end = (date.fromisoformat(args.date) if args.date
                        else today - timedelta(days=1) if args.yesterday else today)
-    label = start.isoformat() if start == end else f"{start.isoformat()}_to_{end.isoformat()}"
+    label = args.label or (start.isoformat() if start == end else f"{start.isoformat()}_to_{end.isoformat()}")
 
     listings = load_listings(label)
     products, errors = fetch_all(listings, cfg, args.refresh, args.max_age_hours)
