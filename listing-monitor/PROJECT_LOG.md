@@ -207,6 +207,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 23/10 | OCR giá trên ảnh: sửa đọc "£" thành số ("847.99" = £47.99) và số 9 cuối bị đọc thành 5. Kiểm tra bằng mắt 13 ảnh bị báo lệch: 4 lệch thật, 9 do OCR (đã sửa) |
 | 23/10 | OCR giá trên ảnh chạy cho cả RFS / RFK / CFS (đã thử: đọc đúng badge giá gift pack cả 3 web). Sửa tải ảnh có ký tự đặc biệt trong tên file ("–", dấu) — trước đây ảnh loại này bị bỏ qua, cả check ảnh hỏng. So giá ảnh cho phép lệch ≤ 5p (OCR đọc 67.48 thay 67.49) |
 | 23/10 | **Màu áo trong ảnh** (Clara 23/10: CFS 69011 Switzerland Home Kids dùng ảnh áo Away xanh lá, mọi chữ đều ghi Home nên rule chữ không bắt được): lấy "dấu màu" ảnh chính (12 dải màu + trắng/đen/xám, bỏ nền trắng và dải badge) của mọi listing, lưu `data/image_fp.json`. Listing 1 loại áo (không gift/GK/special/training) được so với cùng team + cùng season trên cả 4 web: giống áo loại khác ≥75% mà giống áo cùng loại <50% → lỗi Cao. Thử: CFS 69011 giống Home 3–5%, giống KFK Away 96%. `backfill_photo_colours.py` lấy dấu màu cho listing cũ |
+| 23/10 | OCR: chấp nhận tối đa 2 chữ số dễ đọc nhầm (1↔4, 1↔7, 8↔9, 5↔9, 3↔8, 0↔8) — font hẹp của RFK đọc "17.49" thay 47.49. Quét giá ảnh gift pack RFS/RFK: 4 lệch thật (RFS 97266, 94742, 90706, 81335), 5 RFK là đọc nhầm (đã xem tận mắt) |
 
 ## 9. Hạn chế đã biết và câu hỏi còn mở
 

@@ -1020,6 +1020,21 @@ def check_page_body(data, add, name, sku, is_gift, is_retro, team):
 
 
 # ---------------------------------------------------------------- Part G: KFK Christmas campaign + price on photos (23/10)
+OCR_LOOKALIKE = {frozenset(p) for p in (("1", "4"), ("1", "7"), ("8", "9"), ("5", "9"), ("3", "8"), ("0", "8"))}
+
+
+def ocr_same_price(read, real):
+    """True when an OCR'd price is the real price with at most 2 look-alike digits misread
+    (condensed fonts: "17.49" for 47.49, "77.48" for 71.49)."""
+    a, b = f"{read:.2f}", f"{real:.2f}"
+    if abs(read - real) < 0.06:
+        return True
+    if len(a) != len(b):
+        return False
+    diff = [(x, y) for x, y in zip(a, b) if x != y]
+    return len(diff) <= 2 and all(frozenset(d) in OCR_LOOKALIKE for d in diff)
+
+
 def check_campaign_and_photo_price(data, add, name, site, is_gift):
     s, page = data["store"], data.get("page") or {}
     # Price printed on the main photo must be the selling price (KFK task 23/10: "live photos vs sale price")
@@ -1028,7 +1043,7 @@ def check_campaign_and_photo_price(data, add, name, site, is_gift):
     if shown and price:
         regular = (s.get("prices") or {}).get("regular_price")
         ok = {round(price, 2)} | ({int(regular) / 100} if regular else set())
-        if not any(abs(x - y) < 0.06 for x in shown for y in ok):  # OCR can misread the last digit (67.48 for 67.49)
+        if not any(ocr_same_price(x, y) for x in shown for y in ok):
             add(HIGH, "Kho / Giá", "Giá trên ảnh", f"Ảnh chính ghi £{max(shown):.2f} nhưng giá đang "
                 f"bán là £{price:.2f}", "Làm lại ảnh với giá đúng (hoặc sửa giá nếu ảnh đúng)")
 
