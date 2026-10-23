@@ -88,7 +88,35 @@ def parse_body(page_html):
     return re.sub(r"[ \t\u00a0]*\n\s*", "\n", text).strip()
 
 
-def image_price(src, timeout=30):
+def colour_print(im):
+    """Colour make-up of the kit in a product photo: 12 hue bins + white + black + grey, normalised.
+    White studio background and the bottom badge strip are left out."""
+    from PIL import Image
+    w, h = im.size
+    small = im.crop((int(w * 0.08), int(h * 0.08), int(w * 0.92), int(h * 0.80))).resize((80, 80)).convert("HSV")
+    bins = [0.0] * 15
+    for hh, ss, vv in small.getdata():
+        if vv > 235 and ss < 20:
+            continue  # background
+        if vv < 50:
+            bins[13] += 1
+        elif ss < 40:
+            bins[12 if vv > 200 else 14] += 1
+        else:
+            bins[hh * 12 // 256] += 1
+    total = sum(bins) or 1
+    return [round(b / total, 3) for b in bins]
+
+
+def load_image(src, timeout=30):
+    from PIL import Image
+    import io
+    req = urllib.request.Request(safe_url(src), headers={"User-Agent": USER_AGENT})
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return Image.open(io.BytesIO(resp.read())).convert("RGB")
+
+
+def image_price(src, timeout=30, im=None):
     """Prices printed on a product photo (gift pack "SPECIAL OFFER £49.99" badge), read with OCR.
     None when OCR is not installed or the image cannot be read; [] when no price is printed."""
     try:
@@ -97,12 +125,11 @@ def image_price(src, timeout=30):
         from PIL import Image, ImageOps
     except ImportError:
         return None
-    try:
-        req = urllib.request.Request(safe_url(src), headers={"User-Agent": USER_AGENT})
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            im = Image.open(io.BytesIO(resp.read())).convert("RGB")
-    except Exception:
-        return None
+    if im is None:
+        try:
+            im = load_image(src, timeout)
+        except Exception:
+            return None
     w, h = im.size
     # the badge sits in a bottom corner; whole image last
     for crop in (im.crop((0, int(h * 0.78), int(w * 0.42), h)), im.crop((int(w * 0.58), int(h * 0.78), w, h)), im):
@@ -203,7 +230,12 @@ def fetch_product(site, base_url, product_id, url, refresh=False, delay=0.3, sto
     imgs = data["store"].get("images") or []
     data["page"]["main_image_ok"] = image_ok(imgs[0].get("src")) if imgs else None
     if imgs:
-        data["page"]["image_price"] = image_price(imgs[0].get("src"))
+        try:
+            im = load_image(imgs[0].get("src"))
+            data["page"]["image_colours"] = colour_print(im)
+            data["page"]["image_price"] = image_price(imgs[0].get("src"), im=im)
+        except Exception:
+            data["page"]["image_price"] = None
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
     time.sleep(delay)  # be gentle with the sites' firewalls (RFS blocks bursts)

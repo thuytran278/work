@@ -106,6 +106,43 @@ except (OSError, ValueError):
     CAMPAIGNS = {}
 XMAS_RE = re.compile(r"x-?mas|christmas|santa|festive", re.I)
 
+# Colour make-up of every listing's main photo, all sites (data/image_fp.json, rebuilt from the cache on each QA run).
+# A "Home" listing whose photo matches the team's Away kit (on any site) better than its Home kit = wrong photos.
+IMAGE_FP_PATH = Path(__file__).resolve().parent / "data" / "image_fp.json"
+
+
+def photo_key(s, name):
+    """(team, season, kit) for single-kit, non-gift listings; None when the photo is not comparable."""
+    fname = fold(name)
+    sku = parse_sku(s.get("sku"))
+    if (sku and sku["gift"]) or has_word(fname, "gift", "bundle", "pack", "set", "training", "pre", "special", "edition",
+                                          "commemorative", "anniversary", "concept", "goalkeeper", "gk"):
+        return None
+    kits = kits_in(name) - {"training"}
+    team = (attr(s, "clubs name", "club name", "club", "clubs", "national team", "national teams", "team") or [""])[0]
+    seasons = sorted(seasons_in(name) | set(YEAR_RE.findall(name)))
+    if len(kits) != 1 or not team or not seasons:
+        return None
+    t = fold(team)
+    for real, aliases in TEAM_ALIASES.items():
+        if t in aliases:
+            t = real
+    return [t, seasons[0], next(iter(kits)), "retro" if has_word(fname, "retro") else "new"]
+
+
+def load_image_fp():
+    try:
+        return json.loads(IMAGE_FP_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+IMAGE_FP = load_image_fp()
+
+
+def colour_sim(a, b):
+    return sum(min(x, y) for x, y in zip(a, b))
+
 FREE_PIN_TEAMS = ['Spain', 'France', 'Argentina', 'England', 'Brazil', 'Portugal', 'Scotland']
 
 # Reported Club Status sheet, KFK column (as in kfk_rules.py, 19 Jul 2026).
@@ -461,6 +498,7 @@ def check_extra(data):
     check_player_seo(data, add, name, seo_title, sku, is_gift)
     check_template_fields(data, add, name, sku, is_gift)
     check_campaign_and_photo_price(data, add, name, site, is_gift)
+    check_photo_kit(data, add, name)
     if (data.get("page") or {}).get("body"):
         check_page_body(data, add, name, sku, is_gift, is_retro, team)
     else:
@@ -1002,4 +1040,32 @@ def check_campaign_and_photo_price(data, add, name, site, is_gift):
         if not any(XMAS_RE.search((i.get("src") or "") + " " + (i.get("alt") or "")) for i in imgs):
             add(HIGH, "Christmas campaign", "Ảnh", "Listing đăng trong đợt Christmas nhưng chưa có ảnh AI Christmas "
                 "(không có ảnh nào tên/alt chứa Xmas/Christmas)", "Thêm ảnh AI Christmas (đặt tên file/alt có chữ Xmas)")
+
+
+def check_photo_kit(data, add, name):
+    """Main photo compared with the same team + season on all 4 sites: closer to another kit than to its own = wrong
+    photo (CFS Switzerland 'Home' kit with the green Away photos, Clara 23/10)."""
+    s, page = data["store"], data.get("page") or {}
+    fp, key = page.get("image_colours"), photo_key(s, name)
+    if not fp or not key:
+        return
+    me = f"{data['site']}:{s.get('id')}"
+    same, other = [], {}
+    for k, v in IMAGE_FP.items():
+        if k == me or not v.get("key") or v["key"][0] != key[0] or v["key"][1] != key[1] or v["key"][3] != key[3]:
+            continue
+        sim = colour_sim(fp, v["fp"])
+        if v["key"][2] == key[2]:
+            same.append(sim)
+        else:
+            other.setdefault(v["key"][2], []).append((sim, k))
+    if not other:
+        return
+    kit, best = max(((k, max(v)) for k, v in other.items()), key=lambda x: x[1][0])
+    best_same = max(same) if same else None
+    if best[0] >= 0.75 and (best_same is None and best[0] >= 0.85 or best_same is not None and best_same < 0.5):
+        add(HIGH, "Sai Home/Away/Third", "Ảnh (màu áo)",
+            f"Tên là {key[2]} nhưng màu áo trong ảnh chính giống áo {kit} của {key[0].title()} ({int(best[0] * 100)}%, "
+            f"listing {best[1]})" + (f", chỉ giống áo {key[2]} {int(best_same * 100)}%" if best_same is not None else ""),
+            "Kiểm tra có upload nhầm ảnh áo khác không")
 

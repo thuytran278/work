@@ -121,8 +121,25 @@ def refresh_price_ref():
         qa_rules_extra.PRICE_REF = ref
 
 
+def refresh_image_fp():
+    """Photo colour make-up of every cached listing -> data/image_fp.json (photo vs kit type check)."""
+    fps = qa_rules_extra.load_image_fp()
+    for path in qa_fetch.CACHE_DIR.glob("*/*.json"):
+        try:
+            d = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        s, fp = d.get("store") or {}, (d.get("page") or {}).get("image_colours")
+        if fp and s:
+            name = qa_rules.strip_html(s.get("name"))
+            fps[f"{d['site']}:{s.get('id')}"] = {"key": qa_rules_extra.photo_key(s, name), "fp": fp, "name": name[:90]}
+    qa_rules_extra.IMAGE_FP_PATH.write_text(json.dumps(fps, ensure_ascii=False), encoding="utf-8")
+    qa_rules_extra.IMAGE_FP = fps
+
+
 def run_checks(products):
     refresh_price_ref()
+    refresh_image_fp()
     rows = []
     for d in products:
         for i in qa_rules.check_product(d):
