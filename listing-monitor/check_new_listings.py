@@ -87,6 +87,8 @@ def http_get(url, timeout=30, retry_waits=(10, 30)):
         except urllib.error.HTTPError as e:
             if wait is None or not (e.code in (403, 429) or e.code >= 500):
                 raise
+            if e.code == 403 and b"Attention Required" in (e.read(4096) or b""):
+                raise  # Cloudflare firewall block (not a burst limit): retrying will not help
             time.sleep(wait)
 
 

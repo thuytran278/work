@@ -59,6 +59,19 @@ def parse_h1(page_html):
     return html.unescape(re.sub(r"<[^>]+>", " ", m.group(1))).strip() if m else None
 
 
+def parse_options(page_html):
+    """Labels of the add-to-cart options (personalisation, badges): Extra Product Options (RFS/RFK) and PPOM (KFK/CFS)."""
+    t = page_html or ""
+    labels = re.findall(r'class="[^"]*tm-epo-element-label[^"]*"[^>]*>([^<]+)<', t)
+    labels += re.findall(r'data-title="([^"]+)"', t) + re.findall(r'data-label="([^"]+)"', t)
+    out = []
+    for raw in labels:
+        label = html.unescape(raw).strip()
+        if label and label not in out and label.lower() not in ("checkbox", "yes", "no"):
+            out.append(label)
+    return out
+
+
 def cached(site, product_id):
     path = CACHE_DIR / site / f"{product_id}.json"
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
@@ -113,21 +126,20 @@ def fetch_product(site, base_url, product_id, url, refresh=False, delay=0.3, sto
     data = {"site": site, "store": store}
     page_url = url or data["store"]["permalink"]
     name = (data["store"].get("name") or "").lower()
-    if site == "KFK" and any(t in name for t in FREE_PIN_TEAMS):
-        # Free Pin promo text sits near add-to-cart, so the whole page is needed.
+    try:
+        # Whole page: <head> for SEO, add-to-cart options (personalisation / badge labels), Free Pin text, H1.
         full = fetch_text(page_url)
         data["page"] = parse_head(full)
-        team = next(t for t in FREE_PIN_TEAMS if t in name)
-        data["page"]["pin_text"] = bool(re.search(rf"free\s+{team}\s+pin", full, re.I))
         data["page"]["h1"] = parse_h1(full)
-    else:
-        try:
-            data["page"] = parse_head(fetch_head(page_url))
-        except urllib.error.HTTPError as e:
-            if e.code != 403:
-                raise
-            # Firewall (e.g. Cloudflare on CFS) blocks the page: keep the API data, skip page-based SEO checks.
-            data["page"] = {"seo_title": "", "meta_description": "", "robots": "", "canonical": "", "blocked": True}
+        data["page"]["options"] = parse_options(full)
+        if site == "KFK" and any(t in name for t in FREE_PIN_TEAMS):
+            team = next(t for t in FREE_PIN_TEAMS if t in name)
+            data["page"]["pin_text"] = bool(re.search(rf"free\s+{team}\s+pin", full, re.I))
+    except urllib.error.HTTPError as e:
+        if e.code != 403:
+            raise
+        # Firewall (e.g. Cloudflare on CFS) blocks the page: keep the API data, skip page-based SEO checks.
+        data["page"] = {"seo_title": "", "meta_description": "", "robots": "", "canonical": "", "blocked": True}
     imgs = data["store"].get("images") or []
     data["page"]["main_image_ok"] = image_ok(imgs[0].get("src")) if imgs else None
     path.parent.mkdir(parents=True, exist_ok=True)

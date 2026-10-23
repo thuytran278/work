@@ -449,6 +449,7 @@ def check_extra(data):
     check_extra_c(data, add, name, desc, short, meta, sku, is_gift, team)
     check_player_seo(data, add, name, seo_title, sku, is_gift)
     check_template_fields(data, add, name, sku, is_gift)
+    check_page_options(data, add, name)
     return issues
 
 
@@ -812,4 +813,17 @@ def check_template_fields(data, add, name, sku, is_gift):
     if sku and not sku["player"] and re.search(r"pre-?printed with|player print:", both, re.I):
         add(HIGH, "Sai cầu thủ", "Description", "Listing không in sẵn nhưng description có Player print / Pre-printed: "
             + snippet(both, r"pre-?printed with|player print:", 40), "Xoá phần Player print (copy từ listing cầu thủ)")
+
+
+
+def check_page_options(data, add, name):
+    # Add-to-cart options (personalisation / badge labels) naming another kit: "Personalisation for Away shirt"
+    # on a Home & Third bundle. The option forms are shared between products, so one wrong form hits many listings.
+    name_kits = kits_in(name) - {"training"}
+    for label in data.get("page", {}).get("options") or []:
+        k = kits_in(label) - {"training"}
+        if k and name_kits and not k <= name_kits:
+            add(HIGH, "Sai Home/Away/Third", "Option sản phẩm",
+                f"Option trên trang ghi \"{label[:80]}\" nhưng listing là {'/'.join(sorted(name_kits))}",
+                "Sửa option (Extra Product Options / PPOM) gán cho sản phẩm này")
 

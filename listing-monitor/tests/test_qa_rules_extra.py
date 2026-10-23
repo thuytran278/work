@@ -110,6 +110,12 @@ class Extra(unittest.TestCase):
         self.assertIn(("Sleeve", "Description"), g)
         self.assertIn(("Sai tất (socks)", "Description"), g)
 
+    def test_option_label_names_other_kit(self):
+        d = product(store__name="Leeds United Birthday Gift Pack – Home and Third Kids Football Kit 2026/27",
+                    store__sku="KFK_LEE_HO/THGP_KD_No_26/27")
+        d["page"]["options"] = ["Personalisation for Home shirt only £8", "Personalisation for Away shirt only £8"]
+        self.assertIn(("Sai Home/Away/Third", "Option sản phẩm"), groups(d))
+
     def test_category_other_kit_type(self):
         d = product(store__categories=[{"name": "Leeds United"}, {"name": "Premier League"}, {"name": "Leeds Away"}])
         self.assertIn(("Category / Tag", "Category"), groups(d))

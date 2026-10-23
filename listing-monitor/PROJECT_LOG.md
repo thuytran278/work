@@ -199,6 +199,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 22/10 | **Giá cho cả 4 web** (Clara 22/10): shirt KFK 29.99 / RFS 27.99 / RFK 27.49 / CFS 29.69; kids kit with socks = giá shirt; no socks rẻ hơn (KFK/CFS −3, RFS/RFK −2, theo giá đang chạy trên web); in sẵn +10, long sleeve +1, retro +1. Adult kit (ADK) KFK 33.99 / CFS 33.69 with socks (chưa xác nhận, báo Trung bình). Giá khác nhau giữa các size → Trung bình. Bỏ check giá gift pack KFK (bảng cũ 46.99, web đang 47.99) |
 | 22/10 | **Template mới** (Clara 22/10: template description/short của các web đã đổi hết, AI đọc thấy confuse là lỗi): bỏ rule câu bắt buộc RFS + 3 bullet RFS. Thêm Part E đối chiếu các ô Kit / Season / Sleeves / In the parcel (socks) / Colours / Sizes / Name and number / Player print với tên, SKU, attribute |
 | 22/10 | Clara xác nhận: chênh no socks KFK/CFS £3, RFS/RFK £2; giá Adult kit theo web (KFK 33.99, CFS 33.69 with socks, −3 no socks) → nâng lên lỗi Cao. Gift pack: so với giá phổ biến đang live của gift pack cùng loại (cùng web, đối tượng, socks, số cầu thủ in, long sleeve, retro; ≥3 listing, ≥60% cùng giá). Bảng `data/price_ref.json` tự cập nhật mỗi lần chạy QA |
+| 23/10 | Đọc cả thân trang sản phẩm (trước chỉ đọc `<head>`): lấy nhãn option khi thêm vào giỏ (Extra Product Options RFS/RFK, PPOM KFK/CFS). Option ghi loại áo khác listing (vd "Personalisation for Away shirt" trên bundle Home & Third, Clara phát hiện RFS 102993) → lỗi Cao. Cloudflare chặn thì không thử lại |
 
 ## 9. Hạn chế đã biết và câu hỏi còn mở
 
