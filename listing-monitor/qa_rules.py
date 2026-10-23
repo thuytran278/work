@@ -222,6 +222,12 @@ def check_product(data, extra=True):
         issues.append({"severity": sev, "group": group, "field": field, "detail": detail, "fix": fix})
 
     name = strip_html(s.get("name"))
+    if re.search(r"FREEGIFT", s.get("sku") or "", re.I) or re.match(r"free\b", name, re.I):
+        # Campaign freebie (e.g. KFK "FREE Christmas Drawstring Bag", £0, noindex on purpose): not a kit listing,
+        # only the main image is checked.
+        if page.get("main_image_ok") is False:
+            add(HIGH, "Ảnh", "Ảnh chính", "Ảnh chính không tải được", "Upload lại ảnh chính")
+        return issues
     desc = strip_html(s.get("description"))
     short = strip_html(s.get("short_description"))
     seo_title = page.get("seo_title", "")

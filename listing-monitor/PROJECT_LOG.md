@@ -167,6 +167,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 21/10 | 0 / 0 / 4 / 13 | CFS 1 | CFS 84630 Inter Miami Away Kids: tên 2027/28 nhưng SEO title 26/27 (MLS season, câu hỏi mở) |
 | 22/10 | 0 / 0 / 0 / 0 | – | Không có listing mới trên cả 4 web |
 | 23/10 (audit) | 1.192 / 696 / 741 / 1.546 | KFK 326 / RFS 203 / RFK 112 / CFS 147 | Check toàn bộ sản phẩm 2026, 2026/27, 2027/28 (4.175) với mọi rule mới: `reports/season_2026_27_28/`. Nhiều nhất: KFK size người lớn trên listing Kids (137), club bị report (117); RFS listing in sẵn vẫn có Personalisation (156); CFS alt ảnh sai đối tượng (97); RFK giá no socks bán giá with socks (32) |
+| 23/10 | 2 / 1 / 0 / 0 | KFK 1 / RFS 1 | KFK 264123 Portugal Away Adult Kit RONALDO 7: chưa có ảnh AI Christmas, size chart Kids trên listing Adult. KFK "FREE Christmas Drawstring Bag" (quà tặng, £0, noindex) bỏ qua. RFS 104888 Tottenham Away+Third Kids bundle: option "Personalisation for Home kit", description ghi 45.99 (bán 47.99) |
 
 **Báo cáo tổng hợp:**
 
@@ -212,6 +213,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 23/10 | Dấu màu ảnh tách sáng/tối (xanh nhạt Lazio Home ≠ navy Third): 27 ô màu. Rõ ràng (giống áo khác ≥75%, giống áo cùng loại <50%) → Cao; chỉ có 1 listing loại khác trùng ảnh ≥85% (không biết bên nào sai) → Trung bình "1 trong 2 listing dùng nhầm ảnh". Lượt quét đầu (4.120 ảnh): Switzerland CFS 69011, Crystal Palace CFS 82227 / RFK 118873, Australia RFS 90337, Porto RFS 100404 ↔ RFK 112328, Lazio RFK 125947 ↔ CFS 80637 |
 | 23/10 | OCR CFS: badge "2 shirts only £46.69" làm OCR đọc thành 6.69 / 116.69 / 72.09 → bỏ số < £10, thử bỏ chữ số thừa đầu, thêm cặp 0↔6. Quét giá ảnh 405 gift pack RFS/RFK/CFS: lệch thật chỉ 4 (RFS), CFS và RFK 0 (đã xem tận mắt các ảnh bị báo) |
 | 23/10 | Check toàn trang, giảm báo nhầm: câu lặp trên ≥10% trang của 1 web (giới thiệu shop, badge…) không tính cho check đối tượng/team (`data/boilerplate.json`); bỏ ô chọn size và link sản phẩm khác ("Ajax Kids Kit"); dòng tự khớp tên ("Yellow Goalkeeper Home") không tính sai loại áo; personalise trong description chỉ báo 1 lần; ảnh gia đình "Men and Kids" không tính sai đối tượng |
+| 23/10 | Sản phẩm quà tặng (SKU có FREEGIFT hoặc tên bắt đầu "FREE") chỉ check ảnh chính |
 
 ## 9. Hạn chế đã biết và câu hỏi còn mở
 
