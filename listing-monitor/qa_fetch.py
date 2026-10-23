@@ -72,6 +72,21 @@ def parse_options(page_html):
     return out
 
 
+def parse_body(page_html):
+    """Visible text of the product block only (summary, options, variations, all tabs), without menus,
+    related products, footer, scripts. This is everything a shopper (or an AI) reads about the product."""
+    t = page_html or ""
+    m = re.search(r'<div[^>]*id="product-\d+', t)
+    if not m:
+        return ""
+    st = m.start()
+    end = re.search(r"<section[^>]*related|related products|<footer|you may also like", t[st:], re.I)
+    region = t[st:st + (end.start() if end else 150000)]
+    region = re.sub(r"<script.*?</script>|<style.*?</style>|<noscript.*?</noscript>", " ", region, flags=re.S | re.I)
+    text = html.unescape(re.sub(r"<[^>]+>", "\n", region))
+    return re.sub(r"[ \t\u00a0]*\n\s*", "\n", text).strip()
+
+
 def cached(site, product_id):
     path = CACHE_DIR / site / f"{product_id}.json"
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
@@ -132,6 +147,7 @@ def fetch_product(site, base_url, product_id, url, refresh=False, delay=0.3, sto
         data["page"] = parse_head(full)
         data["page"]["h1"] = parse_h1(full)
         data["page"]["options"] = parse_options(full)
+        data["page"]["body"] = parse_body(full)
         if site == "KFK" and any(t in name for t in FREE_PIN_TEAMS):
             team = next(t for t in FREE_PIN_TEAMS if t in name)
             data["page"]["pin_text"] = bool(re.search(rf"free\s+{team}\s+pin", full, re.I))

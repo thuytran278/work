@@ -13,7 +13,7 @@ import re
 from collections import Counter
 from pathlib import Path
 
-from qa_rules import (HIGH, LOW, MED, YEAR_RE, attr, fold, fuzzy_contains, has_word, kits_in, parse_sku,
+from qa_rules import (HIGH, LOW, MED, TEAM_ALIASES, YEAR_RE, attr, fold, fuzzy_contains, has_word, kits_in, parse_sku,
                       seasons_in, snippet, strip_html)
 
 # ---------------------------------------------------------------- Part A: KFK master file rules
@@ -449,7 +449,10 @@ def check_extra(data):
     check_extra_c(data, add, name, desc, short, meta, sku, is_gift, team)
     check_player_seo(data, add, name, seo_title, sku, is_gift)
     check_template_fields(data, add, name, sku, is_gift)
-    check_page_options(data, add, name)
+    if (data.get("page") or {}).get("body"):
+        check_page_body(data, add, name, sku, is_gift, is_retro, team)
+    else:
+        check_page_options(data, add, name)
     return issues
 
 
@@ -826,4 +829,126 @@ def check_page_options(data, add, name):
             add(HIGH, "Sai Home/Away/Third", "Option sản phẩm",
                 f"Option trên trang ghi \"{label[:80]}\" nhưng listing là {'/'.join(sorted(name_kits))}",
                 "Sửa option (Extra Product Options / PPOM) gán cho sản phẩm này")
+
+
+# ---------------------------------------------------------------- Part F: the whole product page (Clara 23/10)
+# Everything on the page (options, variation names, short/long description, Size Guide / Delivery / Returns / Care
+# tabs) must agree with the product name. "0% confusion": any line that names another kit, audience, team, season,
+# socks option or print status is an error, wherever it sits.
+KIT_CTX = re.compile(r"\b(home|away|third|fourth|goalkeeper|gk)\b[\s-]+(?!goalkeeper\b|gk\b)"
+                     r"(?=(?:kits?|shirts?|jersey|strip|shorts|socks|football|replica|cheap|fan|men|mens|men's|kids?|"
+                     r"women|adult|edition|version)\b)", re.I)
+AUD_WORDS = {
+    "kids": r"\b(?:men'?s|mens|men|adult|women'?s|women)\b",
+    "adult": r"\b(?:kids?|kid'?s|junior|youth|children'?s|boys|girls)\b",
+    "women": r"\b(?:men'?s|mens|men|kids?|kid'?s|junior)\b",
+}
+AUD_CTX = r"(?=[\s-]+(?:football\s+)?(?:shirts?|kits?|replica|cheap|sizes?|size\s+chart)\b)"
+TYPOS = ["jusst", "recieve", "seperate", "guarentee", "definately", "delievery", "shrit", "persona1", "socsk", "sizez",
+         "footbal ", "persnal", "qualty", "accross"]
+
+
+def body_lines(body, pattern):
+    return [ln.strip() for ln in body.split("\n") if re.search(pattern, ln, re.I)]
+
+
+def product_text(body):
+    """Body without customer reviews (quoted testimonials) and the delivery country list."""
+    lines = body.split("\n")
+    keep = []
+    for i, ln in enumerate(lines):
+        if re.match(r"\s*[“\"★]", ln):
+            continue  # testimonial / rating widget: customers' words, not product info
+        if any("working days" in x.lower() for x in lines[i + 1:i + 4]) or re.search(r"destinations|countries", ln, re.I):
+            continue  # delivery table: "Germany / 9–13 working days"
+        keep.append(ln)
+    return "\n".join(keep)
+
+
+def check_page_body(data, add, name, sku, is_gift, is_retro, team):
+    s, body = data["store"], product_text(data["page"]["body"])
+    where = "Trang sản phẩm (option / tab / description)"
+
+    # 1. Another kit type
+    name_kits = kits_in(name) - {"training"}
+    if name_kits:
+        bad = []
+        for m in KIT_CTX.finditer(body):
+            k = kits_in(m.group(1))
+            if k and not k <= name_kits:
+                line = body[body.rfind("\n", 0, m.start()) + 1: (body.find("\n", m.end()) + 1 or len(body) + 1) - 1]
+                bad.append(line.strip()[:90])
+        if bad:
+            add(HIGH, "Sai Home/Away/Third", where,
+                f"Tên là {'/'.join(sorted(name_kits))} nhưng trang ghi: " + "; ".join(f'"{b}"' for b in list(dict.fromkeys(bad))[:3]),
+                "Sửa mọi chỗ ghi sai loại áo (option personalisation, tên biến thể, description, tab)")
+
+    # 2. Another audience (kids page showing a Men's size chart, men's page saying kids kit...)
+    aud = sku and "/" not in (sku["aud_code"] or "") and sku["audience"]
+    if aud in AUD_WORDS and not is_gift:
+        bad = body_lines(body, AUD_WORDS[aud] + AUD_CTX)
+        if bad:
+            add(HIGH, "Sai đối tượng", where, f"Listing {aud} nhưng trang ghi: " + "; ".join(f'"{b[:90]}"' for b in bad[:3]),
+                "Sửa chữ / bảng size cho đúng đối tượng")
+
+    # 3. Another team
+    ident = name + " " + team + " " + " ".join(TEAM_ALIASES.get(fold(team), []))
+    national = bool(attr(s, "national team", "national teams")) or any(fold(team) == fold(c) for c in WORLD_CUP_2026_TEAMS)
+    # a club page naturally names its country ("one of Germany's prominent teams"): countries only count on national pages
+    pool = ENTITIES if national else [e for e in ENTITIES if e not in WORLD_CUP_2026_TEAMS]
+    others = [e for e in pool if re.search(rf"\b{re.escape(e)}\b", body, re.I)
+              and not re.search(rf"\b{re.escape(e)}\b", ident, re.I) and not fuzzy_contains(ident, e)
+              and not fuzzy_contains(e, team or "~")]
+    if others:
+        lines = body_lines(body, rf"\b{re.escape(others[0])}\b")
+        add(MED, "Sai team", where, f"Trang nhắc team khác: {', '.join(others[:3])}" + (f' ("{lines[0][:90]}")' if lines else ""),
+            "Kiểm tra có copy nội dung từ listing team khác không")
+
+    # 4. Another season (club listings with a season in the name)
+    name_seasons = seasons_in(name)
+    if name_seasons and not is_retro:
+        other = seasons_in(body) - name_seasons
+        if other:
+            lines = body_lines(body, "|".join(o.replace("/", r"\s*/\s*(?:20)?") for o in other))
+            add(HIGH, "Sai season", where, f"Tên là {', '.join(name_seasons)} nhưng trang có {', '.join(sorted(other))}"
+                + (f': "{lines[0][:90]}"' if lines else ""), "Sửa season cho khớp")
+
+    # 5. Socks
+    socks = kit_socks(s, name) if has_word(fold(name), "kit") and not is_gift else None
+    if socks == "with":
+        bad = body_lines(body, r"socks (are )?not included|without socks|\bno socks\b")
+    elif socks == "no":
+        bad = body_lines(body, r"includes?\s+(matching\s+)?socks|socks (are )?included|shorts and (matching )?socks")
+    else:
+        bad = []
+    if bad:
+        add(HIGH, "Sai tất (socks)", where, f"Listing {'With' if socks == 'with' else 'No'} Socks nhưng trang ghi: \"{bad[0][:90]}\"",
+            "Sửa cho khớp có/không có tất")
+
+    # 6. Shirt-only listing talking about shorts
+    if has_word(fold(name), "shirt") and not has_word(fold(name), "kit") and not is_gift:
+        bad = body_lines(body, r"matching shorts|shirt and shorts|shorts and socks|with shorts")
+        if bad:
+            add(HIGH, "Sai loại Shirt/Kit", where, f"Listing chỉ là áo (Shirt) nhưng trang ghi: \"{bad[0][:90]}\"",
+                "Bỏ phần nói về quần short / tất")
+
+    # 7. Print status
+    if sku and sku["player"]:
+        bad = body_lines(body, r"personalis(e|ation) for|click .yes. for personali|select .yes. for personali|"
+                               r"name and number:\s*(optional|available)")
+        if bad:
+            add(HIGH, "Sai cầu thủ", where, f"Listing in sẵn {sku['player']} nhưng trang vẫn cho/nhắc personalise: \"{bad[0][:90]}\"",
+                "Bỏ option / đoạn personalisation trên listing in sẵn")
+    elif sku:
+        bad = body_lines(body, r"pre-?printed with|player print:")
+        if bad:
+            add(HIGH, "Sai cầu thủ", where, f"Listing không in sẵn nhưng trang ghi: \"{bad[0][:90]}\"",
+                "Xoá phần Player print (copy từ listing cầu thủ)")
+
+    # 8. Typos anywhere
+    typos = [t.strip() for t in TYPOS if re.search(rf"\b{re.escape(t.strip())}\b", body, re.I)]
+    if typos:
+        lines = body_lines(body, re.escape(typos[0]))
+        add(MED, "Lỗi chính tả", where, f"Sai chính tả: {', '.join(typos)}" + (f' ("{lines[0][:90]}")' if lines else ""),
+            "Sửa chính tả")
 

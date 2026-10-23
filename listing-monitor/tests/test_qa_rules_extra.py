@@ -116,6 +116,16 @@ class Extra(unittest.TestCase):
         d["page"]["options"] = ["Personalisation for Home shirt only £8", "Personalisation for Away shirt only £8"]
         self.assertIn(("Sai Home/Away/Third", "Option sản phẩm"), groups(d))
 
+    def test_whole_page_contradictions(self):
+        d = product(store__name="Leeds United Birthday Gift Pack – Home and Third Kids Football Kit 2026/27",
+                    store__sku="KFK_LEE_HO/THGP_KD_No_26/27")
+        d["page"]["body"] = ("Personalisation for Home shirt only £8\nPersonalisation for Away shirt only £8\n"
+                             "“Ordered a Scotland away kit for my son”\nGermany\n9–13\nworking days\nPrice is jusst 47.99")
+        g = groups(d)
+        self.assertIn(("Sai Home/Away/Third", "Trang sản phẩm (option / tab / description)"), g)
+        self.assertIn(("Lỗi chính tả", "Trang sản phẩm (option / tab / description)"), g)
+        self.assertNotIn(("Sai team", "Trang sản phẩm (option / tab / description)"), g)  # review + delivery list
+
     def test_category_other_kit_type(self):
         d = product(store__categories=[{"name": "Leeds United"}, {"name": "Premier League"}, {"name": "Leeds Away"}])
         self.assertIn(("Category / Tag", "Category"), groups(d))
