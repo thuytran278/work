@@ -991,7 +991,7 @@ def check_campaign_and_photo_price(data, add, name, site, is_gift):
         regular = (s.get("prices") or {}).get("regular_price")
         ok = {round(price, 2)} | ({int(regular) / 100} if regular else set())
         if not any(abs(x - y) < 0.01 for x in shown for y in ok):
-            add(HIGH, "Kho / Giá", "Giá trên ảnh", f"Ảnh chính ghi £{', £'.join(f'{x:.2f}' for x in shown)} nhưng giá đang "
+            add(HIGH, "Kho / Giá", "Giá trên ảnh", f"Ảnh chính ghi £{max(shown):.2f} nhưng giá đang "
                 f"bán là £{price:.2f}", "Làm lại ảnh với giá đúng (hoặc sửa giá nếu ảnh đúng)")
 
     # Christmas campaign: every listing published in the campaign window carries a Christmas AI image

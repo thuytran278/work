@@ -204,6 +204,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 23/10 | Sửa `kits_in`: chỉ gộp thành áo thủ môn khi Home/Away đứng sát Goalkeeper ("Away Goalkeeper"); "Away and Goalkeeper" (bundle) là 2 áo. Quét option toàn bộ 791 gift pack 4 web → 5 listing sai, danh sách `reports/gift_option_mismatch_2026-10-23.csv` |
 | 23/10 | Check toàn trang: bỏ qua footer/menu theme nhét trong khối sản phẩm (RFS), tên sản phẩm khác trong khung "mua kèm", ô chọn size của bundle, dòng HTML lộ; team/season chỉ xét câu thật (≥10 chữ hoặc ≥5 chữ có dấu câu). Rule KFK "Kit không ghi shirt" bỏ qua chỗ shirt là 1 phần của kit (template KFK mới: "shirt, matching shorts", "applied to the shirt"). Chạy thử 17–21/10 (120 listing): báo nhầm từ 40+ xuống 0 qua kiểm tra tay |
 | 23/10 | **KFK Christmas campaign** (task 23/10): `config.json` → `christmas_campaign` KFK 23/10–31/12. Listing KFK đăng trong khoảng này (plain + gift pack) phải có ảnh AI Christmas (tên file/alt chứa Xmas/Christmas), thiếu → lỗi Cao. **Giá trên ảnh**: OCR (tesseract) đọc giá in trên ảnh chính (badge "SPECIAL OFFER £49.99"), khác giá bán/giá gốc → lỗi Cao. Cần `apt-get install tesseract-ocr` + `pip install -r requirements.txt`; thiếu OCR thì bỏ qua check này. Routine đã thêm bước cài OCR |
+| 23/10 | OCR giá trên ảnh: sửa đọc "£" thành số ("847.99" = £47.99) và số 9 cuối bị đọc thành 5. Kiểm tra bằng mắt 13 ảnh bị báo lệch: 4 lệch thật, 9 do OCR (đã sửa) |
 
 ## 9. Hạn chế đã biết và câu hỏi còn mở
 

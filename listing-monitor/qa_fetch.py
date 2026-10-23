@@ -114,7 +114,14 @@ def image_price(src, timeout=30):
             found = (re.findall(r"[£€]\s?(\d{2,3})\s?[.,]\s?(\d{2})", text)
                      or re.findall(r"(?<!\d)(\d{2,3})[.,](\d{2})(?!\d)", text))
             if found:
-                return sorted({float(f"{a}.{b}") for a, b in found})
+                vals = set()
+                for a, b in found:
+                    vals.add(float(f"{a}.{b}"))
+                    if len(a) == 3 and a[0] in "2348":
+                        vals.add(float(f"{a[1:]}.{b}"))  # "£" read as a digit: "847.99" is £47.99
+                    if b[0] == "9" and b != "99":
+                        vals.add(float(f"{a[-2:] if len(a) == 3 else a}.99"))  # last 9 misread: "49.95" is £49.99
+                return sorted(v for v in vals if v < 200)
     return []
 
 
