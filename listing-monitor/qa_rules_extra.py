@@ -498,6 +498,7 @@ def check_extra(data):
     check_player_seo(data, add, name, seo_title, sku, is_gift)
     check_template_fields(data, add, name, sku, is_gift)
     check_campaign_and_photo_price(data, add, name, site, is_gift)
+    check_vague_name(data, add, name, team)
     check_photo_kit(data, add, name)
     if (data.get("page") or {}).get("body"):
         check_page_body(data, add, name, sku, is_gift, is_retro, team)
@@ -870,6 +871,16 @@ def check_template_fields(data, add, name, sku, is_gift):
         add(HIGH, "Sai cầu thủ", "Description", "Listing không in sẵn nhưng description có Player print / Pre-printed: "
             + snippet(both, r"pre-?printed with|player print:", 40), "Xoá phần Player print (copy từ listing cầu thủ)")
 
+
+
+def check_vague_name(data, add, name, team):
+    """A listing whose name says nothing about the product ("RFK – Custom") confuses shoppers and Google."""
+    s = data["store"]
+    named_team = any(re.search(rf"\b{re.escape(e)}\b", name, re.I) for e in ENTITIES) or (team and fuzzy_contains(name, team))
+    if not named_team and not kits_in(name) and not re.search(r"\b(kit|shirt|jersey|gift|bundle|pack)s?\b", name, re.I):
+        add(HIGH, "Tên sản phẩm", "Tên sản phẩm", f"Tên \"{name}\" không cho biết sản phẩm là gì (không có team / loại áo)"
+            + (" — đang index trên Google" if "noindex" not in (data.get("page") or {}).get("robots", "") else ""),
+            "Đặt tên theo công thức, hoặc ẩn (private/noindex) nếu đây là sản phẩm riêng cho 1 khách")
 
 
 def check_page_options(data, add, name):
