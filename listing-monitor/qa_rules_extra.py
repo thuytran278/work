@@ -1214,6 +1214,11 @@ def check_catalog_data(data, add, name, sku, is_gift):
     if parent and parent in vskus:
         add(HIGH, "SKU", "SKU variation", f"Variation dùng y SKU cha {s.get('sku')}", "Thêm hậu tố size vào SKU variation")
 
+    spaced = [v.get("sku") for v in vars_ if v.get("sku") and re.search(r"\s_|_\s|\s{2}", v["sku"])]
+    if spaced:
+        add(MED, "SKU", "SKU variation", f"SKU variation có dấu cách thừa: \"{spaced[0]}\"" + (f" (+{len(spaced) - 1})" if len(spaced) > 1 else ""),
+            "Xoá dấu cách thừa (import / feed theo SKU sẽ không khớp)")
+
     # 7. Variation SKU with another prefix than the parent (cloned product, not renamed)
     head = "_".join(parent.split("_")[:4])
     if head.count("_") == 3:

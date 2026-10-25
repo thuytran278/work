@@ -143,6 +143,20 @@ class Extra(unittest.TestCase):
         d["store"]["images"].pop()
         self.assertNotIn(("Christmas campaign", "Ảnh"), groups(d))
 
+    def test_catalog_data(self):
+        d = product()
+        d["store"]["attributes"] = [a for a in d["store"]["attributes"] if a["name"] != "Kit Option"]
+        d["variations"] = [
+            {"id": 11, "sku": "KFK_LEE_HO_KD_No_26/27_16", "attributes": [{"name": "Size", "value": "16-3-4-yrs"}]},
+            {"id": 12, "sku": "", "attributes": [{"name": "Size", "value": "16-3-4-yrs"}]},
+            {"id": 13, "sku": "KFK_LEE_AW_KD_No_26/27_20", "attributes": [{"name": "Size", "value": "20-5-6-yrs"}]},
+        ]
+        g = groups(d)
+        self.assertIn(("Thiếu attribute", "Attribute Kit Option"), g)
+        self.assertIn(("SKU", "SKU variation"), g)
+        self.assertIn(("Variation", "Variation thiếu size"), g)  # 28 (12-13 yrs) has no variation
+        self.assertIn(("Variation", "Attribute Size"), g)  # 20 (5-6 yrs) not in the attribute
+
     def test_category_other_kit_type(self):
         d = product(store__categories=[{"name": "Leeds United"}, {"name": "Premier League"}, {"name": "Leeds Away"}])
         self.assertIn(("Category / Tag", "Category"), groups(d))
