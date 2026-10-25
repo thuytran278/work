@@ -139,6 +139,14 @@ def load_image_fp():
 
 IMAGE_FP = load_image_fp()
 
+# Parent + variation SKUs of every known product per site (data/sku_index.json, refreshed from the Store API list
+# and the cache on QA runs): {site: {sku: [product ids]}}
+SKU_INDEX_PATH = Path(__file__).resolve().parent / "data" / "sku_index.json"
+try:
+    SKU_INDEX = json.loads(SKU_INDEX_PATH.read_text(encoding="utf-8"))
+except (OSError, ValueError):
+    SKU_INDEX = {}
+
 
 def colour_sim(a, b):
     return sum(min(x, y) for x, y in zip(a, b))
@@ -308,6 +316,14 @@ def check_extra(data):
             base = SHIRT_PRICE[site]
             if sku["aud_code"] == "KD" and has_word(fname, "kit") and socks:
                 exp = base - (NO_SOCKS_DISCOUNT[site] if socks == "no" else 0)
+            elif sku["aud_code"] == "KD" and has_word(fname, "kit"):
+                # Kit Option missing: the price must still be one of the two tiers (Clara 25/10: RFS 85134 at 30.99)
+                extra = ((1 if is_retro else 0) + (10 if sku["player"] else 0)
+                         + (1 if sku["long_sleeve"] or re.search(r"long[\s-]sleeve", name, re.I) else 0))
+                tiers = [base + extra, base - NO_SOCKS_DISCOUNT[site] + extra]
+                if not any(abs(price - t) < 0.01 for t in tiers):
+                    add(HIGH, "Kho / Giá", "Giá", f"Giá đang bán £{price:.2f}, ngoài bảng giá (£{tiers[0]:.2f} có tất / "
+                        f"£{tiers[1]:.2f} không tất)", "Sửa giá theo bảng giá, và điền Kit Option")
             elif sku["aud_code"] == "ADK" and socks and site in ADULT_KIT_WITH_SOCKS:
                 exp = ADULT_KIT_WITH_SOCKS[site] - (NO_SOCKS_DISCOUNT[site] if socks == "no" else 0)
             elif sku["aud_code"] in ("AD", "WM") and has_word(fname, "shirt"):
@@ -499,6 +515,8 @@ def check_extra(data):
     check_template_fields(data, add, name, sku, is_gift)
     check_campaign_and_photo_price(data, add, name, site, is_gift)
     check_vague_name(data, add, name, team)
+    check_catalog_data(data, add, name, sku, is_gift)
+    check_audience_attrs(data, add, name, sku)
     check_photo_kit(data, add, name)
     if (data.get("page") or {}).get("body"):
         check_page_body(data, add, name, sku, is_gift, is_retro, team)
@@ -1136,3 +1154,108 @@ def check_photo_kit(data, add, name):
         add(MED, "Sai Home/Away/Third", "Ảnh (màu áo)",
             f"Ảnh chính gần như trùng ảnh của listing {kit} {best[1]} ({int(best[0] * 100)}%): 1 trong 2 listing đang dùng "
             f"nhầm ảnh", "So với ảnh áo thật của mùa này, sửa listing bị nhầm")
+
+
+# ---------------------------------------------------------------- Part H: catalog data (Clara 25/10, team audit list)
+ACCESSORY_RE = re.compile(r"\b(socks?|bag|pin|badge|ball|scarf|hat|cap|bottle|keyring|gift card|voucher)\b", re.I)
+
+
+def sku_norm(sku):
+    return re.sub(r"\s+", "", sku or "").upper()
+
+
+def size_of(v):
+    return next((a.get("value") for a in v.get("attributes") or [] if fold(a.get("name", "")) in ("size", "pa_size")), None)
+
+
+def slug(text):
+    return re.sub(r"[^a-z0-9]+", "-", fold(text or "")).strip("-")
+
+
+def check_catalog_data(data, add, name, sku, is_gift):
+    s, site = data["store"], data["site"]
+    fname = fold(name)
+    parent = sku_norm(s.get("sku"))
+    accessory = bool(ACCESSORY_RE.search(name)) and not has_word(fname, "kit", "shirt", "jersey")
+
+    # 1. Parent SKU used by another product (import by SKU would overwrite the wrong one)
+    others = [i for i in (SKU_INDEX.get(site, {}).get(parent) or []) if str(i) != str(s.get("id"))]
+    if parent and others:
+        add(HIGH, "SKU", "SKU trùng", f"SKU {s.get('sku')} cũng là SKU của sản phẩm {', '.join(map(str, others[:3]))}",
+            "Đổi SKU cho khác nhau (import theo SKU sẽ ghi nhầm sản phẩm)")
+
+    # 2. Kids kit without Kit Option (with / without socks unknown)
+    if has_word(fname, "kit") and not is_gift and not accessory and not attr(s, "kit option"):
+        add(HIGH, "Thiếu attribute", "Attribute Kit Option", "Bộ kit nhưng attribute Kit Option trống: không biết có tất hay không",
+            "Điền Kit Option (With Socks / No Socks)")
+
+    # 3. No Size attribute
+    sizes_attr = attr(s, "size")
+    if not sizes_attr and not is_gift:
+        if accessory:
+            add(MED, "Thiếu attribute", "Attribute Size", "Phụ kiện chưa có attribute Size (vd Adult Size / Kid Socks): "
+                "template chưa có dạng cho phụ kiện (chờ sếp)", "Thêm attribute Size dạng phụ kiện khi có template")
+        else:
+            add(HIGH, "Thiếu attribute", "Attribute Size", "Không có attribute Size: bộ lọc size trên web không thấy sản phẩm",
+                "Thêm attribute Size")
+
+    vars_ = data.get("variations") or []
+    if not vars_:
+        return
+    # 4. Variation SKU empty / duplicated
+    vskus = [sku_norm(v.get("sku")) for v in vars_ if v.get("sku") is not None]
+    empty = [str(v["id"]) for v in vars_ if v.get("sku") == ""]
+    dup = sorted({x for x in vskus if x and vskus.count(x) > 1})
+    if empty:
+        add(HIGH, "SKU", "SKU variation", f"{len(empty)}/{len(vars_)} variation để trống SKU (ID {', '.join(empty[:6])})",
+            "Điền SKU cho từng variation")
+    if dup:
+        add(HIGH, "SKU", "SKU variation", f"Variation trùng SKU: {', '.join(dup[:3])}", "Mỗi variation 1 SKU riêng")
+    if parent and parent in vskus:
+        add(HIGH, "SKU", "SKU variation", f"Variation dùng y SKU cha {s.get('sku')}", "Thêm hậu tố size vào SKU variation")
+
+    # 7. Variation SKU with another prefix than the parent (cloned product, not renamed)
+    head = "_".join(parent.split("_")[:4])
+    if head.count("_") == 3:
+        wrong = [v.get("sku") for v in vars_ if v.get("sku") and not sku_norm(v["sku"]).startswith(head)]
+        if wrong:
+            add(MED, "SKU", "SKU variation", f"SKU cha {s.get('sku')} nhưng variation mang SKU khác đầu: {wrong[0]}"
+                + (f" (+{len(wrong) - 1})" if len(wrong) > 1 else ""), "Sửa SKU variation theo SKU cha (clone quên đổi)")
+
+    # 5 / 8. Size attribute vs variations
+    v_sizes = {slug(size_of(v)) for v in vars_ if size_of(v)}
+    a_sizes = {slug(x) for x in sizes_attr}
+    if a_sizes and v_sizes:
+        missing_var = sorted(a_sizes - v_sizes)
+        missing_attr = sorted(v_sizes - a_sizes)
+        if missing_var:
+            add(HIGH, "Variation", "Variation thiếu size", f"Attribute có {len(a_sizes)} size nhưng chỉ {len(v_sizes)} variation "
+                f"hiện trên web; thiếu: {', '.join(missing_var[:6])}", "Tạo / bật variation cho các size còn thiếu, "
+                "hoặc bỏ size đó khỏi attribute (variation đang tắt thì kiểm tra trong admin)")
+        if missing_attr:
+            add(MED, "Variation", "Attribute Size", f"Variation có size {', '.join(missing_attr[:6])} nhưng attribute Size không "
+                "liệt kê: bộ lọc size thiếu", "Thêm size vào attribute")
+
+
+def check_audience_attrs(data, add, name, sku):
+    """6 / 9 / 10: Kit Type attribute vs SKU, Gender Age vs product type and name."""
+    s = data["store"]
+    fname = fold(name)
+    kit_type = attr(s, "kit type")
+    if sku and sku["kits"] and kit_type and not sku["gift"]:
+        k_attr = kits_in(" ".join(kit_type)) - {"training"}
+        sku_k = sku["kits"] - {"home", "away", "third"} if "gk" in sku["kits"] else sku["kits"]
+        if k_attr and sku_k and not k_attr & sku_k:
+            add(MED, "SKU", "SKU vs Kit Type", f"SKU ghi {sku['kit_code']} nhưng Kit Type là {', '.join(kit_type)}",
+                "Sửa SKU hoặc Kit Type cho khớp tên")
+    ga = " ".join(attr(s, "gender age", "gender/age", "gender & age"))
+    if ga:
+        if has_word(fname, "shirt") and not has_word(fname, "kit") and re.search(r"\bkit\b", ga, re.I):
+            add(MED, "Sai đối tượng", "Attribute Gender Age", f"Áo rời (Shirt) nhưng Gender Age = \"{ga}\" (nhãn kit)",
+                "Bỏ giá trị Kit khỏi Gender Age")
+        if re.search(r"\bwomen'?s?\b|\bladies\b", name, re.I) and not re.search(r"women|ladies", ga, re.I):
+            add(MED, "Sai đối tượng", "Attribute Gender Age", f"Tên có Women nhưng Gender Age = \"{ga}\"", "Thêm Women vào Gender Age")
+        if re.search(r"\bkids?\b", name, re.I) and not re.search(r"\b(men|adult|dad|family)\b", name, re.I) \
+                and not re.search(r"kid", ga, re.I):
+            add(MED, "Sai đối tượng", "Attribute Gender Age", f"Tên có Kids nhưng Gender Age = \"{ga}\"", "Sửa Gender Age")
+

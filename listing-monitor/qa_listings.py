@@ -23,7 +23,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
-from check_new_listings import BASE_DIR, REPORT_DIR, get_tz
+from check_new_listings import BASE_DIR, REPORT_DIR, get_tz, http_get
 import qa_fetch
 import qa_rules
 import qa_rules_extra
@@ -152,7 +152,43 @@ def refresh_boilerplate():
         qa_rules_extra.BOILERPLATE = {k: set(v) for k, v in bp.items()}
 
 
-def run_checks(products):
+def refresh_sku_index(cfg, max_age_hours=24 * 7):
+    """All parent SKUs per site from the Store API list (weekly) + every cached product and variation."""
+    path = qa_rules_extra.SKU_INDEX_PATH
+    index = qa_rules_extra.SKU_INDEX or {}
+    if not path.exists() or (time.time() - path.stat().st_mtime) / 3600 > max_age_hours:
+        index = {}
+        for site, base in cfg["sites"].items():
+            for page in range(1, 60):
+                try:
+                    text, _ = http_get(f"{base.rstrip('/')}/wp-json/wc/store/v1/products?per_page=100&page={page}",
+                                       retry_waits=(20, 60))
+                except Exception:
+                    break
+                items = json.loads(text)
+                for p in items:
+                    k = qa_rules_extra.sku_norm(p.get("sku"))
+                    if k and p["id"] not in index.setdefault(site, {}).setdefault(k, []):
+                        index[site][k].append(p["id"])
+                if len(items) < 100:
+                    break
+                time.sleep(cfg.get("request_delay", {}).get(site, 0.3))
+    for path_ in qa_fetch.CACHE_DIR.glob("*/*.json"):
+        try:
+            d = json.loads(path_.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        s = d.get("store") or {}
+        k = qa_rules_extra.sku_norm(s.get("sku"))
+        if k and s.get("id") not in index.setdefault(d["site"], {}).setdefault(k, []):
+            index[d["site"]][k].append(s["id"])
+    path.write_text(json.dumps(index, ensure_ascii=False), encoding="utf-8")
+    qa_rules_extra.SKU_INDEX = index
+
+
+def run_checks(products, cfg=None):
+    if cfg:
+        refresh_sku_index(cfg)
     refresh_price_ref()
     refresh_image_fp()
     refresh_boilerplate()
@@ -349,7 +385,7 @@ def main(argv=None):
 
     listings = load_listings(label)
     products, errors = fetch_all(listings, cfg, args.refresh, args.max_age_hours)
-    rows = run_checks(products)
+    rows = run_checks(products, cfg)
     templates = find_template_issues(products, rows)
 
     out = REPORT_DIR / label / f"qa_{label}.xlsx"

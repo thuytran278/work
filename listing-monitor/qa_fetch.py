@@ -155,6 +155,22 @@ def image_price(src, timeout=30, im=None):
     return []
 
 
+def fetch_variations(base_url, store, delay=0.3):
+    """SKU / price / attributes of every variation the public API shows (disabled or hidden variations are not
+    visible without an API key)."""
+    out = []
+    for v in store.get("variations") or []:
+        try:
+            text, _ = http_get(f"{base_url}/wp-json/wc/store/v1/products/{v['id']}", retry_waits=(20, 60))
+            q = json.loads(text)
+            out.append({"id": v["id"], "sku": q.get("sku") or "", "price": (q.get("prices") or {}).get("price"),
+                        "attributes": v.get("attributes") or [], "in_stock": q.get("is_in_stock")})
+        except Exception:
+            out.append({"id": v["id"], "sku": None, "price": None, "attributes": v.get("attributes") or []})
+        time.sleep(min(delay, 1.0))
+    return out
+
+
 def cached(site, product_id):
     path = CACHE_DIR / site / f"{product_id}.json"
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
@@ -229,6 +245,7 @@ def fetch_product(site, base_url, product_id, url, refresh=False, delay=0.3, sto
             raise
         # Firewall (e.g. Cloudflare on CFS) blocks the page: keep the API data, skip page-based SEO checks.
         data["page"] = {"seo_title": "", "meta_description": "", "robots": "", "canonical": "", "blocked": True}
+    data["variations"] = fetch_variations(base_url, data["store"], delay)
     imgs = data["store"].get("images") or []
     data["page"]["main_image_ok"] = image_ok(imgs[0].get("src")) if imgs else None
     if imgs:
