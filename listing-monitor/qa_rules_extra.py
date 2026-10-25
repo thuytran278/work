@@ -863,7 +863,11 @@ def check_template_fields(data, add, name, sku, is_gift):
             + snippet(both, r"socks (are )?not included|without socks|no socks", 40), "Sửa phần In the parcel / What you get")
 
     colours_v = field_value(desc, "Colours", "Main colours")
-    name_cols = {c for c in KIT_COLOURS if re.search(rf"\b{c}\b", name, re.I)}
+    plain = name
+    if sku and sku["player"]:
+        plain = re.sub(re.escape(sku["player"]), " ", plain, flags=re.I)  # "GIBBS-WHITE 10" is a player, not a colour
+    plain = re.sub(r"\b[A-Z]+(?:-[A-Z]+)+\b", " ", plain)  # hyphenated surnames in capitals
+    name_cols = {c for c in KIT_COLOURS if re.search(rf"\b{c}\b", plain, re.I)}
     if name_cols:
         where = colours_v or " ".join(desc.split()[:60])
         cols = {c for c in KIT_COLOURS if re.search(rf"\b{c}\b", where, re.I)}
