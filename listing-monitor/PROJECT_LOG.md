@@ -170,6 +170,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 23/10 | 2 / 1 / 0 / 0 | KFK 1 / RFS 1 | KFK 264123 Portugal Away Adult Kit RONALDO 7: chưa có ảnh AI Christmas, size chart Kids trên listing Adult. KFK "FREE Christmas Drawstring Bag" (quà tặng, £0, noindex) bỏ qua. RFS 104888 Tottenham Away+Third Kids bundle: option "Personalisation for Home kit", description ghi 45.99 (bán 47.99) |
 | 24/10 | 0 / 0 / 1 / 0 | RFK 1 | RFK 129353 "RFK – Custom" (SKU RFK_ACMJK_Dark_KD_No_26/27, £39.99, đang index, category New Arrivals 26/27): tên không nói sản phẩm gì, description "AC Milan jacket dark gray — shirt and matching shorts" mâu thuẫn |
 | 25/10 | 0 / 0 / 0 / 5 | – | CFS 4 Nottingham Forest "Front Graphic" Home/Away (thường + GIBBS-WHITE 10, đã đổi từ "Sponsor") + "FREE Christmas Drawstring Bag" (quà tặng, bỏ qua). Chỉ lỗi Thấp |
+| 26/10 | 18 / 0 / 0 / 0 | KFK 18 | Cả 18 listing KFK mới (Barcelona LS/GK, Liverpool 26/27 LS + 27/28, Man City LS, Sunderland GK ×3, Juventus/Everton GK, Inter Third, Croatia 2027, West Brom, Sheff Wed) **chưa có ảnh AI Christmas**. Liverpool Home/Third 2027/28 (câu hỏi mở). Máy cloud mới: `pip` trỏ sai Python, phải dùng `python3 -m pip` + cài lại pillow |
 
 **Báo cáo tổng hợp:**
 
