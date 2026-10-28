@@ -1,6 +1,8 @@
 import copy
 import sys
 import unittest
+from datetime import date
+from unittest import mock
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -142,6 +144,16 @@ class Extra(unittest.TestCase):
         d["published_at"] = "2026-10-01 10:00"
         d["store"]["images"].pop()
         self.assertNotIn(("Christmas campaign", "Ảnh"), groups(d))
+
+    def test_christmas_late_published_listing_judged_by_check_day(self):
+        # KFK GORDON 17 (28/10): dated 26/10 but live only on 28/10, so the day's list has no publish date
+        d = product()
+        d["published_at"] = ""
+        with mock.patch.object(x, "date") as fake:
+            fake.today.return_value = date(2026, 10, 28)
+            self.assertIn(("Christmas campaign", "Ảnh"), groups(d))
+            fake.today.return_value = date(2027, 1, 5)
+            self.assertNotIn(("Christmas campaign", "Ảnh"), groups(d))
 
     def test_catalog_data(self):
         d = product()

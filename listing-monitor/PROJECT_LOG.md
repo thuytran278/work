@@ -171,6 +171,8 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 24/10 | 0 / 0 / 1 / 0 | RFK 1 | RFK 129353 "RFK – Custom" (SKU RFK_ACMJK_Dark_KD_No_26/27, £39.99, đang index, category New Arrivals 26/27): tên không nói sản phẩm gì, description "AC Milan jacket dark gray — shirt and matching shorts" mâu thuẫn |
 | 25/10 | 0 / 0 / 0 / 5 | – | CFS 4 Nottingham Forest "Front Graphic" Home/Away (thường + GIBBS-WHITE 10, đã đổi từ "Sponsor") + "FREE Christmas Drawstring Bag" (quà tặng, bỏ qua). Chỉ lỗi Thấp |
 | 26/10 | 18 / 0 / 0 / 0 | KFK 18 | Cả 18 listing KFK mới (Barcelona LS/GK, Liverpool 26/27 LS + 27/28, Man City LS, Sunderland GK ×3, Juventus/Everton GK, Inter Third, Croatia 2027, West Brom, Sheff Wed) **chưa có ảnh AI Christmas**. Liverpool Home/Third 2027/28 (câu hỏi mở). Máy cloud mới: `pip` trỏ sai Python, phải dùng `python3 -m pip` + cài lại pillow |
+| 27/10 (chạy bù 29/10) | 0 / 2 / 1 / 6 | RFS 2 / CFS 2 | RFS 105054/105060 Retro Argentina MARADONA/MESSI 10 Away 1994/95: SKU ghi HO. CFS 84891 Inter Milan Third Kids: description ghi "away" + Kit: Away, ghi có tất (No Socks); CFS 84880 Everton Yellow GK Kids: ghi có tất (No Socks). RFK FREE Christmas Drawstring Bag bỏ qua |
+| 28/10 | 2 / 1 / 0 / 0 (mới thật) | KFK 2 | KFK 265479/265465 Barcelona Home/Away Kids GORDON 17 (ngày đăng 26/10, 28/10 mới live): **chưa có ảnh AI Christmas**, tool lúc đầu bỏ sót vì thiếu ngày đăng → đã sửa. RFS FREE Christmas Drawstring Bag bỏ qua. Danh sách 28/10 lặp lại 9 listing 27/10 do ngày 27 chạy bù |
 
 **Báo cáo tổng hợp:**
 
@@ -220,6 +222,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 24/10 | Rule mới: tên sản phẩm không có team, loại áo hay chữ kit/shirt/gift ("RFK – Custom") → lỗi Cao. Quét toàn bộ cache: chỉ bắt đúng listing này |
 | 25/10 | **Dữ liệu catalog** (danh sách lỗi team audit 25/10): tool tải thêm SKU/giá/size từng variation (API công khai) + bảng SKU cả web `data/sku_index.json` (quét Store API mỗi tuần). Rule: SKU cha trùng sản phẩm khác (Cao); kit thiếu Kit Option (Cao); thiếu attribute Size (Cao; phụ kiện → Trung bình "chờ template"); SKU variation trống / trùng / bằng SKU cha (Cao); SKU variation khác đầu SKU cha (clone quên đổi) và có dấu cách thừa (Trung bình); attribute Size có mà variation thiếu (Cao) và ngược lại (Trung bình); SKU vs Kit Type; Gender Age có "Kit" trên áo rời, tên Women/Kids mà Gender Age không có (Trung bình); kit Kids thiếu Kit Option mà giá không thuộc 2 mức (Cao). **Giới hạn**: variation đang tắt / sản phẩm private không hiện qua API công khai (vd 5 variation trống SKU của RFS 84552, sản phẩm 81958) → cần API key read-only |
 | 25/10 | Màu trong tên: bỏ tên cầu thủ trước khi đọc màu (GIBBS-WHITE không phải áo trắng) |
+| 28/10 | Christmas campaign: listing không có ngày đăng trong danh sách ngày (lên live muộn từ draft/private) được tính theo ngày tool phát hiện, không bỏ qua nữa |
 
 ## 9. Hạn chế đã biết và câu hỏi còn mở
 

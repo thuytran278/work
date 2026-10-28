@@ -11,6 +11,7 @@ import html
 import json
 import re
 from collections import Counter
+from datetime import date
 from pathlib import Path
 
 from qa_rules import (HIGH, LOW, MED, TEAM_ALIASES, YEAR_RE, attr, fold, fuzzy_contains, has_word, kits_in, parse_sku,
@@ -1121,7 +1122,11 @@ def check_campaign_and_photo_price(data, add, name, site, is_gift):
 
     # Christmas campaign: every listing published in the campaign window carries a Christmas AI image
     camp = CAMPAIGNS.get(site)
-    published = (data.get("published_at") or "")[:10]
+    # No publish date in the day's list = it went live late (draft/private first, KFK GORDON 17 on 28/10):
+    # it was published during the campaign all the same, so judge it by the day it was found
+    published = data.get("published_at")
+    if published is not None:
+        published = published[:10] or date.today().isoformat()
     if camp and published and camp["from"] <= published <= camp["until"]:
         imgs = s.get("images") or []
         if not any(XMAS_RE.search((i.get("src") or "") + " " + (i.get("alt") or "")) for i in imgs):
