@@ -14,6 +14,8 @@ from collections import Counter
 from datetime import date
 from pathlib import Path
 
+import sleeve_badge
+
 from qa_rules import (HIGH, LOW, MED, TEAM_ALIASES, YEAR_RE, attr, fold, fuzzy_contains, has_word, kits_in, parse_sku,
                       seasons_in, snippet, strip_html)
 
@@ -519,6 +521,7 @@ def check_extra(data):
     check_catalog_data(data, add, name, sku, is_gift)
     check_audience_attrs(data, add, name, sku)
     check_photo_kit(data, add, name)
+    check_sleeve_badge(data, add, name, desc)
     if (data.get("page") or {}).get("body"):
         check_page_body(data, add, name, sku, is_gift, is_retro, team)
     else:
@@ -1273,3 +1276,35 @@ def check_audience_attrs(data, add, name, sku):
                 and not re.search(r"kid", ga, re.I):
             add(MED, "Sai đối tượng", "Attribute Gender Age", f"Tên có Kids nhưng Gender Age = \"{ga}\"", "Sửa Gender Age")
 
+
+# ---------- Part I. Sleeve badge option vs team/league (all sites, sleeve_badge.py = football-qa-tools copy)
+# Wrong team/league = CAO; option/picture/description wording = Trung bình; "needs a person" reviews = Thấp.
+BADGE_MED = {"badge_label_missing_league", "badge_image_mismatch", "option_not_in_description",
+             "description_badge_champion_mismatch", "multiple_badge_options"}
+BADGE_FIX = {
+    "national_team_league_badge": "Bỏ option badge giải CLB, hoặc đổi sang badge giải đội tuyển",
+    "badge_league_mismatch": "Đổi option sang badge đúng giải của CLB",
+    "club_with_national_tournament_badge": "Bỏ option badge giải đội tuyển, hoặc đổi sang giải của CLB",
+    "description_badge_mismatch": "Sửa dòng sleeve badge trong description hoặc option cho khớp",
+    "description_badge_without_option": "Thêm option badge hoặc bỏ dòng sleeve badge trong description",
+    "badge_label_missing_league": "Ghi tên giải vào tên option (vd 'Add Premier League Badge')",
+    "badge_image_mismatch": "Sửa tên option hoặc ảnh badge cho khớp",
+    "option_not_in_description": "Thêm dòng sleeve badge vào description",
+    "description_badge_champion_mismatch": "Thống nhất có/không chữ Champions giữa option và description",
+    "multiple_badge_options": "Kiểm tra lại các option badge",
+}
+
+
+def check_sleeve_badge(data, add, name, desc):
+    """Badge option must fit the team: no club-league badge on a national team, the club's own league, the
+    description's "Sleeve badge: X" line naming the same badge (CFS audit 28/10, all sites 29/10). RFS/RFK
+    description templates don't name the badge, so a missing line is only flagged on KFK/CFS."""
+    badges = (data.get("page") or {}).get("badges")
+    if badges is None:  # page cached before 29/10: no badge data
+        return
+    result = sleeve_badge.sleeve_badge_league_check(name, badges, desc,
+                                                    description_lists_badge=data["site"] in ("KFK", "CFS"))
+    for f in result["findings"]:
+        sev = HIGH if f["level"] == "FAIL" else MED if f["issue"] in BADGE_MED else LOW
+        add(sev, "Sleeve badge", "Option badge" if f["badge_label"] else "Description", f["message"],
+            BADGE_FIX.get(f["issue"], "Cần người check"))

@@ -1,10 +1,8 @@
 QA LISTING MOI 2026-10-28
 
-KFK: 2 listing, 2 listing co loi CAO, 2 listing co loi
-   - Christmas campaign: 2 loi
+KFK: 2 listing, 0 listing co loi CAO, 2 listing co loi
 RFS: 3 listing, 2 listing co loi CAO, 2 listing co loi
    - Sai Home/Away/Third: 2 loi
 RFK: 1 listing, 0 listing co loi CAO, 0 listing co loi
-CFS: 6 listing, 2 listing co loi CAO, 2 listing co loi
-   - Sai Home/Away/Third: 3 loi
-   - Sai tất (socks): 2 loi
+CFS: 6 listing, 1 listing co loi CAO, 5 listing co loi
+   - Sai tất (socks): 1 loi

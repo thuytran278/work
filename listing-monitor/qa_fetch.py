@@ -73,6 +73,36 @@ def parse_options(page_html):
     return out
 
 
+def parse_badges(page_html):
+    """Sleeve badge options with their pictures, for sleeve_badge.py: [{'label', 'images'}].
+    CFS (PPOM): the checkbox's data-label ("Add Premier Badge"). KFK/RFS/RFK (Extra Product Options): the
+    option label plus the alt text and filename of each picture under it, because labels like "Add  Badge"
+    or "Add Combo Argentina Home 2026 Badge" only name the league in the picture."""
+    t = page_html or ""
+    badges = []
+    for tag in re.findall(r'<input[^>]*data-data_name="?badge"?[^>]*>', t):
+        m = re.search(r'data-label="([^"]*)"', tag)
+        if m and "badge" in m.group(1).lower():
+            badges.append({"label": html.unescape(m.group(1)).strip(), "images": []})
+    for m in re.finditer(r'<(label|h\d|span|div)\b[^>]*class="[^"]*tm-epo-element-label[^"]*"[^>]*>(.*?)</\1>', t, re.S):
+        label = re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", m.group(2)))).strip()
+        if "badge" not in label.lower():
+            continue
+        # the picture block under the label, up to the option's own input / the next option
+        rest = t[m.end():m.end() + 8000]
+        stop = re.search(r'tc-element-container|tm-epo-element-label|tc-element-inner-wrap', rest)
+        images = []
+        for img in re.findall(r"<img[^>]*>", rest[:stop.start() if stop else len(rest)]):
+            alt = re.search(r'\balt="([^"]*)"', img)
+            srcs = [re.search(rf'(?<![\w-]){a}="([^"]+)"', img) for a in ("data-src", "data-lazy-src", "src")]
+            src = next((s.group(1) for s in srcs if s and not s.group(1).startswith("data:")), "")
+            for x in (html.unescape(alt.group(1)).strip() if alt else "", src.rsplit("/", 1)[-1]):
+                if x:
+                    images.append(x)
+        badges.append({"label": label, "images": images})
+    return badges
+
+
 def parse_body(page_html):
     """Visible text of the product block only (summary, options, variations, all tabs), without menus,
     related products, footer, scripts. This is everything a shopper (or an AI) reads about the product."""
@@ -236,6 +266,7 @@ def fetch_product(site, base_url, product_id, url, refresh=False, delay=0.3, sto
         data["page"] = parse_head(full)
         data["page"]["h1"] = parse_h1(full)
         data["page"]["options"] = parse_options(full)
+        data["page"]["badges"] = parse_badges(full)
         data["page"]["body"] = parse_body(full)
         if site == "KFK" and any(t in name for t in FREE_PIN_TEAMS):
             team = next(t for t in FREE_PIN_TEAMS if t in name)

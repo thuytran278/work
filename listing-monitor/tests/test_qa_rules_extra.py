@@ -220,5 +220,54 @@ class Extra(unittest.TestCase):
         self.assertEqual(len(x.check_extra_batch([a, b])), 2)
 
 
+
+class SleeveBadge(unittest.TestCase):
+    TM = ('<div class="tc-element-inner-wrap"><div class="tc-row">'
+          '<h5 class="tc-cell tc-epo-label tm-epo-element-label tcwidth-100"> {label}</h5>'
+          '<div class="tm-element-description"><p><img src="data:image/svg+xml;base64,AA" '
+          'data-src="https://x/uploads/{img}" alt="{alt}"></p></div>'
+          '<div class="tc-cell tc-col tc-element-container"><img src="https://x/other.png"></div></div></div>')
+
+    def test_parse_badges(self):
+        import qa_fetch
+        page = self.TM.format(label='Add  Badge', img='Argentina-home-world-cup-2026-badge.webp', alt='')
+        self.assertEqual(qa_fetch.parse_badges(page),
+                         [{'label': 'Add Badge', 'images': ['Argentina-home-world-cup-2026-badge.webp']}])
+        ppom = ('<input type="checkbox" data-optionid="add_premier_badge" data-label="Add Premier Badge" '
+                'data-data_name="badge" value="Add Premier Badge">')
+        self.assertEqual(qa_fetch.parse_badges(ppom), [{'label': 'Add Premier Badge', 'images': []}])
+
+    def badge_issues(self, name, badges, site='KFK', desc=''):
+        d = product()
+        d['site'] = site
+        d['store']['name'] = name
+        d['page']['badges'] = badges
+        issues = []
+        x.check_sleeve_badge(d, lambda sev, group, field, detail, fix='': issues.append((sev, group, detail)),
+                             name, desc)
+        return issues
+
+    def test_national_team_league_badge_is_high(self):
+        issues = self.badge_issues('Qatar Home Cheap Football Shirts 2024', [{'label': 'Add Premier Badge', 'images': []}],
+                                   site='CFS', desc='Sleeve badge: Premier League can be added using the product options.')
+        self.assertEqual([(i[0], i[1]) for i in issues], [(x.HIGH, 'Sleeve badge')])
+
+    def test_label_without_league_is_medium(self):
+        issues = self.badge_issues('Al Nassr Home Men Replica Football Shirt 2026/27',
+                                   [{'label': 'Add Sleeve Badge', 'images': ['Roshn_Saudi_League_Logo.png']}], site='RFS')
+        self.assertEqual([i[0] for i in issues], [x.MED])
+
+    def test_rfs_rfk_need_no_description_line(self):
+        badge = [{'label': 'Adding Premier League Badge', 'images': []}]
+        self.assertEqual(self.badge_issues('Chelsea Home Men Replica Football Shirt 2026/27', badge, site='RFK'), [])
+        self.assertEqual([i[0] for i in self.badge_issues('Chelsea Home Kids Football Kit 2026/27', badge)], [x.MED])
+
+    def test_old_cache_without_badges_is_skipped(self):
+        d = product()
+        issues = []
+        x.check_sleeve_badge(d, lambda *a, **k: issues.append(a), d['store']['name'], '')
+        self.assertEqual(issues, [])
+
+
 if __name__ == "__main__":
     unittest.main()
