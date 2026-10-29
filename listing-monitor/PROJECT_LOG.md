@@ -81,7 +81,7 @@ Lỗi xuất hiện trên ≥ 50% listing của 1 site (tối thiểu 5 listing)
 | Ảnh | Không có ảnh, alt trống hoặc trùng, < 3 ảnh, ảnh chính lỗi, màu ảnh mâu thuẫn description | B, C |
 | SKU | Sai format, đuôi `-1`, ký tự HTML, dấu cách hoặc ký tự lạ (Google Merchant) | SOP, A, C |
 | URL / Slug | Slug có season cũ hoặc sai loại áo | B |
-| Club bị report (KFK) | Listing live trong khi sheet ghi Private/Draft; Arsenal chỉ bán bundle | A |
+| Club bị report (4 web) | Listing live trong khi sheet Reported Club Status ghi Draft/Private/Deleted (reported) cho web đó; listing lẻ của đội BUNDLE ONLY; web ghi 'No products' (`data/reported_clubs.json`) | A |
 | Free Pin (KFK) | 7 đội phải có "FREE [TEAM] PIN" | A |
 | Category / Tag | League cha, National Team, World Cup 2026, Players; tag/category của team hoặc season khác | A |
 
