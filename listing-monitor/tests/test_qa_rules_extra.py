@@ -39,10 +39,55 @@ class Extra(unittest.TestCase):
         d = product(page__seo_title="Buy Chelsea Away Shirt Today | Quality Assurance")
         self.assertIn(("SEO", "SEO title"), groups(d))
 
+    REPORTED = {"teams": [
+        {"label": "Bayern Munich (Adidas)", "team": "Bayern Munich", "scope": {"retro": False, "years": [], "seasons": []},
+         "status": {"KFK": "Private (reported)", "CFS": "Published (blurred logo)"}},
+        {"label": "Arsenal (Adidas)", "team": "Arsenal", "scope": {"retro": False, "years": [], "seasons": []},
+         "status": {"KFK": "Published BUNDLE ONLY (blurred logo)", "RFK": "Published"}},
+        {"label": "Retro Arsenal (Nike)", "team": "Arsenal", "scope": {"retro": True, "years": [], "seasons": []},
+         "status": {"RFK": "Draft (reported)"}},
+        {"label": "Liverpool 24/25 (Adidas & Nike)", "team": "Liverpool", "scope": {"retro": False, "years": [], "seasons": ["24/25"]},
+         "status": {"RFK": "Draft (reported)"}},
+        {"label": "Barcelona (Nike)", "team": "Barcelona", "scope": {"retro": False, "years": [], "seasons": []},
+         "status": {"RFS": "Published / Private (reported)"}},
+    ]}
+
+    def reported(self, name, site="KFK"):
+        d = product(store__name=name)
+        d["site"] = site
+        with mock.patch.object(x, "REPORTED", self.REPORTED):
+            return [(i["severity"], i["field"]) for i in x.check_extra(d) if i["group"] == "Club bị report"]
+
     def test_reported_club_private(self):
-        d = product(store__name="Bay^_^rn Home Kids Football Kit 2026/27 (With socks)")
-        d["store"]["attributes"][3]["terms"] = [{"name": "Bay^_^rn"}]
-        self.assertIn(("Club bị report (KFK)", "Trạng thái"), groups(d))
+        self.assertEqual(self.reported("Bay^_^rn Home Kids Football Kit 2026/27 (With socks)"), [(x.HIGH, "Trạng thái")])
+        self.assertEqual(self.reported("Bayern Munich Home Kids Cheap Football Kit 2026/27", "CFS"), [(x.LOW, "Ảnh")])
+        self.assertEqual(self.reported("Bayern Munich Home Kids Football Kit 2026/27", "RFS"), [])
+
+    def test_reported_club_bundle_only(self):
+        self.assertEqual(self.reported("North London Red Home Kids Football Kit 2026/27 (With Socks)"),
+                         [(x.HIGH, "Trạng thái")])
+        self.assertEqual(self.reported("North London Red Gift Pack – Home and Away Kids Football Kit 2026/27"), [])
+        # 'Retro Arsenal' has no KFK status: a KFK retro single falls under the general Arsenal row
+        self.assertEqual(self.reported("Retro North London Red Home Kids Football Kit 1990"), [(x.HIGH, "Trạng thái")])
+
+    def test_reported_club_scopes(self):
+        # 'Retro Arsenal' row only for retro; 'Liverpool 24/25' only for that season
+        self.assertEqual(self.reported("Retro Arsn@l Away Kids Replica Football Kit 1988/1990", "RFK"),
+                         [(x.HIGH, "Trạng thái")])
+        self.assertEqual(self.reported("Arsn@l Home Kid Replica Football Kit 2026/27", "RFK"), [])
+        self.assertEqual(self.reported("Liverpool Home Kid Replica Football Kit 2024/25", "RFK"), [(x.HIGH, "Trạng thái")])
+        self.assertEqual(self.reported("Liverpool Home Kid Replica Football Kit 2025/26", "RFK"), [])
+
+    def test_reported_club_mixed_status(self):
+        self.assertEqual(self.reported("Barcelona Fourth Men Replica Football Shirt 2026/27", "RFS"), [(x.LOW, "Trạng thái")])
+
+    def test_reported_sheet_import(self):
+        import update_reported_clubs as u
+        self.assertEqual(u.parse_label("Retro Portugal + Portugal 2024 + 2022 (Nike)"),
+                         ("Portugal", "Nike", {"retro": True, "years": ["2024", "2022"], "seasons": []}))
+        self.assertEqual(u.parse_label("Liverpool 24/25 (Adidas & Nike)")[0::2],
+                         ("Liverpool", {"retro": False, "years": [], "seasons": ["24/25"]}))
+        self.assertEqual(u.parse_label("Retro Man United (Nike)")[0], "Manchester United")
 
     def test_free_pin_missing(self):
         d = product(store__name="England Home Kids Football Kit 2026 (With socks)", page__pin_text=False)

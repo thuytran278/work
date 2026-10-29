@@ -86,7 +86,15 @@ Làm riêng trên từng web:
 
 Tool tự chạy được mà không cần AI. Khi muốn AI đọc và giải thích kết quả, bắt thêm lỗi tool chưa có rule, hoặc sửa rule: mở thư mục `work` bằng Claude Code (bản desktop hoặc terminal) rồi nhắn như bình thường, ví dụ "chạy check lỗi hôm nay giúp mình".
 
-## 7. Cập nhật tool khi có rule mới
+## 7. Cập nhật danh sách đội bị report
+
+Khi sheet **Reported Club Status** thay đổi: tải sheet về dạng `.xlsx`, rồi mở cmd/Terminal ở thư mục `listing-monitor` và chạy:
+```
+python update_reported_clubs.py "C:\Users\Clara\Downloads\Reported Club Status.xlsx"
+```
+(sửa đường dẫn cho đúng file trên máy bạn). Tool đọc tab **General**, lưu vào `data/reported_clubs.json`, và từ lần chạy sau sẽ báo listing mới của các đội này trên cả 4 web.
+
+## 8. Cập nhật tool khi có rule mới
 
 - **GitHub Desktop**: bấm **Fetch origin**, rồi **Pull**.
 - **Tải ZIP**: tải ZIP mới về rồi copy đè lên thư mục cũ, nhưng **không copy thư mục `data/`** (để giữ lịch sử theo dõi trên máy). File `.env` không có trong ZIP nên không bị mất.

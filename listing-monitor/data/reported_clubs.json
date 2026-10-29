@@ -1,0 +1,1434 @@
+{
+ "updated": "2026-10-29",
+ "source": "Reported_Club_Status.xlsx",
+ "teams": [
+  {
+   "label": "Atletico Madrid (Nike)",
+   "team": "Atletico Madrid",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published",
+    "RFS": "Private (reported)",
+    "RFK": "Draft (reported)",
+    "CFS": "Published"
+   }
+  },
+  {
+   "label": "Australia (Nike)",
+   "team": "Australia",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Al Nassr (Nike & Adidas)",
+   "team": "Al Nassr",
+   "brand": "Nike & Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred logo)",
+    "RFS": "Published (blurred logo)",
+    "RFK": "Published BUNDLE ONLY (blurred logo)",
+    "CFS": "Published (blurred logo)"
+   }
+  },
+  {
+   "label": "Barcelona (Nike)",
+   "team": "Barcelona",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred logo)",
+    "RFS": "Published / Private (reported)",
+    "RFK": "Published (blurred logo)",
+    "CFS": "Published (blurred logo)"
+   }
+  },
+  {
+   "label": "Birmingham City (Nike)",
+   "team": "Birmingham City",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Published (blurred logo) BUNDLE ONLY"
+   }
+  },
+  {
+   "label": "Brazil (Nike)",
+   "team": "Brazil",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Published (blurred logo)"
+   }
+  },
+  {
+   "label": "Brighton (Nike)",
+   "team": "Brighton",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Deleted (reported)",
+    "RFS": "Private (reported)",
+    "RFK": "Private (reported)",
+    "CFS": "Published (blurred logo)"
+   }
+  },
+  {
+   "label": "Canada (Nike)",
+   "team": "Canada",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Chelsea (Nike)",
+   "team": "Chelsea",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred logo)",
+    "RFS": "Published (blurred logo)",
+    "RFK": "Published (blurred logo)",
+    "CFS": "Published (blurred logo)"
+   }
+  },
+  {
+   "label": "Croatia (Nike)",
+   "team": "Croatia",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "England (Nike)",
+   "team": "England",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred logo)",
+    "RFS": "Published",
+    "RFK": "Published (blurred logo)",
+    "CFS": "Published (blurred logo)"
+   }
+  },
+  {
+   "label": "Finland (Nike)",
+   "team": "Finland",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "France (Nike)",
+   "team": "France",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Inter Milan (Nike)",
+   "team": "Inter Milan",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published",
+    "RFS": "Private (reported)",
+    "RFK": "Draft (reported)",
+    "CFS": "Published"
+   }
+  },
+  {
+   "label": "Korea (Nike)",
+   "team": "Korea",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Liverpool 24/25 (Adidas & Nike)",
+   "team": "Liverpool",
+   "brand": "Adidas & Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": [
+     "24/25"
+    ]
+   },
+   "status": {
+    "KFK": "Published (blurred logo + change url)",
+    "RFS": "Published BUNDLE ONLY (blurred logo)",
+    "RFK": "Draft (reported)",
+    "CFS": "Published (blurred logo)"
+   }
+  },
+  {
+   "label": "Netherlands (Nike)",
+   "team": "Netherlands",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published",
+    "RFS": "Published",
+    "RFK": "Draft (reported)",
+    "CFS": "Published"
+   }
+  },
+  {
+   "label": "Nigeria (Nike)",
+   "team": "Nigeria",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Norway (Nike)",
+   "team": "Norway",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Paris Saint-Germain (Nike)",
+   "team": "Paris Saint-Germain",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred logo + change url)",
+    "RFS": "Draft (reported)",
+    "RFK": "Draft (reported)",
+    "CFS": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Poland (Nike)",
+   "team": "Poland",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Portsmouth (Nike)",
+   "team": "Portsmouth",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Pumas UNAM (Nike)",
+   "team": "Pumas UNAM",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Qatar (Nike)",
+   "team": "Qatar",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Retro Arsenal (Nike)",
+   "team": "Arsenal",
+   "brand": "Nike",
+   "scope": {
+    "retro": true,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)",
+    "CFS": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Retro Man United (Nike)",
+   "team": "Manchester United",
+   "brand": "Nike",
+   "scope": {
+    "retro": true,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Retro Portugal + Portugal 2024 + 2022 (Nike)",
+   "team": "Portugal",
+   "brand": "Nike",
+   "scope": {
+    "retro": true,
+    "years": [
+     "2024",
+     "2022"
+    ],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Retro Santos (Nike)",
+   "team": "Santos",
+   "brand": "Nike",
+   "scope": {
+    "retro": true,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Sporting CP (Nike)",
+   "team": "Sporting CP",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Tottenham Hotspur (Nike)",
+   "team": "Tottenham Hotspur",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred logo)",
+    "RFS": "Published (blurred logo)",
+    "RFK": "Draft (reported)",
+    "CFS": "Published"
+   }
+  },
+  {
+   "label": "Turkey (Nike)",
+   "team": "Turkey",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Uruguay (Nike)",
+   "team": "Uruguay",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "USA (Nike)",
+   "team": "USA",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "VFL Wolfsburg (Nike)",
+   "team": "VFL Wolfsburg",
+   "brand": "Nike",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Aberdeen (Adidas)",
+   "team": "Aberdeen",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (Blurred)",
+    "RFS": "Published (Blurred)",
+    "RFK": "Draft (reported)",
+    "CFS": "Published (Blurred)"
+   }
+  },
+  {
+   "label": "Ajax (Adidas)",
+   "team": "Ajax",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Private (reported)",
+    "RFS": "Private (reported)",
+    "RFK": "Published (blurred logo)",
+    "CFS": "Published"
+   }
+  },
+  {
+   "label": "Algeria (Adidas)",
+   "team": "Algeria",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Argentina (Adidas)",
+   "team": "Argentina",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Published BUNDLE ONLY (blurred logo)"
+   }
+  },
+  {
+   "label": "Arsenal (Adidas)",
+   "team": "Arsenal",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published BUNDLE ONLY (blurred logo)",
+    "RFS": "Published (blurred logo)",
+    "RFK": "Published",
+    "CFS": "Draft (reported) - Blur"
+   }
+  },
+  {
+   "label": "AS Roma (Adidas)",
+   "team": "AS Roma",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published",
+    "RFS": "Private (reported - blur)",
+    "RFK": "Published (blurred logo)",
+    "CFS": "Published"
+   }
+  },
+  {
+   "label": "Aston Villa (Adidas)",
+   "team": "Aston Villa",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred logo)",
+    "RFS": "Published (blurred logo)",
+    "RFK": "Published BUNDLE ONLY (blurred logo)",
+    "CFS": "Published"
+   }
+  },
+  {
+   "label": "Bayern Munich (Adidas)",
+   "team": "Bayern Munich",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred logo)",
+    "RFS": "Private (reported)",
+    "RFK": "Published (blurred logo)",
+    "CFS": "Published (blurred logo)"
+   }
+  },
+  {
+   "label": "Benfica (Adidas)",
+   "team": "Benfica",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred logo)",
+    "RFS": "Published (blurred logo)",
+    "RFK": "Draft (reported)",
+    "CFS": "Published (blurred logo)"
+   }
+  },
+  {
+   "label": "Belgium (Adidas)",
+   "team": "Belgium",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published",
+    "RFS": "Private (reported)",
+    "RFK": "No products",
+    "CFS": "Private (reported)"
+   }
+  },
+  {
+   "label": "Boca Juniors (Adidas)",
+   "team": "Boca Juniors",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred logo)",
+    "RFS": "Published (blurred logo)",
+    "RFK": "Draft (reported)",
+    "CFS": "Published (blurred logo)"
+   }
+  },
+  {
+   "label": "Club América (Adidas)",
+   "team": "Club América",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred logo)",
+    "RFS": "Published (blurred logo)",
+    "RFK": "Draft (reported)",
+    "CFS": "Published (blurred logo)"
+   }
+  },
+  {
+   "label": "Celtic FC (Adidas)",
+   "team": "Celtic FC",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Private (reported)",
+    "RFS": "Published",
+    "RFK": "Draft (reported)",
+    "CFS": "Published"
+   }
+  },
+  {
+   "label": "Chile (Adidas)",
+   "team": "Chile",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Colombia (Adidas)",
+   "team": "Colombia",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Eintracht Frankfurt (Adidas)",
+   "team": "Eintracht Frankfurt",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred logo)",
+    "RFS": "Published (blurred logo)",
+    "RFK": "Draft (reported)",
+    "CFS": "Published (blurred logo)"
+   }
+  },
+  {
+   "label": "Germany (Adidas)",
+   "team": "Germany",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Hungary (Adidas)",
+   "team": "Hungary",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Flamengo (Adidas)",
+   "team": "Flamengo",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred logo)",
+    "RFS": "Published (blurred logo)",
+    "RFK": "Draft (reported)",
+    "CFS": "Published (blurred logo)"
+   }
+  },
+  {
+   "label": "Fulham United (Adidas)",
+   "team": "Fulham United",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred logo)",
+    "RFS": "Published (blurred logo)",
+    "RFK": "Published BUNDLE ONLY (blurred logo)",
+    "CFS": "Published (blurred logo)"
+   }
+  },
+  {
+   "label": "Inter Miami (Adidas)",
+   "team": "Inter Miami",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Published BUNDLE ONLY (blurred logo)"
+   }
+  },
+  {
+   "label": "Italy (Adidas)",
+   "team": "Italy",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Japan (Adidas)",
+   "team": "Japan",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Juventus (Adidas & Kappa)",
+   "team": "Juventus",
+   "brand": "Adidas & Kappa",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published",
+    "RFS": "Published",
+    "RFK": "Published BUNDLE ONLY (blurred logo)",
+    "CFS": "Private (reported)"
+   }
+  },
+  {
+   "label": "Leeds United (Adidas)",
+   "team": "Leeds United",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published",
+    "RFS": "Published (Blurred Adidas Logo)",
+    "RFK": "Published BUNDLE ONLY (blurred logo)",
+    "CFS": "Published (blurred logo)"
+   }
+  },
+  {
+   "label": "Leicester City (Adidas)",
+   "team": "Leicester City",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Published (blurred logo)"
+   }
+  },
+  {
+   "label": "Los Angeles (Adidas)",
+   "team": "Los Angeles",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Manchester United (Adidas)",
+   "team": "Manchester United",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Draft (reported) (blurred logo)",
+    "RFS": "Draft (reported) (blurred logo)",
+    "RFK": "Draft (reported) (blurred logo)",
+    "CFS": "Draft (reported) (blurred logo)"
+   }
+  },
+  {
+   "label": "Mexico (Adidas)",
+   "team": "Mexico",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred logo)",
+    "RFS": "Published (blurred logo)",
+    "RFK": "Draft (reported)",
+    "CFS": "Published (blurred logo)"
+   }
+  },
+  {
+   "label": "Newcastle (Adidas)",
+   "team": "Newcastle",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Draft (reported) (blurred logo)",
+    "RFS": "Private (reported) / Published",
+    "RFK": "Published (Blurred logo)",
+    "CFS": "Published (blurred logo)"
+   }
+  },
+  {
+   "label": "Nottingham Forest (Adidas)",
+   "team": "Nottingham Forest",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred logo)",
+    "RFS": "Published (blurred logo)",
+    "RFK": "Published BUNDLE ONLY (blurred logo)",
+    "CFS": "Published (blurred logo)"
+   }
+  },
+  {
+   "label": "Northern Ireland (Adidas)",
+   "team": "Northern Ireland",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Olympique Lyonnais (Adidas)",
+   "team": "Olympique Lyonnais",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Private (reported)",
+    "RFS": "Private (reported)",
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Orlando City (Adidas)",
+   "team": "Orlando City",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Panathinaikos (Adidas)",
+   "team": "Panathinaikos",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "RC Lens (Puma & Adidas)",
+   "team": "RC Lens",
+   "brand": "Puma & Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred PUMA logo)",
+    "RFS": "Published",
+    "RFK": "Published",
+    "CFS": "Published (blurred PUMA logo)"
+   }
+  },
+  {
+   "label": "Real Madrid (Adidas)",
+   "team": "Real Madrid",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Draft (reported) (blurred logo)",
+    "RFS": "Published",
+    "RFK": "Published (blurred logo)",
+    "CFS": "Published"
+   }
+  },
+  {
+   "label": "River Plate (Adidas)",
+   "team": "River Plate",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Scotland (Adidas)",
+   "team": "Scotland",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Published BUNDLE ONLY (blurred logo)"
+   }
+  },
+  {
+   "label": "Spain (Adidas)",
+   "team": "Spain",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred logo)",
+    "RFS": "Published (blurred logo)",
+    "RFK": "Published BUNDLE ONLY (blurred logo)",
+    "CFS": "Published (blurred logo)"
+   }
+  },
+  {
+   "label": "Sweden (Adidas)",
+   "team": "Sweden",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Ukraine (Adidas)",
+   "team": "Ukraine",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Wales (Adidas)",
+   "team": "Wales",
+   "brand": "Adidas",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "AC Milan (Puma)",
+   "team": "AC Milan",
+   "brand": "Puma",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred PUMA logo)",
+    "RFS": "Published",
+    "RFK": "Published",
+    "CFS": "Published (blurred PUMA logo)"
+   }
+  },
+  {
+   "label": "Borussia Dortmund (Puma)",
+   "team": "Borussia Dortmund",
+   "brand": "Puma",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred PUMA logo)",
+    "RFS": "Private (reported)",
+    "RFK": "Draft (reported)",
+    "CFS": "Published"
+   }
+  },
+  {
+   "label": "Borussia Monchengladbach (Puma)",
+   "team": "Borussia Monchengladbach",
+   "brand": "Puma",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred PUMA logo)",
+    "RFS": "Published",
+    "RFK": "Published",
+    "CFS": "Published (blurred PUMA logo)"
+   }
+  },
+  {
+   "label": "Manchester City (Puma)",
+   "team": "Manchester City",
+   "brand": "Puma",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred PUMA logo)",
+    "RFS": "Published",
+    "RFK": "Published (Blurred Logo)",
+    "CFS": "Published (blurred PUMA logo)"
+   }
+  },
+  {
+   "label": "Olympique Marseille (Puma)",
+   "team": "Olympique Marseille",
+   "brand": "Puma",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred PUMA logo)",
+    "RFS": "Published",
+    "RFK": "Published (blurred logo)",
+    "CFS": "Published (blurred PUMA logo)"
+   }
+  },
+  {
+   "label": "Portugal (Puma)",
+   "team": "Portugal",
+   "brand": "Puma",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred PUMA logo)",
+    "RFS": "Published",
+    "RFK": "Published (Blurred Logo)",
+    "CFS": "Published (blurred PUMA logo)"
+   }
+  },
+  {
+   "label": "PSV Eindhoven (Puma)",
+   "team": "PSV Eindhoven",
+   "brand": "Puma",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Private (reported)",
+    "RFS": "Private (reported)",
+    "RFK": "Published",
+    "CFS": "Published (blurred logo)"
+   }
+  },
+  {
+   "label": "RB Leipzig (Puma)",
+   "team": "RB Leipzig",
+   "brand": "Puma",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred PUMA logo)",
+    "RFS": "Published",
+    "RFK": "Published",
+    "CFS": "Published (blurred PUMA logo)"
+   }
+  },
+  {
+   "label": "Southampton (Puma)",
+   "team": "Southampton",
+   "brand": "Puma",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred PUMA logo)",
+    "RFS": "Published",
+    "RFK": "Published",
+    "CFS": "Published (blurred PUMA logo)"
+   }
+  },
+  {
+   "label": "SSC Napoli (EA7)",
+   "team": "SSC Napoli",
+   "brand": "EA7",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred PUMA logo)",
+    "RFS": "Published",
+    "RFK": "Published",
+    "CFS": "Published (blurred PUMA logo)"
+   }
+  },
+  {
+   "label": "Valencia (Puma)",
+   "team": "Valencia",
+   "brand": "Puma",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred logo)",
+    "RFS": "Published (blurred logo)",
+    "RFK": "Published (blurred logo)",
+    "CFS": "Published (blurred logo)"
+   }
+  },
+  {
+   "label": "Bayer Leverkusen (Castore)",
+   "team": "Bayer Leverkusen",
+   "brand": "Castore",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published",
+    "RFS": "Published",
+    "RFK": "Draft (reported)",
+    "CFS": "Published"
+   }
+  },
+  {
+   "label": "Bologna (Macron)",
+   "team": "Bologna",
+   "brand": "Macron",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published",
+    "RFS": "Published",
+    "RFK": "Published",
+    "CFS": "Published"
+   }
+  },
+  {
+   "label": "Luton (Umbro)",
+   "team": "Luton",
+   "brand": "Umbro",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published",
+    "RFS": "Published",
+    "RFK": "Draft (reported)",
+    "CFS": "Published"
+   }
+  },
+  {
+   "label": "Bournemouth (Umbro)",
+   "team": "Bournemouth",
+   "brand": "Umbro",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred logo)",
+    "RFS": "Published",
+    "RFK": "Published",
+    "CFS": "Published"
+   }
+  },
+  {
+   "label": "Feyenoord (Castore)",
+   "team": "Feyenoord",
+   "brand": "Castore",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred logo)",
+    "RFS": "Private (reported)",
+    "RFK": "Published",
+    "CFS": "Published (blurred logo)"
+   }
+  },
+  {
+   "label": "Sevilla (Adidas & Castore)",
+   "team": "Sevilla",
+   "brand": "Adidas & Castore",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published",
+    "RFS": "Published",
+    "RFK": "Draft (reported)"
+   }
+  },
+  {
+   "label": "Hull City (Kappa)",
+   "team": "Hull City",
+   "brand": "Kappa",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "RFK": "No products",
+    "CFS": "Published"
+   }
+  },
+  {
+   "label": "Switzerland (ASF-SFV)",
+   "team": "Switzerland",
+   "brand": "ASF-SFV",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published (blurred PUMA logo)",
+    "RFS": "Published",
+    "RFK": "Published",
+    "CFS": "Published (blurred PUMA logo)"
+   }
+  },
+  {
+   "label": "VfB Stuttgart (Jako)",
+   "team": "VfB Stuttgart",
+   "brand": "Jako",
+   "scope": {
+    "retro": false,
+    "years": [],
+    "seasons": []
+   },
+   "status": {
+    "KFK": "Published",
+    "RFS": "Published",
+    "RFK": "No products",
+    "CFS": "Published"
+   }
+  }
+ ]
+}

@@ -156,24 +156,51 @@ def colour_sim(a, b):
 
 FREE_PIN_TEAMS = ['Spain', 'France', 'Argentina', 'England', 'Brazil', 'Portugal', 'Scotland']
 
-# Reported Club Status sheet, KFK column (as in kfk_rules.py, 19 Jul 2026).
-REPORTED_CLUBS_KFK = {
-    'Barcelona': 'Published (blurred logo)', 'Brighton': 'Deleted (reported)',
-    'Chelsea': 'Published (blurred logo)', 'England': 'Published (blurred logo)',
-    'Liverpool': 'Published (blurred logo + change url)', 'Paris Saint-Germain': 'Private (reported)',
-    'Tottenham Hotspur': 'Published (blurred logo)', 'Ajax': 'Private (reported)',
-    'Arsenal': 'Published BUNDLE ONLY (blurred logo)', 'Aston Villa': 'Published (blurred logo)',
-    'Bayern Munich': 'Private (reported)', 'Celtic': 'Private (reported)',
-    'Manchester United': 'Draft (reported)', 'Newcastle': 'Draft (reported)',
-    'Olympique Lyonnais': 'Private (reported)', 'Real Madrid': 'Published (blurred logo)',
-    'Borussia Dortmund': 'Private (reported)', 'Bournemouth': 'Published (blurred logo)',
-}
+# Reported Club Status sheet ("General"), all 4 sites: data/reported_clubs.json, rebuilt with
+# `python update_reported_clubs.py "<sheet>.xlsx"` whenever the sheet changes.
+REPORTED_PATH = Path(__file__).resolve().parent / "data" / "reported_clubs.json"
+REPORTED = json.loads(REPORTED_PATH.read_text(encoding="utf-8")) if REPORTED_PATH.exists() else {"teams": []}
+# Other spellings of sheet team names in product names (brand-safe names included)
 REPORTED_ALIASES = {
-    'Paris Saint-Germain': ['psg', 'p^_^sg', 'paris saint germain'], 'Bayern Munich': ['bayern', 'bay^_^rn'],
-    'Manchester United': ['man united', 'man^u^nited', 'manchester utd'], 'Liverpool': ['lvrp00l', 'lvr^_^pool'],
-    'Arsenal': ['north london red', 'arsen^_^al', 'arsn@l'], 'Borussia Dortmund': ['dortmund', 'd0rt^_^mund'],
-    'Olympique Lyonnais': ['lyon'], 'Newcastle': ['newcastle united'],
+    'Paris Saint-Germain': ['PSG', 'P^_^SG', 'P^SG', 'Paris Saint Germain'], 'Bayern Munich': ['Bayern', 'Bay^_^rn'],
+    'Manchester United': ['Man United', 'Man Utd', 'Man^U^nited', 'Manchester Utd'],
+    'Liverpool': ['Lvrp00l', 'Lvr^_^pooI'], 'Arsenal': ['North London Red', 'Arsen^_^aI', 'Arsn@l'],
+    'Borussia Dortmund': ['Dortmund', 'D0rt^_^mund'], 'Olympique Lyonnais': ['Lyon'], 'Newcastle': ['Newcastle United'],
+    'Atletico Madrid': ['Atletico de Madrid'], 'Celtic FC': ['Celtic'], 'Korea': ['South Korea', 'Korea Republic'],
+    'Netherlands': ['Netherland', 'Holland'], 'Bayer Leverkusen': ['Leverkusen'], 'AS Roma': ['Roma'],
+    'VFL Wolfsburg': ['Wolfsburg'], 'Eintracht Frankfurt': ['Frankfurt'], 'Pumas UNAM': ['Pumas'],
+    'Club América': ['Club America'], 'Sweden': ['Sweeden'], 'Los Angeles': ['LAFC'],
+    'Tottenham Hotspur': ['Tottenham', 'Spurs'], 'Sporting CP': ['Sporting Lisbon'], 'USA': ['United States'],
+    'PSV Eindhoven': ['PSV'], 'Olympique Marseille': ['Marseille'], 'Fulham United': ['Fulham'],
+    'Leicester City': ['Leicester'], 'Birmingham City': ['Birmingham'], 'Inter Miami': ['Inter Miami CF'],
 }
+_REPORTED_PATTERNS = {}
+
+
+def reported_matches(name, site):
+    """Sheet rows with a status on this site naming this product's team; a scoped row ('Retro Arsenal',
+    'Liverpool 24/25') wins over the team's general row."""
+    hits = []
+    for row in REPORTED["teams"]:
+        team = row["team"]
+        if not row["status"].get(site):
+            continue
+        if team not in _REPORTED_PATTERNS:
+            _REPORTED_PATTERNS[team] = [sleeve_badge._name_pattern(n) for n in [team] + REPORTED_ALIASES.get(team, [])]
+        if not any(p.search(sleeve_badge._strip_accents(name)) for p in _REPORTED_PATTERNS[team]):
+            continue
+        scope = row["scope"]
+        retro = bool(re.search(r"\bretro\b", name, re.I))
+        if scope["seasons"]:
+            y1, y2 = scope["seasons"][0].split("/")
+            if retro or not re.search(rf"\b(?:20)?{y1}\s*/\s*(?:20)?{y2}\b", name):
+                continue
+        elif scope["retro"] and not retro and not any(re.search(rf"\b{y}\b", name) for y in scope["years"]):
+            continue
+        hits.append(row)
+    scoped = [r for r in hits if r["scope"]["retro"] or r["scope"]["seasons"]]
+    return scoped or hits
+
 
 LEAGUE_CLUBS = {
     'Premier League': ['Arsenal', 'Aston Villa', 'Bournemouth', 'Brentford', 'Brighton', 'Burnley', 'Chelsea',
@@ -373,24 +400,27 @@ def check_extra(data):
                 f"Sản phẩm {pin_team} (1 trong 7 đội có Free Pin) nhưng trang không có chữ 'FREE {pin_team.upper()} PIN'",
                 "Kiểm tra BOGO coupon buy-" + pin_team.lower() + "-get-pin có gồm sản phẩm này không")
 
-    # ---------- A9. Reported clubs (KFK)
-    if site == "KFK":
-        ident = " ".join([name, team])
-        for club, status in REPORTED_CLUBS_KFK.items():
-            names = [club.lower()] + REPORTED_ALIASES.get(club, [])
-            fid = fold(ident)
-            if any((n in fid) if len(n.replace("^", "").replace("_", "")) < 7 else fuzzy_contains(ident, n) for n in names):
-                if not status.startswith("Published"):
-                    add(HIGH, "Club bị report (KFK)", "Trạng thái",
-                        f"{club}: sheet Reported Club Status ghi '{status}' nhưng listing đang live",
-                        "Xem lại, chuyển Private/Draft theo sheet")
-                elif "BUNDLE ONLY" in status and not is_gift:
-                    add(HIGH, "Club bị report (KFK)", "Trạng thái",
-                        f"{club}: chỉ được bán dạng bundle nhưng đây là listing lẻ", "Chuyển Private/Draft")
-                else:
-                    add(LOW, "Club bị report (KFK)", "Ảnh",
-                        f"{club}: '{status}', nhớ kiểm tra logo đã blur trên ảnh", "Check blur logo")
-                break
+    # ---------- A9. Reported clubs (all sites, sheet Reported Club Status -> data/reported_clubs.json)
+    for row in reported_matches(name, site):
+        status = row["status"][site]
+        low = status.lower()
+        who = f"{row['label']}: sheet ghi {site} '{status}'"
+        if "bundle only" in low:
+            if not is_gift:
+                add(HIGH, "Club bị report", "Trạng thái", f"{who}, chỉ được bán dạng bundle nhưng đây là listing lẻ",
+                    "Chuyển Private/Draft")
+        elif ("report" in low or "deleted" in low) and "published" in low:
+            add(LOW, "Club bị report", "Trạng thái", f"{who} (vừa Published vừa reported), listing đang live",
+                "Xác nhận listing này được phép publish")
+        elif "report" in low or "deleted" in low:
+            add(HIGH, "Club bị report", "Trạng thái", f"{who} nhưng listing đang live",
+                "Chuyển Private/Draft theo sheet")
+        elif "no products" in low:
+            add(MED, "Club bị report", "Trạng thái", f"{who} nhưng listing đang live",
+                "Gỡ listing hoặc cập nhật sheet")
+        elif "blur" in low:
+            add(LOW, "Club bị report", "Ảnh", f"{who}, nhớ kiểm tra logo đã blur trên ảnh", "Check blur logo")
+        break
 
     # ---------- A10. Category taxonomy (KFK): parent league, National Team, World Cup 2026, Players
     if site == "KFK" and not is_retro:
