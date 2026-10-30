@@ -9,6 +9,7 @@ Results are cached in data/cache/<SITE>/<id>.json so re-runs are fast.
 
 import html
 import json
+import os
 import re
 import time
 import urllib.error
@@ -159,10 +160,14 @@ def image_price(src, timeout=30, im=None):
             im = load_image(src, timeout)
         except Exception:
             return None
+    # One CPU thread per tesseract run: the 4 site threads each running a multi-threaded tesseract overloaded
+    # the machine (load 15 on 4 cores, 7-13 min per product on the 30/10 old-listings check).
+    os.environ.setdefault("OMP_THREAD_LIMIT", "1")
     w, h = im.size
     # the badge sits in a bottom corner; whole image last
     for crop in (im.crop((0, int(h * 0.78), int(w * 0.42), h)), im.crop((int(w * 0.58), int(h * 0.78), w, h)), im):
-        g = ImageOps.grayscale(crop).resize((crop.width * 3, crop.height * 3))
+        scale = max(1.0, min(3.0, 1800 / max(crop.size)))  # upscale small crops, never past ~1800 px
+        g = ImageOps.grayscale(crop).resize((int(crop.width * scale), int(crop.height * scale)))
         for img in (g, ImageOps.autocontrast(g).point(lambda p: 255 if p > 150 else 0)):
             try:
                 text = pytesseract.image_to_string(img, config="--psm 6")

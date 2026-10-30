@@ -230,6 +230,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 29/10 | **Club bị report** (cả 4 web, trước chỉ KFK với danh sách gõ tay 19/7): đọc sheet Reported Club Status (tab General, bản 29/10, 97 đội) vào `data/reported_clubs.json` bằng `update_reported_clubs.py`. Cao: web ghi Draft/Private/Deleted (reported) mà listing đang live; listing lẻ của đội BUNDLE ONLY. Trung bình: web ghi 'No products'. Thấp: vừa Published vừa reported (cần xác nhận), nhắc check blur logo. Phạm vi: 'Retro X' chỉ đồ retro, 'Liverpool 24/25' chỉ mùa đó. Check live 29/10: `reports/reported_clubs_2026-10-29/` |
 | 30/10 | Season: bỏ qua Training/Pre Match 25/26 (cố ý). Shirt/Kit (KFK): câu liệt kê thành phần kit "Long sleeve shirt with …", "The shirt is supplied without a name", "The shirt already has …" không còn bị báo |
 | 30/10 | Words to Avoid: bỏ qua chữ badge trong dòng template badge. Bỏ check Free Pin (A8) và phần đọc chữ Free Pin trên trang |
+| 30/10 | OCR giá trên ảnh nhanh hơn: tesseract chạy 1 luồng CPU (4 luồng web × tesseract nhiều luồng làm máy quá tải, 7–13 phút/sản phẩm), nguyên ảnh không phóng quá ~1800 px. Kiểm lại 12 ảnh gift pack đã biết giá: đúng 12/12, ~1–2 giây/ảnh |
 
 ## 9. Hạn chế đã biết và câu hỏi còn mở
 
