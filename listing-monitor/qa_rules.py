@@ -381,7 +381,9 @@ def check_product(data, extra=True):
     if not is_retro:
         if name_seasons:
             ns = next(iter(name_seasons))
-            if ns != "26/27":
+            # Training / pre-match kits of 25/26 are still listed on purpose (Clara 30/10)
+            training_2526 = ns == "25/26" and re.search(r"\b(training|pre[\s-]?match)\b", name, re.I)
+            if ns != "26/27" and not training_2526:
                 add(MED, "Sai season", "Tên sản phẩm", f"Listing mới nhưng season là {ns}, không phải 26/27",
                     "Kiểm tra lại season (club: 26/27, đội tuyển: 2026, retro: giữ nguyên)")
             for field, text in [("SKU", s.get("sku", "")), ("Attribute Season", " ".join(attr(s, "season")))] + seo_fields:

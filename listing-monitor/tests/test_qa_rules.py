@@ -206,5 +206,17 @@ class Batch(unittest.TestCase):
         self.assertEqual({i["field"] for _, i in issues}, {"SEO title", "Meta description"})
 
 
+
+class TrainingSeason(unittest.TestCase):
+    def test_training_2526_is_intentional(self):
+        d = product(store__name="Leeds United White Training Adult Football Kit 2025/26")
+        d["store"]["sku"] = "KFK_LEE_WhiteTN_ADK_No_25/26"
+        msgs = [i["detail"] for i in q.check_product(d) if i["group"] == "Sai season" and i["field"] == "Tên sản phẩm"]
+        self.assertEqual(msgs, [])
+        d = product(store__name="Leeds United Home Kids Football Kit 2025/26 (With socks)")
+        msgs = [i["detail"] for i in q.check_product(d) if i["group"] == "Sai season" and i["field"] == "Tên sản phẩm"]
+        self.assertTrue(msgs)
+
+
 if __name__ == "__main__":
     unittest.main()

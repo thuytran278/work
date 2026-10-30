@@ -94,6 +94,7 @@ Lỗi xuất hiện trên ≥ 50% listing của 1 site (tối thiểu 5 listing)
 | 27/9 | Listing in chữ **CHAMPIONS 26 / WINNERS 26** không cần player attribute/category |
 | 27/9 | **"Short sleeve"** trong description là OK nếu khớp ảnh. Chỉ báo khi mâu thuẫn với Long Sleeve |
 | 2/10 | **Format tên listing cầu thủ (CFS)**: tên cầu thủ ngay sau CLB, giữ nguyên slug (xem mục 6) |
+| 30/10 | **Kit training / pre-match adult mùa 25/26 là cố ý đăng** (CFS 29/10): không báo "Sai season" cho listing Training/Pre Match 25/26 |
 
 ## 6. Case nghiên cứu: CFS mất khoảng 75% traffic từ 20/8/2026
 
@@ -226,6 +227,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 28/10 | Christmas campaign: listing không có ngày đăng trong danh sách ngày (lên live muộn từ draft/private) được tính theo ngày tool phát hiện, không bỏ qua nữa |
 | 29/10 | **Sleeve badge** (cả 4 web, nhóm "Sleeve badge"): đọc option badge (CFS: `data-label` PPOM; KFK/RFS/RFK: tên option + ảnh badge) và so với đội trong tên SP. Cao: đội tuyển gắn badge giải CLB, CLB gắn badge sai giải / badge Euro-World Cup, description ghi badge khác option. Trung bình: tên option không ghi giải, ảnh khác tên option, KFK/CFS description thiếu dòng sleeve badge. Thấp: cần người check (badge vô địch chưa có dữ liệu mùa đó, CLB chưa có trong bảng, cúp châu Âu). Logic ở `sleeve_badge.py` = bản copy từ repo `football-qa-tools` (CFS/sleeve_badge.py): sửa ở đó rồi copy sang đây. Arsenal vô địch Premier League 2025/26 (Clara xác nhận) |
 | 29/10 | **Club bị report** (cả 4 web, trước chỉ KFK với danh sách gõ tay 19/7): đọc sheet Reported Club Status (tab General, bản 29/10, 97 đội) vào `data/reported_clubs.json` bằng `update_reported_clubs.py`. Cao: web ghi Draft/Private/Deleted (reported) mà listing đang live; listing lẻ của đội BUNDLE ONLY. Trung bình: web ghi 'No products'. Thấp: vừa Published vừa reported (cần xác nhận), nhắc check blur logo. Phạm vi: 'Retro X' chỉ đồ retro, 'Liverpool 24/25' chỉ mùa đó. Check live 29/10: `reports/reported_clubs_2026-10-29/` |
+| 30/10 | Season: bỏ qua Training/Pre Match 25/26 (cố ý). Shirt/Kit (KFK): câu liệt kê thành phần kit "Long sleeve shirt with …", "The shirt is supplied without a name", "The shirt already has …" không còn bị báo |
 
 ## 9. Hạn chế đã biết và câu hỏi còn mở
 

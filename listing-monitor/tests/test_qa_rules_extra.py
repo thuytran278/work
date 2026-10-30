@@ -314,5 +314,19 @@ class SleeveBadge(unittest.TestCase):
         self.assertEqual(issues, [])
 
 
+
+class KitPartsWording(unittest.TestCase):
+    def test_shirt_as_part_of_kit_is_fine(self):
+        for line in ("What’s Included Long sleeve shirt with Messi name and number 10 already applied.",
+                     "Name & number: The shirt is supplied without a name or number.",
+                     "Player print: The shirt already has Gordon name and number 17 applied to the back."):
+            d = product()
+            d["store"]["description"] += f"<p>{line}</p>"
+            self.assertNotIn(("Sai loại Shirt/Kit", "Description"), groups(d), line)
+        d = product()
+        d["store"]["description"] += "<p>A great shirt for young fans.</p>"
+        self.assertIn(("Sai loại Shirt/Kit", "Description"), groups(d))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -2,6 +2,3 @@ QA LISTING MOI 2026-10-29
 
 KFK: 6 listing, 0 listing co loi CAO, 6 listing co loi
 CFS: 27 listing, 0 listing co loi CAO, 23 listing co loi
-
-Loi lap lai (co the do template):
-   - CFS | Sai season | Tên sản phẩm: Listing mới nhưng season là 25/26, không phải 26/27 (16/27)

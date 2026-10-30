@@ -481,7 +481,11 @@ def check_extra(data):
             # New KFK template (Oct 2026) lists the kit's parts: "Football shirt with ... / Matching shorts", "applied to
             # the shirt", "Long Sleeve shirt, matching shorts": the shirt as a part of the kit is not a type error.
             clean = re.sub(r"(?i)(?:football |short[\s-]sleeve |long[\s-]sleeve )?shirts?(?=[^.]{0,60}\bshorts\b)|"
-                           r"(?:applied|printed) (?:to|on) the (?:back of the )?shirt|football shirt with", "", clean)
+                           r"(?:applied|printed) (?:to|on) the (?:back of the )?shirt|football shirt with|"
+                           # "What's Included: Long sleeve shirt with Messi name ...", "Name & number: The shirt is
+                           # supplied without a name" / "The shirt already has Gordon name" (KFK, 29/10)
+                           r"(?:the |long[\s-]sleeve |short[\s-]sleeve )shirt(?=\s+(?:with|is supplied|already|comes)\b)",
+                           "", clean)
             hits = list(re.finditer(rf"\b{bad}s?\b", clean, re.I))
             if hits:
                 add(MED, "Sai loại Shirt/Kit", "Description",
