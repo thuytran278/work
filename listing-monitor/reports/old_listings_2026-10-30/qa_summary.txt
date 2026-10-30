@@ -1,0 +1,25 @@
+QA LISTING MOI old_listings_2026-10-30
+
+KFK: 46 listing, 5 listing co loi CAO, 42 listing co loi
+   - Club bị report: 2 loi
+   - Sleeve badge: 2 loi
+   - Sai cầu thủ: 1 loi
+   - SEO tên cầu thủ: 1 loi
+RFS: 13 listing, 4 listing co loi CAO, 13 listing co loi
+   - Sai cầu thủ: 2 loi
+   - Sai Home/Away/Third: 1 loi
+   - SEO: 1 loi
+RFK: 90 listing, 29 listing co loi CAO, 86 listing co loi
+   - Club bị report: 25 loi
+   - Sai cầu thủ: 3 loi
+   - SEO tên cầu thủ: 2 loi
+   - Sleeve: 2 loi
+   - Variation: 1 loi
+CFS: 215 listing, 14 listing co loi CAO, 173 listing co loi
+   - Sai cầu thủ: 5 loi
+   - Sai tất (socks): 4 loi
+   - Sai đối tượng: 3 loi
+   - Sleeve badge: 3 loi
+   - Sai Home/Away/Third: 3 loi
+
+Khong tai duoc 1 listing (xem sheet Tong quan)

@@ -77,6 +77,9 @@ CLUB_ALIASES = {
 }
 CLUB_TO_LEAGUE = {club: league for league, clubs in CLUB_LEAGUES.items() for club in clubs}
 
+# Last season whose EFL line-up is known; later seasons of an EFL club are unknown (could be promoted).
+EFL_KNOWN_UNTIL = 2025
+
 # League by season start year (2024/25 = 2024) for promoted/relegated clubs.
 # A later season than the last one listed is unknown (club_league_unknown, not
 # a FAIL): promotions/relegations for it are not in the table yet.
@@ -270,7 +273,11 @@ def club_league(club, season):
         return by_season[season]
     if by_season and season is not None and season > max(by_season):
         return None
-    return CLUB_TO_LEAGUE.get(club)
+    league = CLUB_TO_LEAGUE.get(club)
+    # EFL clubs: 2026/27 promotions are not in the table yet (CFS Coventry 2026/27 with a Premier badge, 30/10)
+    if league == 'EFL' and season is not None and season > EFL_KNOWN_UNTIL:
+        return None
+    return league
 
 
 def _national_expected(country):
