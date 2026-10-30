@@ -222,7 +222,6 @@ def prefetch_store(base_url, ids):
     return out
 
 
-FREE_PIN_TEAMS = ("spain", "france", "argentina", "england", "brazil", "portugal", "scotland")
 
 
 def safe_url(url):
@@ -259,18 +258,14 @@ def fetch_product(site, base_url, product_id, url, refresh=False, delay=0.3, sto
         store = json.loads(text)
     data = {"site": site, "store": store}
     page_url = url or data["store"]["permalink"]
-    name = (data["store"].get("name") or "").lower()
     try:
-        # Whole page: <head> for SEO, add-to-cart options (personalisation / badge labels), Free Pin text, H1.
+        # Whole page: <head> for SEO, add-to-cart options (personalisation / badge labels), H1.
         full = fetch_text(page_url)
         data["page"] = parse_head(full)
         data["page"]["h1"] = parse_h1(full)
         data["page"]["options"] = parse_options(full)
         data["page"]["badges"] = parse_badges(full)
         data["page"]["body"] = parse_body(full)
-        if site == "KFK" and any(t in name for t in FREE_PIN_TEAMS):
-            team = next(t for t in FREE_PIN_TEAMS if t in name)
-            data["page"]["pin_text"] = bool(re.search(rf"free\s+{team}\s+pin", full, re.I))
     except urllib.error.HTTPError as e:
         if e.code != 403:
             raise

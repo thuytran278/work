@@ -39,10 +39,9 @@ TEMPLATE_MIN = 5
 TO_CONFIRM = [
     ("Trustpilot / 4.9★", "SOP: tránh 'Trustpilot' và claim 4.9★. Short description KFK, RFS, RFK có dòng "
                           "'Rated 4.9 on Trustpilot' (CFS không có). Giữ hay bỏ?"),
-    ("Free Pin (KFK)", "Tool cũ: 7 đội Spain/France/Argentina/England/Brazil/Portugal/Scotland phải có chữ 'FREE [TEAM] PIN' "
-                       "trên trang. Ngày 2/10 không tìm thấy chữ này trong HTML trang. Khuyến mãi còn chạy không?"),
     ("Tên né thương hiệu", "Tool coi 'North London Red' = Arsenal, 'P^_^SG' = PSG và nhận ra kiểu 'Arsn@l', 'Lvr^_^pooI'."),
-    ("Sleeve badge", "Tool KHÔNG báo lỗi 'sleeve badge' (tên option), chỉ báo 'badge' đứng riêng."),
+    ("Sleeve badge", "Tool KHÔNG báo lỗi chữ 'badge' trong dòng template 'Badge options: ...' / 'Sleeve badge: ...' "
+                     "(đã xác nhận 30/10), chỉ báo 'badge' ở chỗ khác (vd 'club badge')."),
     ("Độ dài SEO title", "Tool báo khi SEO title > 65 ký tự và meta > 165 ký tự (mức Thấp)."),
     ("KFK / CFS / RFK template SEO", "SOP chưa có template SEO title/meta cho KFK, CFS, RFK nên tool chưa check đúng mẫu "
                                      "cho các site này, chỉ check nội dung có khớp sản phẩm không."),

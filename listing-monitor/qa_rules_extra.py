@@ -154,8 +154,6 @@ except (OSError, ValueError):
 def colour_sim(a, b):
     return sum(min(x, y) for x, y in zip(a, b))
 
-FREE_PIN_TEAMS = ['Spain', 'France', 'Argentina', 'England', 'Brazil', 'Portugal', 'Scotland']
-
 # Reported Club Status sheet ("General"), all 4 sites: data/reported_clubs.json, rebuilt with
 # `python update_reported_clubs.py "<sheet>.xlsx"` whenever the sheet changes.
 REPORTED_PATH = Path(__file__).resolve().parent / "data" / "reported_clubs.json"
@@ -392,13 +390,7 @@ def check_extra(data):
     if site == "KFK" and meta and len(meta) < 120:
         add(LOW, "SEO", "Meta description", f"Meta ngắn {len(meta)} ký tự (KFK: 140–160)", "Viết dài hơn")
 
-    # ---------- A8. Free Pin promo (KFK)
-    if site == "KFK" and "pin_text" in page:
-        pin_team = next((t for t in FREE_PIN_TEAMS if has_word(fname, t.lower())), None)
-        if pin_team and not page["pin_text"]:
-            add(MED, "Khuyến mãi Free Pin (KFK)", "Trang sản phẩm",
-                f"Sản phẩm {pin_team} (1 trong 7 đội có Free Pin) nhưng trang không có chữ 'FREE {pin_team.upper()} PIN'",
-                "Kiểm tra BOGO coupon buy-" + pin_team.lower() + "-get-pin có gồm sản phẩm này không")
+    # A8 (Free Pin promo, KFK) removed: the promo ended (Clara 30/10).
 
     # ---------- A9. Reported clubs (all sites, sheet Reported Club Status -> data/reported_clubs.json)
     for row in reported_matches(name, site):

@@ -11,6 +11,11 @@ import qa_rules_extra as x  # noqa: E402
 from test_qa_rules import product  # noqa: E402
 
 
+def base_groups(d):
+    import qa_rules
+    return sorted({(i["group"], i["field"]) for i in qa_rules.check_product(d)})
+
+
 def groups(d):
     return sorted({(i["group"], i["field"]) for i in x.check_extra(d)})
 
@@ -89,9 +94,16 @@ class Extra(unittest.TestCase):
                          ("Liverpool", {"retro": False, "years": [], "seasons": ["24/25"]}))
         self.assertEqual(u.parse_label("Retro Man United (Nike)")[0], "Manchester United")
 
-    def test_free_pin_missing(self):
-        d = product(store__name="England Home Kids Football Kit 2026 (With socks)", page__pin_text=False)
-        self.assertIn(("Khuyến mãi Free Pin (KFK)", "Trang sản phẩm"), groups(d))
+    def test_badge_template_line_is_not_a_word_to_avoid(self):
+        for line in ("Badge options: Premier League sleeve badge can be added.",
+                     "Adult’s Home kit badge options: Premier League sleeve badge can be added to both shirts.",
+                     "Sleeve badge: Combo Chelsea 2025 badge can be added using the product options."):
+            d = product()
+            d["store"]["description"] += f"<p>{line}</p>"
+            self.assertNotIn(("Words to Avoid", "Description"), base_groups(d), line)
+        d = product()
+        d["store"]["description"] += "<p>The club badge is stitched on the chest.</p>"
+        self.assertIn(("Words to Avoid", "Description"), base_groups(d))
 
     def test_tag_other_team_and_season(self):
         d = product(store__tags=[{"name": "Chelsea 26/27"}, {"name": "Leeds United 25/26"}])

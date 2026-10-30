@@ -12,6 +12,8 @@ import html
 import re
 import unicodedata
 
+import sleeve_badge
+
 HIGH, MED, LOW = "CAO", "TB", "THAP"
 
 # ------------------------------------------------------------------ helpers
@@ -484,6 +486,9 @@ def check_product(data, extra=True):
 
     # ---------- Words to Avoid
     for field, text in [("Tên sản phẩm", name), ("Description", desc), ("Short description", short)] + seo_fields:
+        # The badge line is standard template copy (KFK/CFS, Clara 30/10): "Badge options: Premier League sleeve
+        # badge can be added", "Sleeve badge: Combo Chelsea 2025 badge can be added", "EPL badges: ..."
+        text = sleeve_badge.DESCRIPTION_BADGE_RE.sub(" ", text)
         hits = []
         for rx, fix in WORDS_TO_AVOID_RE:
             m = rx.search(text)
