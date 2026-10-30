@@ -1,0 +1,9 @@
+QA LISTING MOI 2026-10-30
+
+KFK: 1 listing, 0 listing co loi CAO, 1 listing co loi
+RFK: 2 listing, 0 listing co loi CAO, 2 listing co loi
+CFS: 13 listing, 1 listing co loi CAO, 11 listing co loi
+   - Sai cầu thủ: 1 loi
+
+Loi lap lai (co the do template):
+   - CFS | Club bị report | Ảnh: Barcelona (7/13)

@@ -176,6 +176,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 27/10 (chạy bù 29/10) | 0 / 2 / 1 / 6 | RFS 2 / CFS 2 | RFS 105054/105060 Retro Argentina MARADONA/MESSI 10 Away 1994/95: SKU ghi HO. CFS 84891 Inter Milan Third Kids: description ghi "away" + Kit: Away, ghi có tất (No Socks); CFS 84880 Everton Yellow GK Kids: ghi có tất (No Socks). RFK FREE Christmas Drawstring Bag bỏ qua |
 | 28/10 | 2 / 1 / 0 / 0 (mới thật) | KFK 2 | KFK 265479/265465 Barcelona Home/Away Kids GORDON 17 (ngày đăng 26/10, 28/10 mới live): **chưa có ảnh AI Christmas**, tool lúc đầu bỏ sót vì thiếu ngày đăng → đã sửa. RFS FREE Christmas Drawstring Bag bỏ qua. Danh sách 28/10 lặp lại 9 listing 27/10 do ngày 27 chạy bù |
 | 29/10 | 6 / 0 / 0 / 27 | – | Không lỗi Cao. KFK: 6 listing đều có ảnh AI Christmas, giá đúng (retro Argentina 1994 LS, Inter IBRAHIMOVIĆ 8, Chelsea GK/gift pack adult). CFS: 16 kit training adult mùa 25/26 + 2 Liverpool 27/28 (Trung bình: season khác 26/27), 2 Chelsea option "Add Combo Chelsea Badge 2025" không ghi giải. Check mới Sleeve badge + Club bị report (4 web) chạy lần đầu |
+| 30/10 | 1 / 0 / 2 / 13 | CFS 1 | CFS 85690 Barcelona & Real Madrid Gift Pack LAMINE YAMAL 10 + MBAPPÉ 10: in sẵn nhưng vẫn có option "Personalisation for 2 items only £16". RFK 132430 cùng bộ: tên ghi Kids Football Shirts nhưng SKU AD, Gender Age Men, giá £67.49 (Trung bình). KFK Barcelona Third GORDON 17 có ảnh Xmas, giá đúng. Check listing cũ (389 SP): `reports/old_listings_2026-10-30/` |
 
 **Báo cáo tổng hợp:**
 
