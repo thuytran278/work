@@ -154,6 +154,23 @@ except (OSError, ValueError):
 def colour_sim(a, b):
     return sum(min(x, y) for x, y in zip(a, b))
 
+# Country categories (national teams) and other spellings of the country in product names
+NATIONAL_CATEGORY_NAMES = set(sleeve_badge.COUNTRIES) | {"Czech Republic", "Republic of Ireland", "Korea", "Ivory Coast"}
+COUNTRY_NAME_ALIASES = {
+    "USA": ["United States", "US"], "Korea": ["South Korea", "Korea Republic"], "South Korea": ["Korea"],
+    "Czech": ["Czechia", "Czech Republic"], "Czechia": ["Czech"], "Czech Republic": ["Czech", "Czechia"],
+    "Netherlands": ["Holland", "Netherland"], "Ireland": ["Republic of Ireland"], "Republic of Ireland": ["Ireland"],
+    "Ivory Coast": ["Cote d'Ivoire", "Côte d'Ivoire"], "Turkey": ["Turkiye", "Türkiye"], "Bosnia": ["Bosnia and Herzegovina"],
+}
+_COUNTRY_PATTERNS = {}
+
+
+def _country_patterns(country):
+    if country not in _COUNTRY_PATTERNS:
+        _COUNTRY_PATTERNS[country] = [sleeve_badge._name_pattern(n) for n in [country] + COUNTRY_NAME_ALIASES.get(country, [])]
+    return _COUNTRY_PATTERNS[country]
+
+
 # Reported Club Status sheet ("General"), all 4 sites: data/reported_clubs.json, rebuilt with
 # `python update_reported_clubs.py "<sheet>.xlsx"` whenever the sheet changes.
 REPORTED_PATH = Path(__file__).resolve().parent / "data" / "reported_clubs.json"
@@ -413,6 +430,16 @@ def check_extra(data):
         elif "blur" in low:
             add(LOW, "Club bị report", "Ảnh", f"{who}, nhớ kiểm tra logo đã blur trên ảnh", "Check blur logo")
         break
+
+    # ---------- A9b. National-team category on a product of another team (all sites): RFK 132430/132408
+    # "Barcelona and Real Madrid ... Gift Set" filed under "Spain" (Clara 31/10). Country categories only ever hold
+    # that country's own products, so a country category whose country is not in the name is a wrong category.
+    for cat in cats:
+        country = re.sub(r"(?i)^retro\s+", "", cat).strip()
+        if country in NATIONAL_CATEGORY_NAMES and not any(
+                p.search(sleeve_badge._strip_accents(name)) for p in _country_patterns(country)):
+            add(HIGH, "Category / Tag", "Category", f"Category đội tuyển '{cat}' nhưng tên sản phẩm không có {country}",
+                f"Bỏ category '{cat}' (chỉ dùng cho sản phẩm của đội tuyển {country})")
 
     # ---------- A10. Category taxonomy (KFK): parent league, National Team, World Cup 2026, Players
     if site == "KFK" and not is_retro:

@@ -233,6 +233,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 30/10 | Words to Avoid: bỏ qua chữ badge trong dòng template badge. Bỏ check Free Pin (A8) và phần đọc chữ Free Pin trên trang |
 | 30/10 | OCR giá trên ảnh nhanh hơn: tesseract chạy 1 luồng CPU (4 luồng web × tesseract nhiều luồng làm máy quá tải, 7–13 phút/sản phẩm), nguyên ảnh không phóng quá ~1800 px. Kiểm lại 12 ảnh gift pack đã biết giá: đúng 12/12, ~1–2 giây/ảnh |
 | 31/10 | Gift pack có SKU 1 đối tượng (AD hoặc KD) giờ cũng được check đối tượng: tên vs SKU, Gender Age, size chart trong gallery (Cao). Trước đây mọi gift pack bị bỏ qua nên sót RFK 132430 (bộ Men tên ghi Kids + size chart Kids, Clara báo) và RFK 126558 (bộ Kids dùng size chart Men). Bundle trộn đối tượng (SKU AD/KD) vẫn bỏ qua |
+| 31/10 | **Category đội tuyển sai** (cả 4 web, Cao): category tên nước (Spain, England, Retro Spain…) mà tên sản phẩm không có nước đó. Category nước chỉ chứa sản phẩm của đội tuyển đó (đã kiểm tra 4 web), RFK 132430/132408 Barcelona & Real Madrid bị gắn "Spain" (Clara báo) |
 
 ## 9. Hạn chế đã biết và câu hỏi còn mở
 

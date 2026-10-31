@@ -340,5 +340,24 @@ class KitPartsWording(unittest.TestCase):
         self.assertIn(("Sai loại Shirt/Kit", "Description"), groups(d))
 
 
+
+class CountryCategory(unittest.TestCase):
+    def cat_issues(self, name, cats):
+        d = product(store__name=name)
+        d["store"]["categories"] = [{"name": c} for c in cats]
+        return [i["detail"] for i in x.check_extra(d) if "Category đội tuyển" in i["detail"]]
+
+    def test_country_category_on_club_product(self):
+        # RFK 132430: Barcelona and Real Madrid gift set filed under "Spain" (Clara 31/10)
+        self.assertTrue(self.cat_issues("Barcelona and Real Madrid 2026/27 Full Shirt Gift Set – Home Men Football Shirts",
+                                        ["Gift Packs", "Barcelona", "La Liga", "Spain"]))
+
+    def test_country_category_matching_name(self):
+        self.assertEqual(self.cat_issues("Spain World Cup 2026 Home Kids Football Kit (With socks)", ["Spain"]), [])
+        self.assertEqual(self.cat_issues("Retro Spain Away Men Shirt 2000", ["Retro Spain"]), [])
+        self.assertEqual(self.cat_issues("Korea World Cup 2026 Home Kid Kit", ["South Korea"]), [])
+        self.assertEqual(self.cat_issues("Holland Retro Home Shirt 1988", ["Netherlands"]), [])
+
+
 if __name__ == "__main__":
     unittest.main()
