@@ -29,7 +29,7 @@ import qa_rules
 import qa_rules_extra
 
 SEV_ORDER = {qa_rules.HIGH: 0, qa_rules.MED: 1, qa_rules.LOW: 2}
-SEV_LABEL = {qa_rules.HIGH: "Cao", qa_rules.MED: "Trung bình", qa_rules.LOW: "Thấp"}
+SEV_LABEL = {qa_rules.HIGH: "Cao", qa_rules.MED: "Cần xác nhận", qa_rules.LOW: "Thấp"}
 SEV_FILL = {qa_rules.HIGH: "F8D7DA", qa_rules.MED: "FFF3CD", qa_rules.LOW: "E2E3E5"}
 SITE_ORDER = ["KFK", "RFS", "RFK", "CFS"]
 # Same problem on at least this share of a site's listings -> probably the site template.
@@ -196,6 +196,7 @@ def run_checks(products, cfg=None):
         for i in qa_rules.check_product(d):
             rows.append((d, i))
     rows.extend(qa_rules.check_batch(products))
+    qa_rules.apply_severity_policy([i for _, i in rows])
     return rows
 
 
@@ -244,8 +245,8 @@ def write_excel(path, label, products, rows, errors, templates):
     ws.title = "Tổng quan"
     ws.append([f"QA listing mới: {label.replace('_to_', ' → ')}"])
     ws["A1"].font = Font(bold=True, size=14)
-    ws.append([f"Tạo lúc {datetime.now().strftime('%Y-%m-%d %H:%M')}. Mức độ: Cao = sai thông tin / gây confuse "
-               "khách và Google; Trung bình = cần sửa; Thấp = nên sửa."])
+    ws.append([f"Tạo lúc {datetime.now().strftime('%Y-%m-%d %H:%M')}. Mức độ: Cao = phải fix (mọi lỗi gây confuse "
+               "khách / AI / Google); Cần xác nhận = cần người xem; Thấp = fix sau (độ dài SEO title/meta, ký tự SKU)."])
     ws.append([])
     sites = [s for s in SITE_ORDER if any(d["site"] == s for d in products)]
     by_site_prod = Counter(d["site"] for d in products)
@@ -258,7 +259,7 @@ def write_excel(path, label, products, rows, errors, templates):
             prod_high[d["site"]].add(d["store"]["id"])
         sev_count[(d["site"], i["severity"])] += 1
     header(ws, ["Site", "Listing đã check", "Listing có lỗi", "Listing có lỗi Cao",
-                "Lỗi Cao", "Lỗi Trung bình", "Lỗi Thấp"], [34, 16, 14, 18, 10, 14, 10])
+                "Lỗi Cao (phải fix)", "Cần xác nhận", "Lỗi Thấp (fix sau)"], [34, 16, 14, 18, 10, 14, 10])
     for s in sites:
         ws.append([s, by_site_prod[s], len(prod_any[s]), len(prod_high[s]),
                    sev_count[(s, qa_rules.HIGH)], sev_count[(s, qa_rules.MED)], sev_count[(s, qa_rules.LOW)]])

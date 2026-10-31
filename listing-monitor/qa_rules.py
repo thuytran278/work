@@ -5,7 +5,8 @@ audience, shirt vs kit, Home/Away/Third, team, season, player vs non-player,
 socks, sleeve, Words to Avoid, site-required copy, SEO fields, images, stock.
 
 Each issue: {severity, group, field, detail, fix}
-  severity: "CAO" (sai thông tin / gây confuse khách & Google), "TB", "THAP"
+  severity: "CAO" (phải fix: gây confuse khách / AI / Google), "TB" (cần xác nhận), "THAP" (fix sau: độ dài SEO, ký tự SKU)
+  The final level comes from policy_severity() (Clara 31/10); rules keep their own hint for tests.
 """
 
 import html
@@ -583,6 +584,37 @@ def check_product(data, extra=True):
     if extra:
         from qa_rules_extra import check_extra  # rules added 2/10 (KFK QA checker + new cases)
         issues.extend(check_extra(data))
+    return issues
+
+
+# ------------------------------------------------------------------ severity policy (Clara 31/10)
+# Anything that can confuse a shopper or an AI reading the listing must be fixed (Cao). Only cosmetic SEO / SKU format
+# issues wait (Thấp): SEO title / meta length, spacing or & in SEO text, special characters in the SKU. Items that need
+# a person to decide (not errors) are "Cần xác nhận" (stored as MED).
+_COSMETIC_SEO_PROBS = {"khoảng trắng trước dấu câu", "2 dấu cách liền nhau", 'có ký tự & hoặc "'}
+_REVIEW_RE = re.compile(r"cần người check|xác nhận|check blur logo|kiểm tra listing trùng|không đọc được trang", re.I)
+
+
+def policy_severity(issue):
+    group, field, detail, fix = issue["group"], issue["field"], issue["detail"], issue.get("fix", "")
+    if group == "SEO" and field in ("SEO title", "Meta description"):
+        if re.match(r"(SEO title|Meta) (dài|ngắn) \d+ ký tự", detail):
+            return LOW
+        probs = detail.split(": \"")[0].split(", ")
+        if probs and all(p in _COSMETIC_SEO_PROBS for p in probs):
+            return LOW
+    if group == "SKU" and (field == "SKU (Google)" or detail.startswith(("SKU chứa ký tự mã hoá HTML",
+                                                                          "Season trong SKU ghi",
+                                                                          "SKU variation có dấu cách thừa"))):
+        return LOW
+    if _REVIEW_RE.search(detail + " " + fix):
+        return MED
+    return HIGH
+
+
+def apply_severity_policy(issues):
+    for i in issues:
+        i["severity"] = policy_severity(i)
     return issues
 
 

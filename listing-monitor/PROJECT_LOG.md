@@ -96,6 +96,7 @@ Lỗi xuất hiện trên ≥ 50% listing của 1 site (tối thiểu 5 listing)
 | 30/10 | **Kit training / pre-match adult mùa 25/26 là cố ý đăng** (CFS 29/10): không báo "Sai season" cho listing Training/Pre Match 25/26 |
 | 30/10 | **"Badge options: …" / "Sleeve badge: …" là template chuẩn** (KFK, CFS): không báo Words to Avoid cho chữ badge trong dòng này |
 | 30/10 | **Khuyến mãi Free Pin (KFK) đã kết thúc**: bỏ check "FREE [TEAM] PIN" |
+| 31/10 | **Mức độ lỗi**: mọi lỗi gây confuse khách / AI đều là **Cao (phải fix)**. Chỉ **Thấp (fix sau)**: SEO title / meta dài hoặc ngắn, lỗi khoảng trắng / & trong SEO, SKU có ký tự đặc biệt (dấu cách, mã HTML, định dạng season). **Cần xác nhận**: mục cần người xem (badge vô địch chưa có dữ liệu, CLB chưa có trong bảng, check blur logo, sheet report vừa Published vừa reported) |
 
 ## 6. Case nghiên cứu: CFS mất khoảng 75% traffic từ 20/8/2026
 
@@ -234,6 +235,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 30/10 | OCR giá trên ảnh nhanh hơn: tesseract chạy 1 luồng CPU (4 luồng web × tesseract nhiều luồng làm máy quá tải, 7–13 phút/sản phẩm), nguyên ảnh không phóng quá ~1800 px. Kiểm lại 12 ảnh gift pack đã biết giá: đúng 12/12, ~1–2 giây/ảnh |
 | 31/10 | Gift pack có SKU 1 đối tượng (AD hoặc KD) giờ cũng được check đối tượng: tên vs SKU, Gender Age, size chart trong gallery (Cao). Trước đây mọi gift pack bị bỏ qua nên sót RFK 132430 (bộ Men tên ghi Kids + size chart Kids, Clara báo) và RFK 126558 (bộ Kids dùng size chart Men). Bundle trộn đối tượng (SKU AD/KD) vẫn bỏ qua |
 | 31/10 | **Category đội tuyển sai** (cả 4 web, Cao): category tên nước (Spain, England, Retro Spain…) mà tên sản phẩm không có nước đó. Category nước chỉ chứa sản phẩm của đội tuyển đó (đã kiểm tra 4 web), RFK 132430/132408 Barcelona & Real Madrid bị gắn "Spain" (Clara báo) |
+| 31/10 | Mức độ: `policy_severity()` trong qa_rules.py quyết định mức cuối (Cao / Cần xác nhận / Thấp) theo quyết định 31/10; Excel đổi cột "Lỗi Trung bình" thành "Cần xác nhận" |
 
 ## 9. Hạn chế đã biết và câu hỏi còn mở
 

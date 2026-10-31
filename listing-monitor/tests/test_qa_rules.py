@@ -240,5 +240,28 @@ class OneAudienceGiftPack(unittest.TestCase):
         self.assertNotIn((q.HIGH, "Ảnh", "Size chart"), got)
 
 
+
+class SeverityPolicy(unittest.TestCase):
+    def sev(self, group, field, detail, fix=""):
+        return q.policy_severity({"group": group, "field": field, "detail": detail, "fix": fix})
+
+    def test_only_cosmetic_seo_and_sku_are_low(self):
+        self.assertEqual(self.sev("SEO", "SEO title", "SEO title dài 84 ký tự (nên <= 60)"), q.LOW)
+        self.assertEqual(self.sev("SEO", "Meta description", "Meta dài 190 ký tự (nên <= 160)"), q.LOW)
+        self.assertEqual(self.sev("SEO", "Meta description", 'khoảng trắng trước dấu câu: "abc ."'), q.LOW)
+        self.assertEqual(self.sev("SKU", "SKU (Google)", "SKU 'X Y' có dấu cách hoặc ký tự đặc biệt"), q.LOW)
+        self.assertEqual(self.sev("SEO", "Meta description", 'biến chưa được thay (%...%): "%title%"'), q.HIGH)
+
+    def test_confusing_errors_are_high(self):
+        self.assertEqual(self.sev("Ảnh", "Alt text", "1/5 ảnh không có alt text"), q.HIGH)
+        self.assertEqual(self.sev("Sai đối tượng", "Attribute Gender Age", 'Tên có Kids nhưng Gender Age = "Men"'), q.HIGH)
+        self.assertEqual(self.sev("Sai season", "Tên sản phẩm", "Listing mới nhưng season là 27/28"), q.HIGH)
+
+    def test_review_items(self):
+        self.assertEqual(self.sev("Sleeve badge", "Option badge", "Chưa có dữ liệu vô địch La Liga 2025/26",
+                                  "Cần người check"), q.MED)
+        self.assertEqual(self.sev("Club bị report", "Ảnh", "Barcelona: 'Published (blurred logo)'", "Check blur logo"), q.MED)
+
+
 if __name__ == "__main__":
     unittest.main()

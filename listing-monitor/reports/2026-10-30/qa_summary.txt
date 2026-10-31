@@ -1,8 +1,17 @@
 QA LISTING MOI 2026-10-30
 
-KFK: 1 listing, 0 listing co loi CAO, 1 listing co loi
-RFK: 2 listing, 0 listing co loi CAO, 2 listing co loi
-CFS: 13 listing, 1 listing co loi CAO, 11 listing co loi
+KFK: 1 listing, 1 listing co loi CAO, 1 listing co loi
+   - SEO tên cầu thủ: 1 loi
+RFK: 2 listing, 2 listing co loi CAO, 2 listing co loi
+   - Words to Avoid: 4 loi
+   - Sai đối tượng: 2 loi
+   - Ảnh: 2 loi
+   - Category / Tag: 2 loi
+   - SKU: 2 loi
+CFS: 13 listing, 6 listing co loi CAO, 11 listing co loi
+   - Ảnh: 5 loi
+   - Sai season: 1 loi
+   - SKU: 1 loi
    - Sai cầu thủ: 1 loi
 
 Loi lap lai (co the do template):
