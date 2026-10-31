@@ -265,7 +265,10 @@ def check_product(data, extra=True):
         exp = sku["audience"]
         exp_set = {"adult", "kids"} if exp == "adult+kids" else {exp}
         name_aud = audience_in(name)
-        if name_aud and not is_gift:
+        # Gift packs mix audiences (Dad & Son: SKU AD/KD), but a one-audience gift SKU (AD or KD) still has to
+        # match: RFK 132430 "Full Shirt Gift Set – Home Kids Football Shirts" was SKU AD, Gender Age Men, S–XXL
+        one_audience = not is_gift or exp in ("adult", "kids", "women")
+        if name_aud and one_audience:
             if exp == "adult+kids" and name_aud != exp_set:
                 add(HIGH, "Sai đối tượng", "Tên sản phẩm",
                     f"SKU '{sku['aud_code']}' (Adult + Kid) nhưng tên chỉ ghi {', '.join(AUDIENCE_LABEL[a] for a in sorted(name_aud))}",
@@ -276,7 +279,7 @@ def check_product(data, extra=True):
                     "Sửa tên hoặc SKU cho khớp")
         age = attr(s, "gender/age", "age", "gender")
         age_aud = audience_in(" ".join(age))
-        if age_aud and not age_aud & exp_set and not is_gift:
+        if age_aud and not age_aud & exp_set and one_audience:
             add(HIGH, "Sai đối tượng", "Attribute Gender/Age",
                 f"Attribute ghi '{', '.join(age)}' nhưng SKU là {AUDIENCE_LABEL[exp]}", "Sửa attribute Gender/Age")
         sizes = attr(s, "size", "sizes")
@@ -552,7 +555,7 @@ def check_product(data, extra=True):
             seen.add(a)
         if dup:
             add(LOW, "Ảnh", "Alt text", f"Alt text bị trùng giữa các ảnh: \"{next(iter(dup))}\"", "Mỗi ảnh 1 alt riêng")
-        if sku and sku["audience"] in ("adult", "women", "kids") and not is_gift:
+        if sku and sku["audience"] in ("adult", "women", "kids"):  # one-audience gift packs too (RFK 132430)
             for a, src in alts:
                 t = fold(a + " " + src)
                 if "size" in t and "chart" in t:

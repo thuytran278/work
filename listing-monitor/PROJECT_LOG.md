@@ -232,6 +232,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 30/10 | Season: bỏ qua Training/Pre Match 25/26 (cố ý). Shirt/Kit (KFK): câu liệt kê thành phần kit "Long sleeve shirt with …", "The shirt is supplied without a name", "The shirt already has …" không còn bị báo |
 | 30/10 | Words to Avoid: bỏ qua chữ badge trong dòng template badge. Bỏ check Free Pin (A8) và phần đọc chữ Free Pin trên trang |
 | 30/10 | OCR giá trên ảnh nhanh hơn: tesseract chạy 1 luồng CPU (4 luồng web × tesseract nhiều luồng làm máy quá tải, 7–13 phút/sản phẩm), nguyên ảnh không phóng quá ~1800 px. Kiểm lại 12 ảnh gift pack đã biết giá: đúng 12/12, ~1–2 giây/ảnh |
+| 31/10 | Gift pack có SKU 1 đối tượng (AD hoặc KD) giờ cũng được check đối tượng: tên vs SKU, Gender Age, size chart trong gallery (Cao). Trước đây mọi gift pack bị bỏ qua nên sót RFK 132430 (bộ Men tên ghi Kids + size chart Kids, Clara báo) và RFK 126558 (bộ Kids dùng size chart Men). Bundle trộn đối tượng (SKU AD/KD) vẫn bỏ qua |
 
 ## 9. Hạn chế đã biết và câu hỏi còn mở
 

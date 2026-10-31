@@ -218,5 +218,27 @@ class TrainingSeason(unittest.TestCase):
         self.assertTrue(msgs)
 
 
+
+class OneAudienceGiftPack(unittest.TestCase):
+    def issues(self, name, sku, chart):
+        d = product(store__name=name)
+        d["store"]["sku"] = sku
+        d["store"]["images"].append({"alt": "size guide", "src": f"https://x/{chart}"})
+        return {(i["severity"], i["group"], i["field"]) for i in q.check_product(d)}
+
+    def test_men_gift_set_named_kids_with_kids_chart(self):
+        # RFK 132430: "Full Shirt Gift Set – Home Kids Football Shirts", SKU AD, kids size chart in the gallery
+        got = self.issues("Barcelona and Real Madrid 2026/27 Full Shirt Gift Set – Home Kids Football Shirts",
+                          "RFK_BARRM_HOGP_AD_No_2026/27", "Replica-Football-Kits-Kid_s-Kit-Size-Chart.png")
+        self.assertIn((q.HIGH, "Sai đối tượng", "Tên sản phẩm"), got)
+        self.assertIn((q.HIGH, "Ảnh", "Size chart"), got)
+
+    def test_dad_and_son_pack_not_flagged(self):
+        got = self.issues("Leeds United 2026/27 Gift Pack – Home Dad Shirt and Son Kit",
+                          "KFK_LEE_HOGP_AD/KD_No_26/27", "KFK-Kid-Kit-Size-Chart.png")
+        self.assertNotIn((q.HIGH, "Sai đối tượng", "Tên sản phẩm"), got)
+        self.assertNotIn((q.HIGH, "Ảnh", "Size chart"), got)
+
+
 if __name__ == "__main__":
     unittest.main()
