@@ -128,7 +128,8 @@ def audience_in(text):
     """Audiences mentioned in a (folded) text."""
     t = fold(text)
     found = set()
-    if has_word(t, "kid", "kids", "kid's", "kids'", "children", "childrens", "junior", "boys", "youth"):
+    if has_word(t, "kid", "kids", "kid's", "kids'", "children", "childrens", "junior", "boys", "youth",
+                "son", "sons", "daughter", "daughters"):
         found.add("kids")
     if has_word(t, "men", "mens", "men's", "adult", "adults", "dad"):
         found.add("adult")
@@ -575,8 +576,12 @@ def check_product(data, extra=True):
                         kids_vs_adult = ("kids" in chart_aud) != (exp == "kids")
                         backs_sku = exp in ga_aud or (kids_vs_adult and (
                             ("kids" in size_aud) == (exp == "kids") and bool(size_aud) and len(size_aud) == 1))
-                        if name_aud_all and chart_aud <= name_aud_all and not backs_sku:
-                            add(HIGH, "SKU", "SKU", f"SKU ghi {AUDIENCE_LABEL[exp]} ({sku['aud_code']}) nhưng tên và size "
+                        # name, or Gender Age when the name gives no audience (RFK 18990 "Manchester City Away
+                        # Replica Football Kit HAALAND 9": Gender Age Kids, sizes 16–28, kids chart, SKU AD)
+                        sides_with_chart = (name_aud_all and chart_aud <= name_aud_all) or bool(chart_aud & ga_aud)
+                        if sides_with_chart and not backs_sku:
+                            where = "tên" if name_aud_all and chart_aud <= name_aud_all else "Gender Age"
+                            add(HIGH, "SKU", "SKU", f"SKU ghi {AUDIENCE_LABEL[exp]} ({sku['aud_code']}) nhưng {where} và size "
                                 f"chart là {', '.join(AUDIENCE_LABEL[x] for x in chart_aud)}", "Sửa mã đối tượng trong SKU")
                         else:
                             add(HIGH, "Ảnh", "Size chart",
