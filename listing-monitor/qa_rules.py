@@ -556,16 +556,32 @@ def check_product(data, extra=True):
             seen.add(a)
         if dup:
             add(LOW, "Ảnh", "Alt text", f"Alt text bị trùng giữa các ảnh: \"{next(iter(dup))}\"", "Mỗi ảnh 1 alt riêng")
-        if sku and sku["audience"] in ("adult", "women", "kids"):  # one-audience gift packs too (RFK 132430)
+        name_aud_all = audience_in(name)
+        # one-audience gift packs too (RFK 132430); "For Men and Kids" / family packs legitimately carry several charts
+        if sku and sku["audience"] in ("adult", "women", "kids") and len(name_aud_all) <= 1:
             for a, src in alts:
                 t = fold(a + " " + src)
                 if "size" in t and "chart" in t:
                     chart_aud = audience_in(re.sub(r"[-_./]", " ", t))
                     exp = sku["audience"]
                     if chart_aud and exp not in chart_aud and not (exp == "women" and "adult" in chart_aud):
-                        add(HIGH, "Ảnh", "Size chart",
-                            f"Listing {AUDIENCE_LABEL[exp]} nhưng dùng size chart {', '.join(AUDIENCE_LABEL[x] for x in chart_aud)} ({src.rsplit('/', 1)[-1]})",
-                            "Đổi size chart đúng đối tượng")
+                        # Name and chart agree against the SKU: Gender Age and the size options decide which side is
+                        # wrong (RFK 132430: SKU AD + Gender Age Men + S–XXL, so the name and chart are wrong;
+                        # CFS_FR_WM_AD_No_2025 "France Women": Gender Age Women, so the SKU is wrong).
+                        ga_aud = audience_in(" ".join(attr(s, "gender age", "gender/age", "gender & age", "age", "gender")))
+                        size_aud = size_kind([tm for a2 in s.get("attributes", []) if "size" in fold(a2.get("name", ""))
+                                              for tm in (x.get("name", "") for x in a2.get("terms", []))])
+                        # sizes only tell kids from grown-ups (S–XXL fits Men and Women alike)
+                        kids_vs_adult = ("kids" in chart_aud) != (exp == "kids")
+                        backs_sku = exp in ga_aud or (kids_vs_adult and (
+                            ("kids" in size_aud) == (exp == "kids") and bool(size_aud) and len(size_aud) == 1))
+                        if name_aud_all and chart_aud <= name_aud_all and not backs_sku:
+                            add(HIGH, "SKU", "SKU", f"SKU ghi {AUDIENCE_LABEL[exp]} ({sku['aud_code']}) nhưng tên và size "
+                                f"chart là {', '.join(AUDIENCE_LABEL[x] for x in chart_aud)}", "Sửa mã đối tượng trong SKU")
+                        else:
+                            add(HIGH, "Ảnh", "Size chart",
+                                f"Listing {AUDIENCE_LABEL[exp]} nhưng dùng size chart {', '.join(AUDIENCE_LABEL[x] for x in chart_aud)} ({src.rsplit('/', 1)[-1]})",
+                                "Đổi size chart đúng đối tượng")
 
     # ---------- Stock / price / variations
     if not s.get("is_in_stock", True):

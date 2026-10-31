@@ -236,6 +236,7 @@ File tham khảo: `CFS_listing_cau_thu_trung_lap.xlsx` (382 listing, 176 nhóm),
 | 31/10 | Gift pack có SKU 1 đối tượng (AD hoặc KD) giờ cũng được check đối tượng: tên vs SKU, Gender Age, size chart trong gallery (Cao). Trước đây mọi gift pack bị bỏ qua nên sót RFK 132430 (bộ Men tên ghi Kids + size chart Kids, Clara báo) và RFK 126558 (bộ Kids dùng size chart Men). Bundle trộn đối tượng (SKU AD/KD) vẫn bỏ qua |
 | 31/10 | **Category đội tuyển sai** (cả 4 web, Cao): category tên nước (Spain, England, Retro Spain…) mà tên sản phẩm không có nước đó. Category nước chỉ chứa sản phẩm của đội tuyển đó (đã kiểm tra 4 web), RFK 132430/132408 Barcelona & Real Madrid bị gắn "Spain" (Clara báo) |
 | 31/10 | Mức độ: `policy_severity()` trong qa_rules.py quyết định mức cuối (Cao / Cần xác nhận / Thấp) theo quyết định 31/10; Excel đổi cột "Lỗi Trung bình" thành "Cần xác nhận" |
+| 31/10 | Size chart: bỏ qua listing có nhiều đối tượng trong tên ("For Men and Kids", bộ gia đình). Khi tên và size chart cùng đối tượng nhưng SKU khác: Gender Age / size quyết định bên sai (SKU sai → báo ở SKU; vd CFS_FR_WM_AD France Women) |
 
 ## 9. Hạn chế đã biết và câu hỏi còn mở
 

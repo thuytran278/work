@@ -220,16 +220,35 @@ class TrainingSeason(unittest.TestCase):
 
 
 class OneAudienceGiftPack(unittest.TestCase):
-    def issues(self, name, sku, chart):
+    def issues(self, name, sku, chart, gender=None, sizes=None):
         d = product(store__name=name)
         d["store"]["sku"] = sku
+        d["store"]["images"] = [i for i in d["store"]["images"] if "size" not in (i["src"] + i["alt"]).lower()]
         d["store"]["images"].append({"alt": "size guide", "src": f"https://x/{chart}"})
+        for a in d["store"]["attributes"]:
+            if gender and a["name"] == "Gender/Age":
+                a["terms"] = [{"name": gender}]
+            if sizes and a["name"] == "Size":
+                a["terms"] = [{"name": x} for x in sizes]
         return {(i["severity"], i["group"], i["field"]) for i in q.check_product(d)}
+
+    def test_women_shirt_with_adult_sku_blames_the_sku(self):
+        # CFS_FR_WM_AD_No_2025 "France Women Team Cheap Football Shirt": women chart, Gender Age Women
+        got = self.issues("France Women Team Cheap Football Shirt 2025", "CFS_FR_WM_AD_No_2025",
+                          "New-CFS-Women-Shirt-Size-Chart-2807.webp", gender="Women", sizes=["S", "M", "L"])
+        self.assertIn((q.HIGH, "SKU", "SKU"), got)
+        self.assertNotIn((q.HIGH, "Ảnh", "Size chart"), got)
+
+    def test_men_and_kids_listing_skips_chart_check(self):
+        got = self.issues("Liverpool Away for Men and Kids Cheap Football Kit 2025/26", "CFS_LV_AW_KD_No_25/26",
+                          "CFS-ADULT-KITS-SIZE-CHART.jpg")
+        self.assertNotIn((q.HIGH, "Ảnh", "Size chart"), got)
 
     def test_men_gift_set_named_kids_with_kids_chart(self):
         # RFK 132430: "Full Shirt Gift Set – Home Kids Football Shirts", SKU AD, kids size chart in the gallery
         got = self.issues("Barcelona and Real Madrid 2026/27 Full Shirt Gift Set – Home Kids Football Shirts",
-                          "RFK_BARRM_HOGP_AD_No_2026/27", "Replica-Football-Kits-Kid_s-Kit-Size-Chart.png")
+                          "RFK_BARRM_HOGP_AD_No_2026/27", "Replica-Football-Kits-Kid_s-Kit-Size-Chart.png",
+                          gender="Men", sizes=["S", "M", "L", "XL", "XXL"])
         self.assertIn((q.HIGH, "Sai đối tượng", "Tên sản phẩm"), got)
         self.assertIn((q.HIGH, "Ảnh", "Size chart"), got)
 
